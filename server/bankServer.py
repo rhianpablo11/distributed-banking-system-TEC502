@@ -15,6 +15,11 @@ IP = '0.0.0.0'
 global bankName
 bankName = "elevenBank"
 
+global hashMapBanks
+hashMapBanks = {
+    "1": "localhost:8082"
+}
+
 global accountNumbers
 accountNumbers = 2;
 
@@ -116,6 +121,7 @@ def changeStatusKeyPix():
         return "client not found", 404
 
 
+#funcao de receber via deposito comum
 @app.route('/client/deposit', methods=["PATCH"])
 def depositMoney():
     data =  request.json
@@ -149,10 +155,10 @@ def loginClient():
 
 
 @app.route('/client/transaction/pix/infos', methods=['GET'])
-def sendPixGeInfos():
+def getInfosForMakePix():
     data =  request.json
     if(data["bankID"] == 1):
-        url = "localhost:8082/client/pix"
+        url = "http://"+hashMapBanks[data["bankID"]]+"/client/pix"
         keyPix = {
             "keyPix": data["keyPix"]
         }
@@ -166,6 +172,52 @@ def sendPixGeInfos():
             return "Error in requisition",400              
     else:
         return "Bank invalid", 404
+
+#metodo para enviar o dinheiro via pix
+@app.route('/client/transactions/pix/send', methods=['POST'])
+def sendMoneyPix():
+    data =  request.json
+    if(float(data["value"])<=float(clients[data["cpfCNPJ1"]].balance)):
+        oldBalance = clients[data["cpfCNPJ1"]].balance
+        newBalance = oldBalance - float(data["value"])
+        clients[data["cpfCNPJ1"]].setBalance(newBalance)
+        clients[data["cpfCNPJ1"]].setBlockedBalance(float(data["value"]))
+        
+        if(data["bankID"] == 1):
+            url = "http://"+hashMapBanks[data["bankID"]]+"/client/transactions/pix/receive"
+            datasForSend = {}
+            datasForSend["keyPix"] = data["keyPix"]
+            datasForSend["value"] = data["value"]
+            datasForSend["sender"] = data["cpfCNPJ1"]
+            infoReceived = requests.get(url,params=datasForSend)
+            
+
+            if (infoReceived.status_code == 200): #achou o cliente no outro banco
+                print(infoReceived.json())
+                clients[data["cpfCNPJ1"]].setBlockedBalance((-1)*(float(data["value"])))
+            else: #nao encontrou o cliente no outro banco
+                print(infoReceived.status_code, infoReceived.text)
+                clients[data["cpfCNPJ1"]].setBlockedBalance((-1)*(float(data["value"])))
+                oldBalance = clients[data["cpfCNPJ1"]].balance
+                newBalance = oldBalance + float(data["value"])
+                clients[data["cpfCNPJ1"]].setBalance(newBalance)
+                return "Error in requisition",400
+
+#metodo para ele receber o dinheiro via pix
+@app.route('/client/transactions/pix/receive', methods=['PATCH'])
+def receiveMoneyPix():
+    data = request.json
+    if(len(clients) >0):
+        for client in clients:
+            if(data["keyPix"] == clients[client].keyPix):
+                oldBalance = clients[client].balance
+                newBalance = oldBalance + float(data["value"])
+                clients[client].setBalance(newBalance)
+                return "money received with sucess", 200
+        else:
+            return "client not found", 404 
+    else:
+        return "client not found", 404
 
 app.run(IP, 8082, debug=False)
 

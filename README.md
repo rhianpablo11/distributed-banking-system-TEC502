@@ -1,1 +1,6 @@
-# distributed-banking-system-TEC502
+<div align=center>
+
+# Distributed Banking System
+</div>
+
+

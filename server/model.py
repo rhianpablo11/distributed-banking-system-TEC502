@@ -67,3 +67,6 @@ class Client:
 
     def setBalance(self, newBalance):
         self.balance = newBalance
+    
+    def setBlockedBalance(self, blockedValue):
+        self.blockedBalance += blockedValue
