@@ -1,0 +1,15 @@
+* {
+  padding: 0;
+  margin:0;
+  box-sizing: border-box;
+  font-family: "Inter", Verdana, Geneva, Tahoma, sans-serif;
+  color: white;
+}
+
+body{
+  background-color: black;
+}
+
+a{
+  text-decoration: none;
+}
