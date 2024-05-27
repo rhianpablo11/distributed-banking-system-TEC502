@@ -1,6 +1,11 @@
 
-function cardHelloUser(){
+function CardHelloUser(){
 
+    return(
+        <>
+        
+        </>
+    )
 }
 
-export default cardHelloUser
+export default CardHelloUser
