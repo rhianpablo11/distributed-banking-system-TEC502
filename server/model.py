@@ -69,4 +69,6 @@ class Client:
         self.balance = newBalance
     
     def setBlockedBalance(self, blockedValue):
-        self.blockedBalance += blockedValue
+        oldBlocked = float(self.blockedBalance)
+        oldBlocked += blockedValue
+        self.blockedBalance = oldBlocked
