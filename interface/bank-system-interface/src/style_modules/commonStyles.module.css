@@ -106,3 +106,16 @@
     margin-top: 35px;
     margin-bottom: 30px;
 }
+
+/*
+    PARTE DO BOTAO DE CRIAR CONTA NA LANDING PAGE
+*/
+
+.buttonAccount button{
+    background: none ;
+    border-radius: 10px;
+    border: 2px solid #EEEEEE;
+    padding: 5px 10px;
+    font-size: 1.5rem;
+    margin: 20px 10px;
+}
