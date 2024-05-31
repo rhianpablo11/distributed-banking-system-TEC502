@@ -11,6 +11,8 @@ class Client:
         self.bank = bank
         self.balance = balance
         self.blockedBalance = blockedBalance
+        self.transactions = {}
+        self.idLastTransaction = 0
         if(isJoinetAccount):
             self.name1 = name1
             self.cpfCNPJ1 = cpfCNPJ1
@@ -32,6 +34,12 @@ class Client:
             "balance": str(self.balance),
             "blockedBalance": self.blockedBalance
         }
+        listTransactions = []
+        for transaction in self.transactions:
+            listTransactions.append(transaction)
+
+        auxJson["transactions"] = listTransactions
+
         if(self.isJoinetAccount=="True"):
             auxJson["isJoinet"] = "True"
             auxJson["cpfCNPJ1"] = self.cpfCNPJ1
@@ -72,3 +80,10 @@ class Client:
         oldBlocked = float(self.blockedBalance)
         oldBlocked += blockedValue
         self.blockedBalance = oldBlocked
+
+    def addTransaction(self, transaction):
+        self.idLastTransaction = transaction.idTransaction
+        self.transactions[transaction.idTransaction] = transaction
+    
+    def attTransaction(self, transaction):
+        self.transactions[transaction.idTransaction] = transaction

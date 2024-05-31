@@ -2,7 +2,6 @@ import styles from "../style_modules/commonStyles.module.css"
 
 function ButtonLoginAccount(){
     const divStyle = {
-        color: 'white',
         padding: '5px 30px',
         
       };
