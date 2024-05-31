@@ -8,9 +8,10 @@ class Transaction:
         self.typeTransaction = typeTransaction
         self.idTransaction = idTransaction
         self.bankReceptor = bankReceptor
-        self.bankSorce = bankSource
+        self.bankSource = bankSource
 
     def getJsonTransaction(self):
+        print("receptor pivete",self.receptor)
         auxJson = {
             "source": self.source,
             "value": self.value,

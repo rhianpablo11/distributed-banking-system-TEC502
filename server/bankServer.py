@@ -1,6 +1,7 @@
 import threading
 import os
 import sys
+from time import sleep
 from flask import *
 import json
 from datetime import *
@@ -11,6 +12,8 @@ import requests
 
 global clients
 clients = {}
+clientsLock = threading.Lock()
+
 
 IP = '0.0.0.0'
 global bankName
@@ -18,7 +21,7 @@ bankName = "elevenBank"
 
 global hashMapBanks
 hashMapBanks = {
-    "1": "localhost:8082"
+    "1": "localhost:8081"
 }
 
 global accountNumbers
@@ -48,9 +51,11 @@ def getClientsList():
     if(len(clients) >0):
         for client in clients:
             clientsList.append(clients[client].jsonComplet())
-
+    print(clientsList)
+    print(clientsLock)
     response = make_response(jsonify(clientsList))
     response.headers['Cache-Control'] = 'private, max-age=1'
+
     return response
 
 
@@ -58,17 +63,11 @@ def getClientsList():
 def createClient():
     global clients
     data = request.json
+    clientsLock.acquire()
     #verificar se tem todos os elementos
-    if(data["name1"]  and
-       data["cpfCNPJ1"] and
-       data["name2"] and
-       data["cpfCNPJ2"] and
-       data["email"] and
-       data["password"] and
-       data["isFisicAccount"] and
-       data["isJoinetAccount"] and
-       data["telephone"]):
+    if(data["name1"]  and data["cpfCNPJ1"] and data["name2"] and data["cpfCNPJ2"] and data["email"] and data["password"] and data["isFisicAccount"] and data["isJoinetAccount"] and data["telephone"]):
         if(data["cpfCNPJ1"] in clients):
+            clientsLock.release()
             return "user already in system", 409
         else:
             clients[data["cpfCNPJ1"]] = Client(
@@ -85,10 +84,12 @@ def createClient():
                                             bank=bankName,
                                             balance="0",
                                             blockedBalance="0"    )
-            print(clients[data["cpfCNPJ1"]].jsonComplet())
+            
             response = make_response(jsonify(clients[data["cpfCNPJ1"]].jsonComplet()))
+            clientsLock.release()
             return response, 201
     else:
+        clientsLock.release()
         return "infos received not are complete", 406
 
 
@@ -138,24 +139,10 @@ def depositMoney():
     if(len(clients) >0):
         for client in clients:
             if(data["cpfCNPJ1"] == client):
-                oldBalance = clients[client].balance
-                newBalance = float(oldBalance) + float(data["value"])
-                clients[client].setBalance(newBalance)
-                clients[client].addTransaction(
-                    Transaction(
-                        source="none",
-                        receptor=client,
-                        value=data["value"],
-                        dateTransaction=datetime.now(),
-                        concluded=True,
-                        typeTransaction="deposit",
-                        idTransaction=int(clients[client].idLastTransaction) + 1,
-                        bankReceptor=bankName,
-                        bankSource=bankName
-                    )
-                )
-                
-                return "money received with sucess", 201
+                if(clients[client].receiveDeposit(data["value"])):
+                    return "money received with sucess", 201
+                else:
+                    return "error in complet transaction", 403
         else:
             return "client not found", 404 
     else:
@@ -172,6 +159,7 @@ def loginClient():
         for client in clients:
             if(clients[client].email == data["email"]):
                 if(clients[client].password == data["password"]):
+                    print(clients[client].jsonComplet())
                     response = make_response(jsonify(clients[client].jsonComplet()))
                     return response, 200
                 else:
@@ -212,71 +200,22 @@ Função para poder enviar o dinheiro via pix para outro cliente
 @app.route('/client/transactions/pix/send', methods=['POST'])
 def sendMoneyPix():
     data =  request.json
-    if(float(data["value"])<=float(clients[data["cpfCNPJ1"]].balance)):
-        oldBalance = clients[data["cpfCNPJ1"]].balance
-        newBalance = float(oldBalance) - float(data["value"])
-        print(f'valor antigo: {oldBalance} valor novo: {newBalance}')
-        clients[data["cpfCNPJ1"]].setBalance(newBalance)
-        clients[data["cpfCNPJ1"]].setBlockedBalance(float(data["value"]))
-        
-        if(data["bankID"] == "1"):
-            url = "http://"+hashMapBanks[data["bankID"]]+"/client/transactions/pix/receive"
-            print(url)
-            datasForSend = {}
-            datasForSend["keyPix"] = data["keyPix"]
-            datasForSend["value"] = data["value"]
-            datasForSend["sender"] = data["cpfCNPJ1"]
-            datasForSend["bankName"] = bankName
-            infoReceived = requests.patch(url,json=datasForSend)
-            
 
-            if (infoReceived.status_code == 200): #achou o cliente no outro banco
-                print(infoReceived.text)
-                clients[data["cpfCNPJ1"]].setBlockedBalance((-1)*(float(data["value"])))
-                print(clients[data["cpfCNPJ1"]].balance)
-
-
-                #source = quem ta enviando
-                #receptor =  quem recebe
-                clients[data["cpfCNPJ1"]].addTransaction(
-                    Transaction(
-                        source=data["cpfCNPJ1"],
-                        receptor=data["nameReceptor"],
-                        bankReceptor=hashMapBanks[data["bankID"]],
-                        value=data["value"],
-                        dateTransaction=datetime.now(),
-                        concluded=True,
-                        typeTransaction="Send Pix",
-                        idTransaction=int(clients[data["cpfCNPJ1"]].idLastTransaction) + 1
-                    )
-                )
-                
-
-
-                return "money send with sucess",200
-            else: #nao encontrou o cliente no outro banco
-                print(infoReceived.status_code, infoReceived.text)
-                clients[data["cpfCNPJ1"]].setBlockedBalance((-1)*(float(data["value"])))
-                oldBalance = clients[data["cpfCNPJ1"]].balance
-                newBalance = float(oldBalance) + float(data["value"])
-                clients[data["cpfCNPJ1"]].setBalance(newBalance)
-                clients[data["cpfCNPJ1"]].addTransaction(
-                    Transaction(
-                        source=data["cpfCNPJ1"],
-                        receptor=data["nameReceptor"],
-                        bankReceptor=hashMapBanks[data["bankID"]],
-                        value=data["value"],
-                        dateTransaction=datetime.now(),
-                        concluded="Error",
-                        typeTransaction="Send Pix",
-                        idTransaction=int(clients[data["cpfCNPJ1"]].idLastTransaction) + 1
-                    )
-                )
-                return "Error in requisition",400
+    if(data["bankID"] == "1"):
+        url = "http://"+hashMapBanks[data["bankID"]]+"/client/transactions/pix/receive"
+        print(url)
+        addMoney = clients[data["cpfCNPJ1"]].sendPix(data["value"], url, data["keyPix"], data["nameReceptor"])
+        print(addMoney)
+        if(addMoney[1]):
+            return "money send with sucess", 200
+        elif(addMoney[0]=="error in transaction"):
+            return "error in transaction", 406
         else:
-            return "Bank invalid",400
+            return "error, key is same of client", 403
+        
     else:
-        return "Not money availible for this transaction",400
+        return "Bank invalid",400
+
 
 
 '''
@@ -286,29 +225,13 @@ Função para receber dinheiro via pix
 def receiveMoneyPix():
     data = request.json
     if(len(clients) >0):
+        #SE A CHAVE PIX SE MANTER O CPF, NAO PRECISA PERCORRER O FOR
         for client in clients:
             if(data["keyPix"] == clients[client].keyPix):
-                oldBalance = clients[client].balance
-                newBalance = float(oldBalance) + float(data["value"])
-                clients[client].setBalance(newBalance)
-                
-                #source = quem ta me mandando dinheiro
-                #receptor = o cliente que recebe aquele dinheiro
-                clients[client].addTransaction(
-                    Transaction(
-                        source= data["sender"],
-                        receptor=client,
-                        bankReceptor=bankName,
-                        bankSource= data["bankName"],
-                        value=data["value"],
-                        dateTransaction=datetime.now(),
-                        concluded=True,
-                        typeTransaction="Receive Pix",
-                        idTransaction=int(clients[client].idLastTransaction) + 1
-                    )
-                )
-
-                return "money received with sucess", 200
+                if(clients[client].receivePix(data["value"], data["bankName"], data["sender"])):
+                    return "money received with sucess", 200
+                else:
+                    return "error in transaction", 403
         else:
             return "client not found", 404 
     else:
