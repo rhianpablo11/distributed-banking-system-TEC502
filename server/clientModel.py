@@ -30,6 +30,7 @@ class Client:
     
 
     def jsonComplet(self):
+        self.operationLock.acquire()
         auxJson = {
             "telephone": self.telephone,
             "email": self.email,
@@ -56,6 +57,8 @@ class Client:
             auxJson["isJoinet"] = "False"
             auxJson["cpfCNPJ1"] = self.cpfCNPJ1
             auxJson["name1"] = self.name1
+        
+        self.operationLock.release()
         return auxJson
     
 

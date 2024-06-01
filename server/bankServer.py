@@ -9,6 +9,7 @@ from flask_cors import CORS
 from clientModel import Client
 from transactionModel import Transaction
 import requests
+from utils import *
 
 global clients
 clients = {}
@@ -24,19 +25,13 @@ hashMapBanks = {
     "1": "localhost:8081"
 }
 
-global accountNumbers
-accountNumbers = 2;
+
 
 app = Flask(__name__)
 CORS(app)
 
 
-#função geradora de numero de conta conta
-def createAccountNumber():
-    global accountNumbers
-    accountNumber = (accountNumbers**10+12*accountNumbers+(6*(accountNumbers**3)))/2
-    accountNumbers +=2
-    return accountNumber
+
 
 
 @app.route('/bank', methods=['GET'])
@@ -76,7 +71,7 @@ def createClient():
                                             name2= data["name2"],
                                             cpfCNPJ2= data["cpfCNPJ2"],
                                             email=data["email"],
-                                            password= data["password"],
+                                            password= cryptographyPassword(data["password"]),
                                             isFisicAccount= data["isFisicAccount"],
                                             isJoinetAccount=data["isJoinetAccount"],
                                             accountNumber= createAccountNumber(),
@@ -158,8 +153,7 @@ def loginClient():
     if(len(clients) >0):
         for client in clients:
             if(clients[client].email == data["email"]):
-                if(clients[client].password == data["password"]):
-                    print(clients[client].jsonComplet())
+                if(clients[client].password == cryptographyPassword(data["password"])):
                     response = make_response(jsonify(clients[client].jsonComplet()))
                     return response, 200
                 else:

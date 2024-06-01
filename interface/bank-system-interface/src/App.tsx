@@ -11,8 +11,7 @@ import ButtonLoginAccount from "./common/buttonLoginAccount.tsx"
 function App() {
   return (
     <>
-      <ButtonCreateAccount />
-      <ButtonLoginAccount />
+      <LandingPage />
     </>
   )
 }
