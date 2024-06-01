@@ -11,7 +11,6 @@ function LandingPage(){
 
 
 
-
     return(
         <>
             <div className={styles.landingPageComponent}>

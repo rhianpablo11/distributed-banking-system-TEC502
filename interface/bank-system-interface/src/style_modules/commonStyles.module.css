@@ -127,3 +127,234 @@
     border: 2px solid #171717;
     color: black;
 }
+
+
+/*
+    NAVBAR INTERNAL WITH USER LOGGED
+*/
+.navBarGeral{
+    width: 98.7%;
+    display: flex;
+    justify-content: center;
+    
+}
+.navBarInternal{
+    width: 1440px;
+    max-width: 1440px;
+    display: inline-flex;
+    background: #171717;
+    border-radius: 10px;
+    margin: 10px;
+    height: 60px;
+}
+
+.navBarInternal img{
+    width: 210px;
+    margin-top: 0px;
+    margin-left: 20px;
+    margin-right: 16%;
+}
+
+.personIconNavBar{
+    background: white;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    margin-top: 5px;
+    margin-left: 30%;
+}
+
+.personIconNavBar img{
+    margin:0px;
+    width: 45px;
+    height: 45px;
+}
+
+.personIconNavBar:hover{
+    background: black;
+}
+
+.navBarInternalTexts{
+    display: inline-flex;
+    color: #EEEEEE;
+}
+
+.navBarInternalTexts h4{
+    margin: 17px 15px 0px 15px;
+    font-weight: 400;
+    font-size: 1.3rem;
+}
+
+.navBarInternalTexts h4 a:hover{
+    color: #444444;
+}
+
+/*
+    PARTE CENTRAL
+*/
+.divGeral{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+}
+
+.centralParteDashboard{
+    max-width: 1440px;
+    width: 1440px;
+    display: flex;
+    margin-top: 15px;
+}
+
+.cardsLeft{
+    width: 22%;
+    max-width: 22%;
+    min-width: 22%;
+    margin-right: 5px;
+}
+
+.cardHelloUserBlock{
+    background: #171717;
+    height: 170px;
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cardHelloUserBlock h4{
+    margin-left: 15px;
+    padding-top: 10px;
+    font-size: 2rem;
+    font-weight: 300;
+    color: #EEEEEE;
+}
+
+.cardHelloUserBlock h1{
+    margin-left: 30px;
+    font-size: 2.7rem;
+    font-weight: 500;
+    text-align: center;
+    text-overflow: ellipsis;
+    height: 100px;
+    width: 80%;
+    overflow: hidden;
+    white-space: nowrap; 
+}
+
+.cardHelloUserBlock h3{
+    position: relative;
+    height: 60px;
+    top: 0px;
+    text-align: center;
+    font-size:1.8rem;
+    font-weight: 400;
+}
+
+.cardDepositMoneyBlock{
+    background: #171717;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+    color: #EEEEEE;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+
+}
+
+.cardDepositMoneyBlock h1{
+    font-weight: 600;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.inputDepositValue{
+    width: 94%;
+    background: #444444;
+    margin-top: 15px;
+    border-radius: 10px;
+    height: 40px;
+    border-style: none;
+    color: #EEEEEE;
+    font-size: 1.2rem;
+    padding-left: 10px;
+}
+
+.inputDepositValue::placeholder{
+    color: #EEEEEE;
+    font-size: 1.2rem;
+    padding-left: 10px;
+    padding-top: 20px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.buttonDeposit button{
+    background-color: #444444;
+    padding: 7px 10px;
+    border-style: none;
+    margin: 15px 5px;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.buttonDeposit button:hover{
+    background: #000000;
+}
+
+.qrCodeImage{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+   
+}
+
+.qrCodeImage img{
+    width: 50%;
+    background: #EEEEEE;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.buttonPayDeposit{
+    background: #444444;
+    padding: 7px 30px;
+    border-style: none;
+    margin: 0px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+
+.buttonPayDeposit:hover{
+    background: #000000;
+}
+
+.cardsCenter{
+    width: 60%;
+    min-width: 50%;
+    margin-left: 10px;
+    margin-right: 5px;
+
+
+    border-radius: 10px;
+    background: #171717;
+    height: 170px;
+}
+
+.cardsRight{
+    width: 22%;
+    max-width: 22%;
+    min-width: 22%;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 10px;
+    background: #171717;
+    height: 170px;
+}

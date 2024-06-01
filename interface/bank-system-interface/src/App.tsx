@@ -5,13 +5,14 @@ import CardCreateAccount from "./common/cardCreateAccount.tsx"
 import CardLoginAccount from "./common/cardLoginAccount.tsx"
 import ButtonCreateAccount from "./common/buttonCreateAccount.tsx"
 import ButtonLoginAccount from "./common/buttonLoginAccount.tsx"
+import BackgroundLogged from "./common/backgroundLogged.tsx"
 
 
 
 function App() {
   return (
     <>
-      <LandingPage />
+      <BackgroundLogged />
     </>
   )
 }
