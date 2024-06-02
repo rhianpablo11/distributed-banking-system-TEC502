@@ -1,4 +1,5 @@
 import styles from "../style_modules/commonStyles.module.css"
+import { Link } from "react-router-dom";
 
 function ButtonLoginAccount(){
     const divStyle = {
@@ -8,9 +9,11 @@ function ButtonLoginAccount(){
     return(
         <>
             <div  className={styles.buttonAccount}>
-                <button style={divStyle}>
-                    Login
-                </button>
+                <Link to='/go/login'>
+                    <button style={divStyle}>
+                        Login
+                    </button>
+                </Link>
             </div>
         </>
     )

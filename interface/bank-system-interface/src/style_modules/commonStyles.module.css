@@ -128,6 +128,9 @@
     color: black;
 }
 
+.buttonAccount button a:hover{
+    color: #000000;
+}
 
 /*
     NAVBAR INTERNAL WITH USER LOGGED
