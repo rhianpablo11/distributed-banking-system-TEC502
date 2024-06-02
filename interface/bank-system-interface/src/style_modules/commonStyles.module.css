@@ -206,6 +206,10 @@
     margin-top: 15px;
 }
 
+/*
+    ELEMENTOS A ESQUERDA
+*/
+
 .cardsLeft{
     width: 22%;
     max-width: 22%;
@@ -293,6 +297,7 @@
     padding-top: 20px;
     padding-bottom: 0px;
     margin-bottom: 0px;
+    text-align: left;
 }
 
 .buttonDeposit button{
@@ -338,17 +343,215 @@
     background: #000000;
 }
 
+/*
+    ELEMENTOS NO CENTRO
+*/
+
 .cardsCenter{
     width: 60%;
     min-width: 50%;
     margin-left: 10px;
     margin-right: 5px;
+}
 
-
+.infoClientBalanceBlock{
+    width: 100%;
     border-radius: 10px;
     background: #171717;
     height: 170px;
+    
 }
+
+.infoClientBalanceBlock h4{
+    font-size: 1.8rem;
+    font-weight: 500;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.infoClientsBalanceValuesCards{
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
+    align-items: end;
+    width: 97%;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.infoClientsBalanceValuesCards::-webkit-scrollbar{
+    height: 10px;
+}
+
+.infoClientsBalanceValuesCards::-webkit-scrollbar-track {
+    background: #171717;
+    border-radius:20px;
+}
+
+.infoClientsBalanceValuesCards::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 20px;  
+    border: black solid 1px;
+}
+
+.infoClientValueCard{
+    background: #444444;
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    height: 110px;
+    display: flex;
+    flex-direction: column;
+}
+
+.infoClientValueCard h5{
+    padding-left: 10px;
+    padding-top: 10px;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.infoClientValueCard h4{
+    display: flex;
+    align-items: baseline;
+    font-size: 2.5rem;
+    font-weight: 700;
+    padding-right: 10px;
+    padding-top: 20px;
+}
+
+.infoClientValueCard h4 p{
+    font-size: 1.2rem;
+    padding-right: 10px;
+    font-weight: 500;
+    
+}
+
+.recentsTransactionsBlock{
+    width: 100%;
+    height: 60vh;
+    
+    background: #171717;
+    margin-top: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding-bottom: 15px;
+}
+
+.listTransactions{
+    height: 59vh;
+    overflow-y: scroll;
+}
+
+.listTransactions::-webkit-scrollbar{
+    width: 10px;
+}
+
+.listTransactions::-webkit-scrollbar-track {
+    background: #171717;
+    border-radius:20px;
+}
+
+.listTransactions::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 20px;  
+    border: black solid 1px;
+}
+
+.recentsTransactionsBlock h4{
+    text-align: left;
+    align-self: start;
+    padding-top: 10px;
+    padding-left: 10px;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.infoTransactionBlockList{
+    width: 96%;
+    background: #444444;
+    height: 70px;
+    margin-left: 10px ;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.infoTransactionBlockList:hover{
+    background: #000000;
+}
+
+.iconAboutMoneyTransaction{
+    width: 10%;
+    min-width: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+    border-right: #171717 solid 5px;
+}
+
+.iconAboutMoneyTransaction svg{
+    fill: #171717;
+    width: 80%;
+    min-width: 80%;
+}
+
+.infoTechnicalAboutTransaction{
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    align-self: flex-start;
+    margin-top: 5px;
+    
+
+}
+
+.infoTechnicalAboutTransaction h2{
+    width: 190px;
+    min-width: 190px;
+    font-weight:300;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-top: 3px;
+}
+
+.infoValueAboutTransaction h2{
+    align-items: baseline;
+    width: 210px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-weight: 400;
+}
+
+
+.infoValueAboutTransactionValueArea{
+    display: flex;
+
+    align-items: baseline;
+    margin-left: 20px;
+
+}
+
+.infoValueAboutTransactionValueArea p{
+    font-size: 1rem;
+}
+
+
+
+/*
+    ELEMENTOS A DIREITA
+*/
 
 .cardsRight{
     width: 22%;
@@ -432,6 +635,15 @@
     font-size: 1.2rem;
     color: #EEEEEE;
 
+}
+
+.inputValuePix{
+    text-align: end;
+    padding-right: 10px;
+}
+
+.inputValuePix::placeholder{
+    text-align: left;
 }
 
 .fastPixBlock button{

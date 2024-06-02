@@ -4,6 +4,8 @@ import CardHelloUser from "./cardHelloUser"
 import CardDepositMoney from "./cardDepositMoney"
 import CardAccountInfo from "./cardAccountInfo"
 import CardFastPix from "./cardFastPix"
+import CardInfoClientBalance from "./cardInfoClientBalance"
+import CardRecentTransactions from "./cardRecentTransactions"
 
 function  BackgroundLogged(){
 
@@ -15,13 +17,13 @@ function  BackgroundLogged(){
                 <NavBarInternal />
                 <div className={styles.divGeral}>
                     <div className={styles.centralParteDashboard}>
-                        
                         <div className={styles.cardsLeft}>
                             <CardHelloUser />
                             <CardDepositMoney />
                         </div>
                         <div className={styles.cardsCenter}>
-
+                            <CardInfoClientBalance />
+                            <CardRecentTransactions />
                         </div>
                         <div className={styles.cardsRight}>
                             <CardAccountInfo />

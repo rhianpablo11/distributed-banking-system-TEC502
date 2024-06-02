@@ -7,7 +7,7 @@ function CardDepositMoney(){
                         <img  src={qrCodeInter}></img>
                     </div>
     
-    const [valueDepositChoice, setValueDepositChoice] = useState(0)
+    const [valueDepositChoice, setValueDepositChoice] = useState("")
     function selectedOnlyNumber(event){
         let valueCaptured = event.target.value.replace(/[^0-9.]/g, '')
 

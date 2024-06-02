@@ -11,7 +11,7 @@ function CardFastPix(){
     }
 
     
-    const [valueSendPix, setvalueSendPix] = useState(0.00)
+    const [valueSendPix, setvalueSendPix] = useState("")
 
     function selectedOnlyNumber(event){
         let valueCaptured = event.target.value.replace(/[^0-9.]/g, '')
@@ -48,7 +48,7 @@ function CardFastPix(){
                 <div className={styles.fastPixInfoReceiver}>
                     <div className={styles.fastPixInfoReceiverData}>
                         <h4>Name: </h4>
-                        <h3>Rhian Pablo anakfsjfajopfjapofafka</h3>
+                        <h3>Rhian Pablo </h3>
                     </div>
                     <div className={styles.fastPixInfoReceiverData}>
                         <h4>{cpfOrCNPJ}: </h4>
@@ -61,7 +61,7 @@ function CardFastPix(){
                 </div>
                 <div className={styles.inputArea}>
                     <div className={styles.inputKeyPix}>
-                        <input style={styleInputValue} placeholder="Value:" type="text" value={valueSendPix} onChange={selectedOnlyNumber}></input>
+                        <input className={styles.inputValuePix} placeholder="Value:" type="text" value={valueSendPix} onChange={selectedOnlyNumber}></input>
                     </div>
                 </div>
                 <button>
