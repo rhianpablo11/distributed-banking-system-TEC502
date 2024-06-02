@@ -133,7 +133,7 @@
     NAVBAR INTERNAL WITH USER LOGGED
 */
 .navBarGeral{
-    width: 98.7%;
+    width: 100%;
     display: flex;
     justify-content: center;
     
@@ -160,7 +160,7 @@
     border-radius: 50%;
     width: 45px;
     height: 45px;
-    margin-top: 5px;
+    margin-top: 8px;
     margin-left: 30%;
 }
 
@@ -282,6 +282,8 @@
     color: #EEEEEE;
     font-size: 1.2rem;
     padding-left: 10px;
+    text-align: end;
+    padding-right: 10px;
 }
 
 .inputDepositValue::placeholder{
@@ -353,8 +355,122 @@
     max-width: 22%;
     min-width: 22%;
     margin-left: 10px;
-    margin-right: 10px;
+}
+
+.accountInfoGeral{
+    width: 100%;
     border-radius: 10px;
     background: #171717;
     height: 170px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+.accountInfoGeral h1{
+    text-align: center;
+    padding-top: 5px;
+    font-size: 2.2rem;
+    font-weight: 500;
+}
+
+.accountData{
+    width: 90%;
+    background: #444444;
+    border-radius: 10px;
+    padding: 0px 10px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-top: 15px;
+}
+
+.accountData h6{
+    font-weight: 400;
+    font-size: 1.25rem;
+    padding-left: 10p;
+}
+
+.fastPixBlock{
+    width: 100%;
+    background: #171717;
+    margin-top: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+.fastPixBlock h1{
+    text-align: center;
+    font-size: 1.5rem;
+    padding-top: 10px;
+}
+
+.inputArea{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    
+}
+
+.inputKeyPix{
+    width: 95%;
+    margin-top: 10px;
+    
+}
+
+.inputKeyPix input{
+    background: #444444;
+    border-style: none;
+    width: 100%;
+    border-radius: 10px;
+    height: 30px;
+    padding-left: 15px;
+    font-size: 1.2rem;
+    color: #EEEEEE;
+
+}
+
+.fastPixBlock button{
+    margin-top: 10px;
+    background: #444444;
+    border-style: none;
+    border-radius: 10px;
+    padding: 7px 20px;
+    font-size: 1rem;
+}
+
+.fastPixBlock button:hover{
+    background: black;
+}
+
+.fastPixInfoReceiver{
+    margin-bottom: 5px;
+    margin-top: 15px;
+    background: #444444;
+    padding: 10px;
+    border-radius: 10px;
+    width: 93%;
+    text-overflow: clip;
+}
+
+.fastPixInfoReceiverData{
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+}
+
+.fastPixInfoReceiverData h4{
+    font-weight: 400;
+    font-size: 1rem;
+    padding-right: 5px;
+}
+
+.fastPixInfoReceiverData h3{
+    font-weight: 600;
+    text-overflow: clip;
+}
+

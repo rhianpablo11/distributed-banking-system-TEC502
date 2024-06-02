@@ -2,6 +2,8 @@ import styles from "../style_modules/commonStyles.module.css"
 import NavBarInternal from "./navBarInternal"
 import CardHelloUser from "./cardHelloUser"
 import CardDepositMoney from "./cardDepositMoney"
+import CardAccountInfo from "./cardAccountInfo"
+import CardFastPix from "./cardFastPix"
 
 function  BackgroundLogged(){
 
@@ -22,10 +24,9 @@ function  BackgroundLogged(){
 
                         </div>
                         <div className={styles.cardsRight}>
-
+                            <CardAccountInfo />
+                            <CardFastPix />
                         </div>
-                        
-                        
                     </div>
                 </div>
             </div>
