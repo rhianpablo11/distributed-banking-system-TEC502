@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 function CardLoginAccount(){
     const navigate = useNavigate()
     const borderNotFillInput ={
-        'border': '3px solid red'
+        'border': '3px solid #ba1111'
     }
 
     const [styleCampInput, setStyleCampInput] = useState()
@@ -15,7 +15,7 @@ function CardLoginAccount(){
         const email = document.getElementById("emailRegister").value
         const password = document.getElementById("passwordRegister").value
         if(email=="" || password==""){
-            console.log("algo")
+            
             setStyleCampInput(borderNotFillInput)
         } else{
             setStyleCampInput()
@@ -29,7 +29,7 @@ function CardLoginAccount(){
     return(
         <>
             <div className={styles.createAccountBase}>
-                <div className={styles.logoBankLogin}>
+                <div className={styles.logoBankPreLogin}>
                     <LogoBank />
                 </div>
                 <div className={styles.inputsAreaLogin}>

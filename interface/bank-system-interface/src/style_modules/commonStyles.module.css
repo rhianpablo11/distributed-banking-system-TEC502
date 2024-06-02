@@ -3,26 +3,33 @@
     PARTE DO CARD DE CRIAR A CONTA
 */
 .createAccountBase{
-    background-color: #171717;
+    background-color: #1717178f;
     padding: 10px;
     padding-top: 20px;
     border-radius: 10px;
     width: 500px;
-    display: block;
+    display: flex;
     flex-direction: column;
     margin: 30px;
-
+    align-items: center;
 }
 
 .logoBankPreLogin{
-    margin-left: 16%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.logoBankPreLogin img{
+    width: 300px;
+    min-width:300px;
+}
 
 .inputPreLogin{
     width: 90%;
     height: 50px;
-    margin: 15px 10px 10px 20px;
+    margin: 15px 0px 10px 0px;
     padding: 5px;
     color: #EEEEEE;
     background-color: #444444;
@@ -87,22 +94,25 @@
     padding: 10px 30px;
     border-style: none;
     margin-top: 10px;
-    margin-bottom: 5px;
-    margin-left: 35%;    
+    margin-bottom: 5px;  
     font-size: 1.5rem;
 }
 
+.buttonPreLogin:hover{
+    background: #000000;
+}
 
 /*
     PARTE DO LOGIN
 */
 
-.logoBankLogin{
-    margin-left: 16%;
-    margin-top: 30px;
-}
 
 .inputsAreaLogin{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     margin-top: 35px;
     margin-bottom: 30px;
 }
