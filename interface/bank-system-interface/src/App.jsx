@@ -1,14 +1,14 @@
 import LandingPage from "./elevenBankElements/landingPage"
-import CardFastPix  from "./common/cardFastPix.tsx"
-import LogoBank from "./common/logoBank.tsx"
-import CardCreateAccount from "./common/cardCreateAccount.tsx"
-import CardLoginAccount from "./common/cardLoginAccount.tsx"
-import ButtonCreateAccount from "./common/buttonCreateAccount.tsx"
-import ButtonLoginAccount from "./common/buttonLoginAccount.tsx"
-import BackgroundLogged from "./common/backgroundLogged.tsx"
+import CardFastPix  from "./common/cardFastPix.jsx"
+import LogoBank from "./common/logoBank.jsx"
+import CardCreateAccount from "./common/cardCreateAccount.jsx"
+import CardLoginAccount from "./common/cardLoginAccount.jsx"
+import ButtonCreateAccount from "./common/buttonCreateAccount.jsx"
+import ButtonLoginAccount from "./common/buttonLoginAccount.jsx"
+import BackgroundLogged from "./common/backgroundLogged.jsx"
 import { ReactDOM } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import ElevenBankBackgroundLogin from "./elevenBankElements/elevenBankBackgroundLogin.tsx"
+import ElevenBankBackgroundLogin from "./elevenBankElements/elevenBankBackgroundLogin.jsx"
 
 const router = createBrowserRouter([
   {

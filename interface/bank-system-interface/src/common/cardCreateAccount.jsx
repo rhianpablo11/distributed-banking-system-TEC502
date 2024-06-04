@@ -10,11 +10,33 @@ function CardCreateAccount(){
     const borderNotFillInput ={
         'border': '3px solid #ba1111'
     }
+    const cpfError = <>
+        <p>CPF inserido é invalido</p>
+    </>
+    const CNPJError = <>
+        <p>CNPJ inserido é invalido</p>
+    </>
+
+    const passwordUnequal = <>
+            <p>Passwords do not match</p>
+        </>
+
+    const passwordLenght = <>
+            <p>Passwords it's short</p>
+        </>
+
+    const CpfEqual = <>
+            <p>CPF cannot be the same</p>
+        </>
 
     const [styleCampInput, setStyleCampInput] = useState()
     const [styleCampInputPassword, setStyleCampInputPassword] = useState()
-
-    
+    const [valueCpfCNPJ1isValid, setValueCpfCNPJ1isInvalid] = useState()
+    const [valueCpfCNPJ2isValid, setValueCpfCNPJ2isInvalid] = useState()
+    const [mensageErrorAboutCpfCNPJ, setMensageErrorAboutCpfCNPJ] = useState()
+    const [passwordIsEqual, setPasswordIsEqual] = useState(true)
+    const [cpfIsEqual, setCpfIsEqual] = useState(false)
+    const [passwordInInterval, setPasswordInInterval] = useState(true)
 
     const createAccount = async ()=>{
         const email = document.getElementById('emailRegister').value;
@@ -39,7 +61,7 @@ function CardCreateAccount(){
         let name2 =""
 
         if(personalAccount== "true" && isJoinetAccount== "true"){
-            const cpf1 = document.getElementById('cpfHoldRegister').value;
+            cpf1 = document.getElementById('cpfHoldRegister').value;
             cpf2 = document.getElementById('cpfHoldRegister2').value;
             name2 = document.getElementById('nameRegister2').value;
         } 
@@ -59,31 +81,128 @@ function CardCreateAccount(){
                 if(cpf2=="" || name2==""){
                     setStyleCampInput(borderNotFillInput)
                     setStyleCampInputPassword(borderNotFillInput)
-                }else if(password !=checkedPassword){
-                    setStyleCampInput()
-                    setStyleCampInputPassword(borderNotFillInput)
-                }
-                else{
+                } else{
                     setStyleCampInput()
                     setStyleCampInputPassword()
                     //verificar ainda a requisição ao servidor
                     //esse valor apos o logged tem que definir ainda o que sera que vai usar
                     return navigate("/logged/598")
                 }
-            }else{
+            }
+            else{
                 setStyleCampInput(borderNotFillInput)
                 setStyleCampInputPassword(borderNotFillInput)
             }
-        }else if(password !=checkedPassword){
-            setStyleCampInput()
-            setStyleCampInputPassword(borderNotFillInput)
+        } else if(personalAccount=="true"){
+            if(isJoinetAccount== "true"){
+                
+                if(cpf1.length <14){
+                    setMensageErrorAboutCpfCNPJ(cpfError)
+                    setValueCpfCNPJ1isInvalid(true)
+                } else if(cpf1.length ==14){
+                    setValueCpfCNPJ1isInvalid(false)
+                }
+
+                if(cpf2.length <14){
+                    setMensageErrorAboutCpfCNPJ(cpfError)
+                    setValueCpfCNPJ2isInvalid(true)
+                } else if(cpf2.length ==14){
+                    setValueCpfCNPJ2isInvalid(false)
+                } 
+                if(cpf1!=cpf2){
+                    setCpfIsEqual(false)
+                } else{
+                    setCpfIsEqual(true)
+                }
+
+                if(password.length<8){
+                    setPasswordInInterval(false)
+                } else{
+                    setPasswordInInterval(true)
+                }
+                if(password !=checkedPassword){
+                    setPasswordIsEqual(false)
+                    setStyleCampInput()
+                    setStyleCampInputPassword(borderNotFillInput)
+                } else if(cpf2.length ==14 && cpf1.length ==14 && password ==checkedPassword && cpf1 != cpf2 && password.length>=8){
+                    setPasswordIsEqual(true)
+                    setStyleCampInput()
+                    setStyleCampInputPassword()
+                    //verificar ainda a requisição ao servidor
+                    //esse valor apos o logged tem que definir ainda o que sera que vai usar
+                    return navigate("/logged/598")
+                }
+            } else{
+                if(cpf1.length <14){
+                    setMensageErrorAboutCpfCNPJ(cpfError)
+                    setValueCpfCNPJ1isInvalid(true)
+                } else if(cpf1.length ==14){
+                    setValueCpfCNPJ1isInvalid(false)
+                }
+
+                if(password.length<8){
+                    setPasswordInInterval(false)
+                } else{
+                    setPasswordInInterval(true)
+                }
+
+                if(password !=checkedPassword){
+                    setPasswordIsEqual(false)
+                    setStyleCampInput()
+                    setStyleCampInputPassword(borderNotFillInput)
+                }
+                else if(cpf1.length ==14 && password ==checkedPassword && password.length>=8){
+                    setPasswordIsEqual(true)
+                    setStyleCampInput()
+                    setStyleCampInputPassword()
+                    //verificar ainda a requisição ao servidor
+                    //esse valor apos o logged tem que definir ainda o que sera que vai usar
+                    return navigate("/logged/598")
+                }
+            }
         } else{
-            setStyleCampInput()
-            setStyleCampInputPassword()
-            //verificar ainda a requisição ao servidor
-            //esse valor apos o logged tem que definir ainda o que sera que vai usar
-            return navigate("/logged/598")
+            console.log(cpf1.length)
+            if(cpf1.length <18){
+                setMensageErrorAboutCpfCNPJ(CNPJError)
+                setValueCpfCNPJ1isInvalid(true)
+            } else if(cpf1.length ==18){
+                setValueCpfCNPJ1isInvalid(false)
+            }
+
+            if(password.length<8){
+                setPasswordInInterval(false)
+            } else{
+                setPasswordInInterval(true)
+            }
+
+            if(password !=checkedPassword){
+                setPasswordIsEqual(false)
+                setStyleCampInput()
+                setStyleCampInputPassword(borderNotFillInput)
+            } else if(password ==checkedPassword && cpf1.length ==18 && password.length>=8){
+                setPasswordIsEqual(true)
+                setStyleCampInput()
+                setStyleCampInputPassword()
+                //verificar ainda a requisição ao servidor
+                //esse valor apos o logged tem que definir ainda o que sera que vai usar
+                return navigate("/logged/598")
+            }
         }
+          
+    }
+
+    function infosAboutPassword(event){
+        const password = event.target.value
+        if(password.length<8){
+            setStyleCampInputPassword({
+                'border': '3px solid #ba1111'
+            })
+        } else{
+            setStyleCampInputPassword({
+                'border': '3px solid #008000'
+            })
+        }
+
     }
 
     const [valueCpfHolder, setValueCpfHolder] = useState("")
@@ -232,10 +351,16 @@ function CardCreateAccount(){
                             </form>
                         </div>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CPF holder 1" id="cpfHoldRegister" value={valueCpfHolder} onChange={cpfCNPJCamp}></input>
+                        {valueCpfCNPJ1isValid ? mensageErrorAboutCpfCNPJ : <></>}
+                        {cpfIsEqual ? CpfEqual : <></>}
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder 2" id='nameRegister2'></input>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CPF holder 2" id="cpfHoldRegister2" value={valueCpfHolder2} onChange={cpfCNPJCamp2}></input>
-                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister"></input>
+                        {valueCpfCNPJ2isValid ? mensageErrorAboutCpfCNPJ : <></>}
+                        {cpfIsEqual ? CpfEqual : <></>}
+                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister" onChange={infosAboutPassword}></input>
                         <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'></input>
+                        {passwordIsEqual ? <></> : passwordUnequal}
+                        {passwordInInterval ? <></> : passwordLenght}
                         <button className={styles.buttonPreLogin} onClick={verifyFields}>
                             Create
                         </button>
@@ -275,8 +400,11 @@ function CardCreateAccount(){
                             </form>
                         </div>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CPF holder" id="cpfHoldRegister" value={valueCpfHolder} onChange={cpfCNPJCamp}></input>
-                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister"></input>
+                        {valueCpfCNPJ1isValid ? mensageErrorAboutCpfCNPJ : <></>}
+                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister" onChange={infosAboutPassword}></input>
                         <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'></input>
+                        {passwordIsEqual ? <></> : passwordUnequal}
+                        {passwordInInterval ? <></> : passwordLenght}
                         <button className={styles.buttonPreLogin} onClick={verifyFields}>
                             Create
                         </button>
@@ -308,8 +436,11 @@ function CardCreateAccount(){
                         </form>
                     </div>
                     <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CNPJ holder" id="cpfHoldRegister" value={valueCpfHolder} onChange={cpfCNPJCamp}></input>
-                    <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister"></input>
+                    {valueCpfCNPJ1isValid ? mensageErrorAboutCpfCNPJ : <></>}
+                    <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister" onChange={infosAboutPassword}></input>
                     <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'></input>
+                    {passwordIsEqual ? <></> : passwordUnequal}
+                    {passwordInInterval ? <></> : passwordLenght}
                     <button className={styles.buttonPreLogin} onClick={verifyFields}>
                         Create
                     </button>
