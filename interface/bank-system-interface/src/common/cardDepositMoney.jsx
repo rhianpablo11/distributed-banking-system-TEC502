@@ -29,6 +29,10 @@ function CardDepositMoney(){
         setValueDepositChoice(valueCaptured)
     }
     
+    function handleClick(){
+        
+    }
+
     function selectOptionDeposit(event){
         const optionSelected = event.target.value
         if(optionSelected == "money"){
