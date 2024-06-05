@@ -1,3 +1,10 @@
+:root{
+    --background-color: #000000;
+    --block-color: #171717;
+    --secondary-block-color: #444444;
+    --button-color: #444444;
+}
+
 
 /*
     PARTE DO CARD DE CRIAR A CONTA

@@ -1,5 +1,5 @@
 class Transaction:
-    def __init__(self, source, receptor, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource):
+    def __init__(self, source, receptor, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource, idTransactionExternal):
         self.source = source
         self.receptor = receptor
         self.value = value
@@ -9,6 +9,7 @@ class Transaction:
         self.idTransaction = idTransaction
         self.bankReceptor = bankReceptor
         self.bankSource = bankSource
+        self.idTransactionExternal = idTransactionExternal
 
     def getJsonTransaction(self):
         print("receptor pivete",self.receptor)

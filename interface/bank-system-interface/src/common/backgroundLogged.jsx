@@ -20,6 +20,7 @@ function  BackgroundLogged(){
                         <div className={styles.cardsLeft}>
                             <CardHelloUser />
                             <CardDepositMoney />
+                            
                         </div>
                         <div className={styles.cardsCenter}>
                             <CardInfoClientBalance />

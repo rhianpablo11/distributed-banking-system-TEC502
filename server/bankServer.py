@@ -10,6 +10,7 @@ from clientModel import Client
 from transactionModel import Transaction
 import requests
 from utils import *
+import random
 
 global clients
 clients = {}
@@ -25,7 +26,10 @@ hashMapBanks = {
     "1": "localhost:8081"
 }
 
+            
 
+global accountNumbers
+accountNumbers = GenerateNumberAccountBank
 
 app = Flask(__name__)
 CORS(app)
@@ -74,7 +78,7 @@ def createClient():
                                             password= cryptographyPassword(data["password"]),
                                             isFisicAccount= data["isFisicAccount"],
                                             isJoinetAccount=data["isJoinetAccount"],
-                                            accountNumber= createAccountNumber(),
+                                            accountNumber= accountNumbers.createAccountNumber(),
                                             telephone= data["telephone"],
                                             bank=bankName,
                                             balance="0",
