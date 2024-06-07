@@ -870,3 +870,94 @@
     font-size: 1.4rem;
     font-weight: 400;
 }
+
+
+/*
+    PARTE DA REQUISIÇÃO DA AGENCIA BANCARIA
+*/
+
+.logoUnifiedBank{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    padding-bottom: 0px;
+}
+
+
+.logoUnifiedBank h1{
+    font-size: 3.6rem;
+    padding-bottom: 0px;
+}
+
+
+.logoUnifiedBank h3{
+    padding-left: 0px;
+    font-weight: 300;
+    font-size: 2.5rem;
+    padding-bottom: 0px;
+}
+
+.subtitleLogoUnifiedBank h6{
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 200;
+    padding-top: 0px;
+}
+
+
+
+.requestAgencyComponent{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.backgroundRequestAgencyComponent{
+    width: 800px;
+    background: #171717;
+    border-radius: 20px;
+}
+
+.inputAgencyNumber{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.inputAgencyNumber h1{
+    margin-top: 20px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.inputAgencyNumber input{
+    background: #313131;
+    border-style: none;
+    border-radius: 10px;
+    width: 400px;
+    height: 40px;
+    color: #EEEEEE;
+    font-size: 1.5rem;
+    margin-top: 5px;
+    margin-bottom: 20px;    
+    text-align: center;
+}
+
+.inputAgencyNumber button{
+    background: #313131;
+    border-style: none;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.inputAgencyNumber button:hover{
+    background: #000000;
+}
+

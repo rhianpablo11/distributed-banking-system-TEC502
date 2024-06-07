@@ -10,10 +10,15 @@ import { ReactDOM } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import ElevenBankBackgroundLogin from "./elevenBankElements/elevenBankBackgroundLogin.jsx"
 import BackgroundTransactions from "./common/backgroundTransactions.jsx"
+import CardRequestAgencyBank from "./common/cardRequestAgencyBank.jsx"
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <CardRequestAgencyBank />
+  },
+  {
+    path: "/elevenBank",
     element: <LandingPage />
   },
   {

@@ -4,8 +4,8 @@
 
 
 .landingPageComponent{
-    background: rgb(0,0,0);
     background: linear-gradient(130deg, rgba(19, 0, 16, 0.685) 9%, rgba(36,52,82,1) 45%, rgba(19, 0, 16, 0.685) 84%);
+    background-size: cover;
     margin: 0px;
     padding: 0px;
     height: 100vh;
