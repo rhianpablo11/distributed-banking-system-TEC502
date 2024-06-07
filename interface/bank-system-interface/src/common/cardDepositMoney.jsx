@@ -11,10 +11,14 @@ function CardDepositMoney(){
         'background': '#000000'
     }
 
+    const buttonOptionNotSelected = {
+        'background': '#444444'
+    }
 
 
     const [valueDepositChoice, setValueDepositChoice] = useState("")
     const [methodDeposit, setMethodDeposit] = useState("")
+    const [isButtonClicked, setIsButtonClicked] = useState(true)
 
     function selectedOnlyNumber(event){
         let valueCaptured = event.target.value.replace(/[^0-9.]/g, '')
@@ -29,19 +33,24 @@ function CardDepositMoney(){
         setValueDepositChoice(valueCaptured)
     }
     
-    function handleClick(){
-        
-    }
+
 
     function selectOptionDeposit(event){
         const optionSelected = event.target.value
-        if(optionSelected == "money"){
-            setMethodDeposit("money")
-        } else if(optionSelected == "qrCode"){
-            setMethodDeposit("qrCode")
-        } else if(optionSelected == "bank slip"){
-            setMethodDeposit("bankSlip")
-        } 
+        setIsButtonClicked(!isButtonClicked)
+        console.log(methodDeposit)
+        if(isButtonClicked){
+            if(optionSelected == "money"){
+                setMethodDeposit("money")
+            } else if(optionSelected == "qrCode"){
+                setMethodDeposit("qrCode")
+            } else if(optionSelected == "bank slip"){
+                setMethodDeposit("bankSlip")
+            } 
+        } else{
+            setMethodDeposit("none")
+        }
+        
     }
     
 
@@ -53,13 +62,13 @@ function CardDepositMoney(){
                 </h1>
                 <input className={styles.inputDepositValue} type="text" placeholder="Value" id="valueDeposit" value={valueDepositChoice} onChange={selectedOnlyNumber}></input>
                 <div className={styles.buttonDeposit}>
-                    <button style={methodDeposit=="money" ? buttonOptionSelected : {}} value="money" onClick={selectOptionDeposit}>
+                    <button style={methodDeposit=="money" ? buttonOptionSelected : buttonOptionNotSelected} value="money" onClick={selectOptionDeposit}>
                         Money
                     </button>
-                    <button style={methodDeposit=="qrCode" ? buttonOptionSelected : {}} value="qrCode" onClick={selectOptionDeposit}>
+                    <button style={methodDeposit=="qrCode" ? buttonOptionSelected : buttonOptionNotSelected} value="qrCode" onClick={selectOptionDeposit}>
                         Qr Code
                     </button>
-                    <button style={methodDeposit=="bankSlip" ? buttonOptionSelected : {}} value="bank slip" onClick={selectOptionDeposit}>
+                    <button style={methodDeposit=="bankSlip" ? buttonOptionSelected : buttonOptionNotSelected} value="bank slip" onClick={selectOptionDeposit}>
                         Bank Slip
                     </button>
                 </div>

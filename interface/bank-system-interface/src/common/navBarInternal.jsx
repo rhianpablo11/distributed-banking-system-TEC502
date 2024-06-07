@@ -1,8 +1,20 @@
 import LogoBank from "./logoBank"
 import styles from "../style_modules/commonStyles.module.css"
 import personIcon from "../assets/person.svg"
+import { useNavigate } from "react-router-dom"
+
 
 function NavBarInternal(){
+    const navigate = useNavigate()
+
+    function goTransactions(){
+        return navigate("/logged/598/transactions")
+    }
+
+    function goDashboard(){
+        return navigate("/logged/598")
+    }
+    
 
     return(
         <>
@@ -11,7 +23,7 @@ function NavBarInternal(){
                     <LogoBank />
                     <div className={styles.navBarInternalTexts}>
                         <h4>
-                            <a href="#">
+                            <a href="#" onClick={goDashboard}>
                                 dashboard
                             </a>
                         </h4>
@@ -26,7 +38,7 @@ function NavBarInternal(){
                             </a>
                         </h4>
                         <h4>
-                            <a href="#">
+                            <a href="#" onClick={goTransactions}>
                                 transfers
                             </a>
                         </h4>

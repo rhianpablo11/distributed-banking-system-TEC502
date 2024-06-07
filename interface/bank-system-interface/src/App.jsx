@@ -9,6 +9,7 @@ import BackgroundLogged from "./common/backgroundLogged.jsx"
 import { ReactDOM } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import ElevenBankBackgroundLogin from "./elevenBankElements/elevenBankBackgroundLogin.jsx"
+import BackgroundTransactions from "./common/backgroundTransactions.jsx"
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/logged/:account_number",
     element: <BackgroundLogged />
+  }, 
+  {
+    path: "/logged/:account_number/transactions",
+    element: <BackgroundTransactions />
   }
 ])
 

@@ -1,7 +1,7 @@
 :root{
     --background-color: #000000;
     --block-color: #171717;
-    --secondary-block-color: #444444;
+    --secondary-block-color: #2e2e2e;
     --button-color: #444444;
 }
 
@@ -706,3 +706,167 @@
     text-overflow: clip;
 }
 
+/*
+    PARTE DA PAGINA DE  TRANSAÇÕES
+*/
+
+.cardRightTransactionsPage{
+    width: 25%;
+}
+
+.cardsLeftTransactionPage{
+    width: 75%;
+
+    background: var(--block-color);
+    margin-left: 10px;
+    border-radius: 10px;
+}
+
+/*
+    PARTE DO CARD DE TRANSAÇÕES
+*/
+.superiorPartTransactions{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 85vh;
+}
+
+.superiorPartTransactions h1{
+    padding: 10px 15px;
+    font-weight: 600;
+    align-self: flex-start;
+}
+
+.constructTrasaction{
+    width: 98%;
+    background: var(--button-color);
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    
+}
+
+.constructTrasaction input{
+    background: var(--secondary-block-color);
+    margin: 5px;
+    border-radius: 10px;
+    border-style: none;
+    width: 27%;
+    padding-left: 10px;
+    color: #EEEEEE;
+}
+
+.constructTrasaction input::placeholder{
+    color: #EEEEEE;
+}
+
+.constructTrasaction select{
+    background: var(--secondary-block-color);
+    margin: 5px;
+    border-radius: 10px;
+    border-style: none;
+    width: 27%;
+    padding-left: 10px;
+    color: #EEEEEE;
+    padding: 10px;
+}
+
+.constructTrasaction button{
+    background: var(--secondary-block-color);
+    border-radius: 10px;
+    border-style: none;
+    margin: 5px;
+    width: 200px;
+    padding-left: 10px;
+    color: #EEEEEE;
+    font-size: 1.3rem;
+}
+
+.constructTrasaction button:hover{
+    background: var(--background-color);
+}
+
+.operationsOfPacketTransactionsArea{
+    width: 98%;
+    background: var(--button-color);
+    height: 80%;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.textExplainCamps{
+    display: flex;
+    flex-direction: row;
+    width: 98%;
+    justify-content: center;
+    align-items: center;
+    background: var(--secondary-block-color);
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.textExplainCamps h1{
+    align-items: center;
+    align-self: center;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    font-size: 1.2rem;
+    width: 50%;
+
+}
+
+.operationsOfPacketTransactionsArea ul{
+    list-style: none;
+    width: 100%;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
+.operationsOfPacketTransactionsArea li{
+    align-self: center;
+    width: 100%;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardAboutTransactionMountedGeral{
+    width: 98%;
+    background: var(--block-color);
+    height: 50px;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.infoOperationArea{
+    width:32%;
+    height: 40px;
+    background: var(--button-color);
+    margin: 0px 5px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.infoOperationArea h1{
+    color: #EEEEEE;
+    padding: 7px;
+    font-size: 1.7rem;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
