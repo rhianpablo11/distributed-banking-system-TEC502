@@ -3,8 +3,8 @@ from transactionModel import Transaction
 from datetime import *
 import requests
 
-class Client:
-    def __init__(self, name1, name2, cpfCNPJ1, cpfCNPJ2, email, password, isFisicAccount, accountNumber, telephone, bank, isJoinetAccount, balance, blockedBalance):
+class Account:
+    def __init__(self, name1, name2, cpfCNPJ1, cpfCNPJ2, email, password, isFisicAccount, accountNumber, telephone, bank, isJoinetAccount, balance, blockedBalance, listBanks):
         self.email = email
         self.password = password
         self.isJoinetAccount = isJoinetAccount
@@ -19,6 +19,7 @@ class Client:
         self.transactions = {}
         self.idLastTransaction = 0
         self.operationLock = threading.Lock()
+        self.listBanks = listBanks
         if(isJoinetAccount):
             self.name1 = name1
             self.cpfCNPJ1 = cpfCNPJ1
@@ -202,3 +203,7 @@ class Client:
                 self.balance = balanceBackup
                 return "error in transaction", 406
             
+    def addBankToList(self, bankName):
+        self.operationLock.acquire()
+        self.listBanks.append(bankName)
+        self.operationLock.release()

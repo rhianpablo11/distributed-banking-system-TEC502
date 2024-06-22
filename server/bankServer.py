@@ -6,15 +6,15 @@ from flask import *
 import json
 from datetime import *
 from flask_cors import CORS
-from clientModel import Client
+from accountModel import Account
 from transactionModel import Transaction
 import requests
 from utils import *
 import random
 
-global clients
-clients = {}
-clientsLock = threading.Lock()
+global accounts
+accounts = {}
+accountsLock = threading.Lock()
 
 
 IP = '0.0.0.0'
@@ -43,33 +43,33 @@ def getNameBank():
     return bankName, 200
 
 
-@app.route('/clients', methods=['GET'])
-def getClientsList():
+@app.route('/accounts', methods=['GET'])
+def getaccountsList():
     
-    clientsList = []
-    if(len(clients) >0):
-        for client in clients:
-            clientsList.append(clients[client].jsonComplet())
-    print(clientsList)
-    print(clientsLock)
-    response = make_response(jsonify(clientsList))
+    accountsList = []
+    if(len(accounts) >0):
+        for account in accounts:
+            accountsList.append(accounts[account].jsonComplet())
+    print(accountsList)
+    print(accountsLock)
+    response = make_response(jsonify(accountsList))
     response.headers['Cache-Control'] = 'private, max-age=1'
 
     return response
 
 
-@app.route('/client/create', methods=['POST'])
-def createClient():
-    global clients
+@app.route('/account/create', methods=['POST'])
+def createaccount():
+    global accounts
     data = request.json
-    clientsLock.acquire()
+    accountsLock.acquire()
     #verificar se tem todos os elementos
     if(data["name1"]  and data["cpfCNPJ1"] and data["name2"] and data["cpfCNPJ2"] and data["email"] and data["password"] and data["isFisicAccount"] and data["isJoinetAccount"] and data["telephone"]):
-        if(data["cpfCNPJ1"] in clients):
-            clientsLock.release()
+        if(data["cpfCNPJ1"] in accounts):
+            accountsLock.release()
             return "user already in system", 409
         else:
-            clients[data["cpfCNPJ1"]] = Client(
+            accounts[data["cpfCNPJ1"]] = Account(
                                             name1= data["name1"],
                                             cpfCNPJ1= data["cpfCNPJ1"],
                                             name2= data["name2"],
@@ -84,99 +84,99 @@ def createClient():
                                             balance="0",
                                             blockedBalance="0"    )
             
-            response = make_response(jsonify(clients[data["cpfCNPJ1"]].jsonComplet()))
-            clientsLock.release()
+            response = make_response(jsonify(accounts[data["cpfCNPJ1"]].jsonComplet()))
+            accountsLock.release()
             return response, 201
     else:
-        clientsLock.release()
+        accountsLock.release()
         return "infos received not are complete", 406
 
 
 """
-Função para procurar um cliente, e retornar dados basicos deste cliente
+Função para procurar um accounte, e retornar dados basicos deste accounte
 Esses dados são retornados para quem quer fazer o pix
 """
-@app.route('/client/pix', methods=['GET'])
-def getClientPixInfo(): #fazer o retorno de informações basicas para apresentar na hora do pix
+@app.route('/account/pix', methods=['GET'])
+def getaccountPixInfo(): #fazer o retorno de informações basicas para apresentar na hora do pix
     data = request.json
-    if(len(clients) >0):
-        for client in clients:
-            print(clients[client].email)
-            if(data["keyPix"] == clients[client].keyPix):
-                print(clients[client].infoBasic())
-                response = make_response(jsonify(clients[client].infoBasic()))
+    if(len(accounts) >0):
+        for account in accounts:
+            print(accounts[account].email)
+            if(data["keyPix"] == accounts[account].keyPix):
+                print(accounts[account].infoBasic())
+                response = make_response(jsonify(accounts[account].infoBasic()))
                 return response
         else:
-            return "client not found", 404
+            return "account not found", 404
     else:
-        return "client not found", 404
+        return "account not found", 404
     
 
 """
-Essa função realiza a operação de ativar a chave pix do cliente
+Essa função realiza a operação de ativar a chave pix do accounte
 """
-@app.route('/client/keypix', methods=["PATCH"])
+@app.route('/account/keypix', methods=["PATCH"])
 def changeStatusKeyPix():
     data = request.json
-    if(len(clients) >0):
-        for client in clients:
-            if(data["cpfCNPJ1"] == client):
-                clients[client].setKeyPix(data["active"])
-                return clients[client].keyPix, 201
+    if(len(accounts) >0):
+        for account in accounts:
+            if(data["cpfCNPJ1"] == account):
+                accounts[account].setKeyPix(data["active"])
+                return accounts[account].keyPix, 201
         else:
-            return "client not found", 404 
+            return "account not found", 404 
     else:
-        return "client not found", 404
+        return "account not found", 404
 
 
 """
 Função para receber um dinheiro provindo de deposito comum
 """
-@app.route('/client/deposit', methods=["PATCH"])
+@app.route('/account/deposit', methods=["PATCH"])
 def depositMoney():
     data =  request.json
-    if(len(clients) >0):
-        for client in clients:
-            if(data["cpfCNPJ1"] == client):
-                if(clients[client].receiveDeposit(data["value"])):
+    if(len(accounts) >0):
+        for account in accounts:
+            if(data["cpfCNPJ1"] == account):
+                if(accounts[account].receiveDeposit(data["value"])):
                     return "money received with sucess", 201
                 else:
                     return "error in complet transaction", 403
         else:
-            return "client not found", 404 
+            return "account not found", 404 
     else:
-        return "client not found", 404
+        return "account not found", 404
 
 
 '''
 Função para realizar o login do usuario
 '''
-@app.route('/client/login', methods=['GET'])
-def loginClient():
+@app.route('/account/login', methods=['GET'])
+def loginaccount():
     data =  request.json
-    if(len(clients) >0):
-        for client in clients:
-            if(clients[client].email == data["email"]):
-                if(clients[client].password == cryptographyPassword(data["password"])):
-                    response = make_response(jsonify(clients[client].jsonComplet()))
+    if(len(accounts) >0):
+        for account in accounts:
+            if(accounts[account].email == data["email"]):
+                if(accounts[account].password == cryptographyPassword(data["password"])):
+                    response = make_response(jsonify(accounts[account].jsonComplet()))
                     return response, 200
                 else:
                     return "password incorrect", 401
         else:
-            return "client not found", 404 
+            return "account not found", 404 
     else:
-        return "client not found", 404    
+        return "account not found", 404    
 
 
 
 '''
 Função para requisitar ao outro banco as informações do pix daquele usuario
 '''
-@app.route('/client/transaction/pix/infos', methods=['GET'])
+@app.route('/account/transaction/pix/infos', methods=['GET'])
 def getInfosForMakePix():
     data =  request.json
     if(data["bankID"] == "1"):
-        url = "http://"+hashMapBanks[data["bankID"]]+"/client/pix"
+        url = "http://"+hashMapBanks[data["bankID"]]+"/account/pix"
         keyPix = {
             "keyPix": str(data["keyPix"])
         }
@@ -193,23 +193,23 @@ def getInfosForMakePix():
 
 
 '''
-Função para poder enviar o dinheiro via pix para outro cliente
+Função para poder enviar o dinheiro via pix para outro accounte
 '''
-@app.route('/client/transactions/pix/send', methods=['POST'])
+@app.route('/account/transactions/pix/send', methods=['POST'])
 def sendMoneyPix():
     data =  request.json
 
     if(data["bankID"] == "1"):
-        url = "http://"+hashMapBanks[data["bankID"]]+"/client/transactions/pix/receive"
+        url = "http://"+hashMapBanks[data["bankID"]]+"/account/transactions/pix/receive"
         print(url)
-        addMoney = clients[data["cpfCNPJ1"]].sendPix(data["value"], url, data["keyPix"], data["nameReceptor"])
+        addMoney = accounts[data["cpfCNPJ1"]].sendPix(data["value"], url, data["keyPix"], data["nameReceptor"])
         print(addMoney)
         if(addMoney[1]):
             return "money send with sucess", 200
         elif(addMoney[0]=="error in transaction"):
             return "error in transaction", 406
         else:
-            return "error, key is same of client", 403
+            return "error, key is same of account", 403
         
     else:
         return "Bank invalid",400
@@ -219,21 +219,21 @@ def sendMoneyPix():
 '''
 Função para receber dinheiro via pix
 '''
-@app.route('/client/transactions/pix/receive', methods=['PATCH'])
+@app.route('/account/transactions/pix/receive', methods=['PATCH'])
 def receiveMoneyPix():
     data = request.json
-    if(len(clients) >0):
+    if(len(accounts) >0):
         #SE A CHAVE PIX SE MANTER O CPF, NAO PRECISA PERCORRER O FOR
-        for client in clients:
-            if(data["keyPix"] == clients[client].keyPix):
-                if(clients[client].receivePix(data["value"], data["bankName"], data["sender"])):
+        for account in accounts:
+            if(data["keyPix"] == accounts[account].keyPix):
+                if(accounts[account].receivePix(data["value"], data["bankName"], data["sender"])):
                     return "money received with sucess", 200
                 else:
                     return "error in transaction", 403
         else:
-            return "client not found", 404 
+            return "account not found", 404 
     else:
-        return "client not found", 404
+        return "account not found", 404
 
 app.run(IP, 8082, debug=False, threaded=True)
 

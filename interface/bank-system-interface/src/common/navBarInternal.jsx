@@ -2,7 +2,7 @@ import LogoBank from "./logoBank"
 import styles from "../style_modules/commonStyles.module.css"
 import personIcon from "../assets/person.svg"
 import { useNavigate } from "react-router-dom"
-
+import logoutIcon from "../assets/logout.svg"
 
 function NavBarInternal(){
     const navigate = useNavigate()
@@ -20,7 +20,9 @@ function NavBarInternal(){
         <>
             <div className={styles.navBarGeral}>
                 <div className={styles.navBarInternal}>
-                    <LogoBank />
+                    <div className={styles.navBarLogoArea}>
+                        <LogoBank />
+                    </div>
                     <div className={styles.navBarInternalTexts}>
                         <h4>
                             <a href="#" onClick={goDashboard}>
@@ -44,9 +46,15 @@ function NavBarInternal(){
                         </h4>
                         
                     </div>
-                    <a href="#" className={styles.personIconNavBar}>
-                        <img src={personIcon}></img>
-                    </a>
+                    <div className={styles.navBarButtons}>
+                        <button>
+                            <img src={logoutIcon}></img>
+                        </button>
+                        <a href="#" className={styles.personIconNavBar}>
+                            <img src={personIcon}></img>
+                        </a>
+                    </div>
+                    
                     
                 </div>
             </div>

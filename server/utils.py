@@ -1,7 +1,24 @@
 from hashlib import sha512
 import random
 import uuid
+import requests
+import threading
+import os
+from pathlib import Path
+from accountModel import Account
 
+
+
+
+
+global listBanksConsortium
+listBanksConsortium = {
+    "1": "http://localhost:8081",
+    "2": "http://localhost:8082",
+    "3": "http://localhost:8083",
+    "4": "http://localhost:8084",
+    "5": "http://localhost:8085"
+}
 
 def cryptographyPassword(password):
     encryptedPassword = sha512(password.encode()).digest()
@@ -35,5 +52,33 @@ class GenerateIDTransaction:
         id = str(f"bankID={self.IDBankSender}?{id}")
         return id
 
-        
-        
+global accountNumbers
+accountNumbers = GenerateNumberAccountBank()
+
+
+
+
+
+
+
+
+def createAccountObject(dataReceived, selfID, bankName):
+    
+    account = Account(
+                                name1= dataReceived["name1"],
+                                cpfCNPJ1= dataReceived["cpfCNPJ1"],
+                                name2= dataReceived["name2"],
+                                cpfCNPJ2= dataReceived["cpfCNPJ2"],
+                                email=dataReceived["email"],
+                                password= cryptographyPassword(dataReceived["password"]),
+                                isFisicAccount= dataReceived["isFisicAccount"],
+                                isJoinetAccount=dataReceived["isJoinetAccount"],
+                                accountNumber= accountNumbers.createAccountNumber(),
+                                telephone= dataReceived["telephone"],
+                                bank=bankName,
+                                balance="0",
+                                blockedBalance="0",
+                                listBanks=dataReceived["listBanks"],
+                                )
+    return account
+

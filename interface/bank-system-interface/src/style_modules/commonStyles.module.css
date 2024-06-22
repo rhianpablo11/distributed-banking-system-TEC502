@@ -1,8 +1,36 @@
 :root{
     --background-color: #000000;
+    --background-body-color: #000000;
     --block-color: #171717;
-    --secondary-block-color: #2e2e2e;
-    --button-color: #444444;
+    --secondary-block-color: #444444;
+    --button-color: #00eb0c;
+    --button-hover-color: #000000;
+    --input-color: #444444;
+    --input-secondary-color: #1f1e1e;
+    --letter-color: #EEEEEE;
+    --letter-placeholder-color: #a0a0a0;
+    --letter-hover-color:#444444;
+}
+
+/*
+    PARTE DA LOGO 
+*/
+.logoBankStyle {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.logoBankStyle h1{
+    font-size: 2rem;
+    color: var(--letter-color);
+}
+
+.logoBankStyle h2{
+    padding-left: 0px;
+    font-weight: 200;
+    font-size: 1.8rem;
+    color: var(--letter-color);
 }
 
 
@@ -10,7 +38,7 @@
     PARTE DO CARD DE CRIAR A CONTA
 */
 .createAccountBase{
-    background-color: #1717178f;
+    background-color: var(--block-color);
     padding: 10px;
     padding-top: 20px;
     border-radius: 10px;
@@ -38,8 +66,8 @@
     height: 50px;
     margin: 15px 0px 10px 0px;
     padding: 5px;
-    color: #EEEEEE;
-    background-color: #444444;
+    color: var(--letter-color);
+    background-color: var(--input-color);
     border-radius: 10px;
     border-style: none;
     font-size: 1.2rem;
@@ -51,14 +79,14 @@
 }
 
 .inputPreLogin::placeholder{
-    color: #c4c1c1;
+    color: var(--letter-placeholder-color);
     padding-left: 10px;
 }
 
 .choiceRadioButton{
     width: 100%;
     display: flex;
-
+    color: var(--letter-color);
 }
 
 .choiceRadioButton form label{
@@ -66,26 +94,28 @@
     margin-right: 10px;
     padding: 0px;
     font-size: 1.1rem;
+    color: var(--letter-color);
 }
 
 .inputRadiosPreLogin{
     width: 1.5em;
     height: 1.5em;
     appearance: none;
-    border: 0.15rem solid #444444;
+    border: 0.15rem solid var(--button-color);
     border-radius: 50%;
-    background-color: #EEEEEE;
+    background-color: var(--letter-color);
     margin-top: 15px;
     align-items: center;
     justify-content: center;
     text-align: center;
+    color: var(--letter-color);
 }
 
 .inputRadiosPreLogin:checked{
     background-color: rgb(0, 81, 255);
     width: 1.5em;
     height: 1.5em;
-    border: 0.15rem solid #EEEEEE;
+    border: 0.15rem solid var(--letter-color);
 }
 
 .textInputCheckBox{
@@ -93,10 +123,11 @@
     font-weight: 500;
     margin: 10px 0px 10px 20px;
     width: 40%;
+    color: var(--letter-color);
 }
 
 .buttonPreLogin{
-    background-color: #444444;
+    background-color: var(--button-color);
     border-radius: 10px;
     padding: 10px 30px;
     border-style: none;
@@ -106,7 +137,7 @@
 }
 
 .buttonPreLogin:hover{
-    background: #000000;
+    background: var(--button-hover-color);
 }
 
 /*
@@ -131,22 +162,21 @@
 .buttonAccount button{
     background: none ;
     border-radius: 10px;
-    border: 2px solid #EEEEEE;
+    border: 2px solid var(--letter-color);
     padding: 5px 10px;
     font-size: 1.3rem;
     margin: 10px 5px;
     width: 200px;
-    color: #EEEEEE;
+    color: var(--letter-color);
 }
 
 .buttonAccount button:hover{
-    background: #EEEEEE ;
-    border: 2px solid #171717;
-    color: black;
+    background: var(--letter-color);
+    color: var(--letter-hover-color);
 }
 
 .buttonAccount button a:hover{
-    color: #000000;
+    color: var(--letter-hover-color);
 }
 
 /*
@@ -161,27 +191,23 @@
 .navBarInternal{
     width: 1440px;
     max-width: 1440px;
-    display: inline-flex;
-    background: #171717;
+    display: flex;
+    flex-direction: row;
+    background: var(--block-color);
     border-radius: 10px;
     margin: 10px;
     height: 60px;
+    justify-content: center;
+    align-self: center;
 }
 
-.navBarInternal img{
-    width: 210px;
-    margin-top: 0px;
-    margin-left: 20px;
-    margin-right: 16%;
-}
 
 .personIconNavBar{
-    background: white;
+    background: var(--letter-color);
     border-radius: 50%;
     width: 45px;
     height: 45px;
     margin-top: 8px;
-    margin-left: 30%;
 }
 
 .personIconNavBar img{
@@ -191,12 +217,38 @@
 }
 
 .personIconNavBar:hover{
-    background: black;
+    background: var(--letter-hover-color);
+}
+
+.navBarLogoArea{
+    width: 20%;
+    margin-top: 12px;
+    margin-left: 20px;
+    
+}
+
+.navBarButtons{
+    width: 10%;
+    height: 100%;
+    display: flex;
+}
+
+.navBarButtons button{
+    background: none;
+    border: none;
+    padding: 10px;
+}
+
+.navBarButtons button img{
+    width: 40px;
+    color: var(--button-color);
 }
 
 .navBarInternalTexts{
     display: inline-flex;
-    color: #EEEEEE;
+    color: var(--letter-color);
+    width: 80%;
+    justify-content: center;
 }
 
 .navBarInternalTexts h4{
@@ -206,7 +258,7 @@
 }
 
 .navBarInternalTexts h4 a:hover{
-    color: #444444;
+    color: var(--letter-hover-color);
 }
 
 /*
@@ -238,7 +290,7 @@
 }
 
 .cardHelloUserBlock{
-    background: #171717;
+    background: var(--block-color);
     height: 170px;
     width: 100%;
     border-radius: 10px;
@@ -252,7 +304,7 @@
     padding-top: 10px;
     font-size: 2rem;
     font-weight: 300;
-    color: #EEEEEE;
+    color: var(--letter-color);
 }
 
 .cardHelloUserBlock h1{
@@ -277,11 +329,11 @@
 }
 
 .cardDepositMoneyBlock{
-    background: #171717;
+    background: var(--block-color);
     width: 100%;
     margin-top: 20px;
     border-radius: 10px;
-    color: #EEEEEE;
+    color: var(--letter-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -298,12 +350,12 @@
 
 .inputDepositValue{
     width: 94%;
-    background: #444444;
+    background: var(--input-color);
     margin-top: 15px;
     border-radius: 10px;
     height: 40px;
     border-style: none;
-    color: #EEEEEE;
+    color: var(--letter-color);
     font-size: 1.2rem;
     padding-left: 10px;
     text-align: end;
@@ -311,7 +363,7 @@
 }
 
 .inputDepositValue::placeholder{
-    color: #EEEEEE;
+    color: var(--letter-placeholder-color);
     font-size: 1.2rem;
     padding-left: 10px;
     padding-top: 20px;
@@ -321,7 +373,7 @@
 }
 
 .buttonDeposit button{
-    background-color: #444444;
+    background-color: var(--button-color);
     padding: 7px 10px;
     border-style: none;
     margin: 15px 5px;
@@ -330,7 +382,7 @@
 }
 
 .buttonDeposit button:hover{
-    background: #000000;
+    background: var(--button-hover-color);
 }
 
 .qrCodeImage{
@@ -342,14 +394,14 @@
 
 .qrCodeImage img{
     width: 50%;
-    background: #EEEEEE;
+    background: var(--letter-color);
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
 }
 
 .buttonPayDeposit{
-    background: #444444;
+    background: var(--button-color);
     padding: 7px 30px;
     border-style: none;
     margin: 0px;
@@ -360,7 +412,7 @@
 }
 
 .buttonPayDeposit:hover{
-    background: #000000;
+    background: var(--button-hover-color);
 }
 
 /*
@@ -377,7 +429,7 @@
 .infoClientBalanceBlock{
     width: 100%;
     border-radius: 10px;
-    background: #171717;
+    background: var(--block-color);
     height: 170px;
     
 }
@@ -406,18 +458,18 @@
 }
 
 .infoClientsBalanceValuesCards::-webkit-scrollbar-track {
-    background: #171717;
+    background: var(--block-color);
     border-radius:20px;
 }
 
 .infoClientsBalanceValuesCards::-webkit-scrollbar-thumb {
-    background: #444444;
+    background: var(--secondary-block-color);
     border-radius: 20px;  
     border: black solid 1px;
 }
 
 .infoClientValueCard{
-    background: #444444;
+    background: var(--secondary-block-color);
     border-radius: 10px;
     margin-top: 5px;
     margin-left: 5px;
@@ -454,7 +506,7 @@
     width: 100%;
     height: 60vh;
     
-    background: #171717;
+    background: var(--block-color);
     margin-top: 20px;
     border-radius: 10px;
     display: flex;
@@ -473,12 +525,12 @@
 }
 
 .listTransactions::-webkit-scrollbar-track {
-    background: #171717;
+    background: var(--block-color);
     border-radius:20px;
 }
 
 .listTransactions::-webkit-scrollbar-thumb {
-    background: #444444;
+    background: var(--secondary-block-color);
     border-radius: 20px;  
     border: black solid 1px;
 }
@@ -494,7 +546,7 @@
 
 .infoTransactionBlockList{
     width: 96%;
-    background: #444444;
+    background: var(--secondary-block-color);
     height: 70px;
     margin-left: 10px ;
     margin-top: 10px;
@@ -504,8 +556,9 @@
     align-items: center;
 }
 
+
 .infoTransactionBlockList:hover{
-    background: #000000;
+    background: var(--background-color);
 }
 
 .iconAboutMoneyTransaction{
@@ -515,11 +568,11 @@
     align-items: center;
     justify-content: center;
     margin-top: 5px;
-    border-right: #171717 solid 5px;
+    border-right: var(--block-color) solid 5px;
 }
 
 .iconAboutMoneyTransaction svg{
-    fill: #171717;
+    fill: var(--button-color);
     width: 80%;
     min-width: 80%;
 }
@@ -583,7 +636,7 @@
 .accountInfoGeral{
     width: 100%;
     border-radius: 10px;
-    background: #171717;
+    background: var(--block-color);
     height: 170px;
     display: flex;
     flex-direction: column;
@@ -599,7 +652,7 @@
 
 .accountData{
     width: 90%;
-    background: #444444;
+    background: var(--input-color);
     border-radius: 10px;
     padding: 0px 10px;
     height: 35px;
@@ -617,7 +670,7 @@
 
 .fastPixBlock{
     width: 100%;
-    background: #171717;
+    background: var(--block-color);
     margin-top: 20px;
     border-radius: 10px;
     display: flex;
@@ -646,14 +699,14 @@
 }
 
 .inputKeyPix input{
-    background: #444444;
+    background: var(--input-color);
     border-style: none;
     width: 100%;
     border-radius: 10px;
     height: 30px;
     padding-left: 15px;
     font-size: 1.2rem;
-    color: #EEEEEE;
+    color: var(--letter-color);
 
 }
 
@@ -668,7 +721,7 @@
 
 .fastPixBlock button{
     margin-top: 10px;
-    background: #444444;
+    background: var(--button-color);
     border-style: none;
     border-radius: 10px;
     padding: 7px 20px;
@@ -676,13 +729,13 @@
 }
 
 .fastPixBlock button:hover{
-    background: black;
+    background: var(--button-hover-color);
 }
 
 .fastPixInfoReceiver{
     margin-bottom: 5px;
     margin-top: 15px;
-    background: #444444;
+    background: var(--secondary-block-color);
     padding: 10px;
     border-radius: 10px;
     width: 93%;
@@ -741,7 +794,7 @@
 
 .constructTrasaction{
     width: 98%;
-    background: var(--button-color);
+    background: var(--secondary-block-color);
     height: 50px;
     border-radius: 10px;
     display: flex;
@@ -749,32 +802,32 @@
 }
 
 .constructTrasaction input{
-    background: var(--secondary-block-color);
+    background: var(--input-secondary-color);
     margin: 5px;
     border-radius: 10px;
     border-style: none;
     width: 27%;
     padding-left: 10px;
-    color: #EEEEEE;
+    color: var(--letter-color);
 }
 
 .constructTrasaction input::placeholder{
-    color: #EEEEEE;
+    color: var(--letter-placeholder-color);
 }
 
 .constructTrasaction select{
-    background: var(--secondary-block-color);
+    background: var(--input-secondary-color);
     margin: 5px;
     border-radius: 10px;
     border-style: none;
     width: 27%;
     padding-left: 10px;
-    color: #EEEEEE;
+    color: var(--letter-color);
     padding: 10px;
 }
 
 .constructTrasaction button{
-    background: var(--secondary-block-color);
+    background: var(--button-color);
     border-radius: 10px;
     border-style: none;
     margin: 5px;
@@ -785,12 +838,12 @@
 }
 
 .constructTrasaction button:hover{
-    background: var(--background-color);
+    background: var(--button-hover-color);
 }
 
 .operationsOfPacketTransactionsArea{
     width: 98%;
-    background: var(--button-color);
+    background: var(--secondary-block-color);
     height: 80%;
     margin-top: 10px;
     border-radius: 10px;
@@ -799,25 +852,33 @@
     align-items: center;
 }
 
-.textExplainCamps{
+.textExplainCampsArea{
     display: flex;
     flex-direction: row;
     width: 98%;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
-    background: var(--secondary-block-color);
+    background: var(--block-color);
     border-radius: 10px;
     margin-top: 10px;
 }
 
-.textExplainCamps h1{
+.textExplainCampsArea h1{
     align-items: center;
     align-self: center;
     padding-top: 15px;
     padding-bottom: 10px;
     font-size: 1.2rem;
-    width: 50%;
+    width: 30%;
 
+}
+
+.textExplainCamps{
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    justify-content: left;
+    align-items: left;
 }
 
 .operationsOfPacketTransactionsArea ul{
@@ -848,13 +909,13 @@
     border-radius: 10px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
 }
 
 .infoOperationArea{
     width:32%;
     height: 40px;
-    background: var(--button-color);
+    background: var(--secondary-block-color);
     margin: 0px 5px;
     border-radius: 10px;
     display: flex;
@@ -863,15 +924,46 @@
 }
 
 .infoOperationArea h1{
-    color: #EEEEEE;
+    color: var(--letter-color);
     padding: 7px;
-    font-size: 1.7rem;
     text-align: center;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 400;
 }
 
+.buttonRemoveTransaction{
+    width: 10%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    
+}
 
+.buttonRemoveTransaction button{
+    background: var(--button-color);
+    width: 100%;
+    border: none;
+    border-radius: 15px;
+    padding: 0px;
+    align-items: center;
+    margin: 8px 8px 8px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+}
+
+.buttonRemoveTransaction button:hover{
+    background: var(--button-hover-color);
+}
+
+.buttonRemoveTransaction button h1{
+    padding: 0px;
+    margin: 0px;
+    font-size: 2.2rem;
+}
 /*
     PARTE DA REQUISIÇÃO DA AGENCIA BANCARIA
 */
@@ -913,6 +1005,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #EEEEEE;
 }
 
 
@@ -920,6 +1013,7 @@
     width: 800px;
     background: #171717;
     border-radius: 20px;
+    color: #EEEEEE;
 }
 
 .inputAgencyNumber{
@@ -936,7 +1030,7 @@
 }
 
 .inputAgencyNumber input{
-    background: #313131;
+    background: #444444;
     border-style: none;
     border-radius: 10px;
     width: 400px;
@@ -955,9 +1049,23 @@
     border-radius: 10px;
     font-size: 1.2rem;
     margin-bottom: 20px;
+    color: #EEEEEE;
 }
 
 .inputAgencyNumber button:hover{
     background: #000000;
 }
 
+.buttonMakePacketTransaction{
+    background: var(--button-color);
+    border-style: none;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+.buttonMakePacketTransaction:hover{
+    background-color: #000000;
+}

@@ -3,11 +3,11 @@
   margin:0;
   box-sizing: border-box;
   font-family: "Inter", Verdana, Geneva, Tahoma, sans-serif;
-  color: white;
+  color: var(--letter-color);
 }
 
 body{
-  background: rgb(0,0,0);
+  background: var(--background-body-color);
 }
 
 a{

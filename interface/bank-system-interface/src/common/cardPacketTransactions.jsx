@@ -37,16 +37,22 @@ function CardPacketTransactions(){
                     <button>add operation</button>
                 </div>
                 <div className={styles.operationsOfPacketTransactionsArea}>
-                    <div className={styles.textExplainCamps}>
-                        <h1>
-                            Bank Name:
-                        </h1>
-                        <h1>
-                            Key Pix:
-                        </h1>
-                        <h1>
-                            Value:
-                        </h1>
+                    <div className={styles.textExplainCampsArea}>
+                        <div className={styles.textExplainCamps}>
+                            <h1>
+                                Bank Name:
+                            </h1>
+                            <h1>
+                                Key Pix:
+                            </h1>
+                            <h1>
+                                Value:
+                            </h1>
+                            <h1>
+                                Name Receiver:
+                            </h1>
+                        </div>
+                        
                     </div>
                     <ul>
                         <li>
@@ -62,8 +68,9 @@ function CardPacketTransactions(){
                             <CardInfoTransactionForMakeInPacket />
                         </li>
                     </ul>
-                    
                 </div>
+                
+                <button className={styles.buttonMakePacketTransaction}>Make Transaction</button>
             </div>
         </>
     )

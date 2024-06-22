@@ -9,19 +9,21 @@
     margin: 0px;
     padding: 0px;
     height: 100vh;
+    color: #eeeeee;
 }
 
 .logoBankArea{
-    margin-top: 15px;
+    margin-top: 10px;
     margin-left: 20px;
+    color: #eeeeee;
     
 }
 
-.logoBankArea img{
+.logoBankArea .logoBankStyle{
     width:200px;
     margin-top: 0px;
     padding-top: 0px;
-
+    color: #eeeeee;
 }
 
 .navBarLandingPage{
@@ -31,23 +33,26 @@
     border-radius: 10px;
     margin: 8px 8px;
     margin-bottom: 0px;
-    
+    color: #eeeeee;
 }
 
 .buttonLadingPage{
     margin-left: 63%;
     width: 300px;
     display: inline-flex;
+    color: #eeeeee;
 }
 
 .principalArea{
     display: inline-flex;
     width: 100%;
     height: 90%;
+    color: #eeeeee;
 }
 
 .principalArea h1{
     line-height: 95%;
+    color: #eeeeee;
 }
 
 .textPrincipalArea{
@@ -57,6 +62,7 @@
     justify-content: center;
     margin-left: 30px;
     align-items: left;
+    color: #eeeeee;
 }
 
 .gifArea{
@@ -69,6 +75,7 @@
 
 .gifArea img{
     width: 100%;
+
 }
 
 .mainSentence{
@@ -76,6 +83,7 @@
     font-size: 7rem;
     margin-top: 0px;
     padding-top: 0px;
+    color: #eeeeee;
 }
 
 .submainSentence{
@@ -83,6 +91,7 @@
     font-size: 5.5rem;
     margin-bottom: 0px;
     padding-bottom: 0px;
+    color: #eeeeee;
 }
 
 
@@ -90,6 +99,7 @@
     margin-left: 30px;
     font-weight: 500;
     font-size: 2rem;
+    color: #eeeeee;
 }
 
 .infoAboutConsortium{
@@ -97,6 +107,7 @@
     bottom: 20px;
     font-size: 1.1rem;
     font-weight: 400;
+    color: #eeeeee;
 }
 
 .backgroundGoPage{
