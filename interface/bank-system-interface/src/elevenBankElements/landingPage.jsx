@@ -17,11 +17,11 @@ function LandingPage(){
                 <div className={styles.navBarBackground}>
                     <div className={styles.navBarLandingPage}>
                         <div className={styles.logoBankArea}>
-                            <LogoBank />
+                            <LogoBank nameBank={"Eleven"}/>
                         </div>
                         <div className={styles.buttonLadingPage}>
-                            <ButtonCreateAccount />
-                            <ButtonLoginAccount />
+                            <ButtonCreateAccount  nameBank={"Eleven"}/>
+                            <ButtonLoginAccount  nameBank={"Eleven"}/>
                         </div>
                     </div>
                 </div>

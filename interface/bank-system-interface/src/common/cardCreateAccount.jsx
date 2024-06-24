@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import styles from "../style_modules/commonStyles.module.css"
 import LogoBank from "./logoBank"
+import propsTypes from 'prop-types'
 
 
-function CardCreateAccount(){
+function CardCreateAccount(props){
     const navigate = useNavigate()
     const [everyThingOk, setEveryThingOk] = useState(false);
     const borderNotFillInput ={
@@ -267,7 +268,7 @@ function CardCreateAccount(){
             <>
                 <div className={styles.createAccountBase}>
                     <div className={styles.logoBankPreLogin}>
-                        <LogoBank />
+                        <LogoBank nameBank = {props.nameBank} />
                     </div>
                     <input className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
                     <input className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister'></input>
@@ -326,7 +327,7 @@ function CardCreateAccount(){
                 <>
                     <div className={styles.createAccountBase}>
                         <div className={styles.logoBankPreLogin}>
-                            <LogoBank />
+                            <LogoBank  nameBank = {props.nameBank}/>
                         </div>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder" id='nameRegister'></input>
@@ -375,7 +376,7 @@ function CardCreateAccount(){
                 <>
                     <div className={styles.createAccountBase}>
                         <div className={styles.logoBankPreLogin}>
-                            <LogoBank />
+                            <LogoBank  nameBank = {props.nameBank}/>
                         </div>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder" id='nameRegister'></input>
@@ -421,7 +422,7 @@ function CardCreateAccount(){
             <>
                 <div className={styles.createAccountBase}>
                     <div className={styles.logoBankPreLogin}>
-                        <LogoBank />
+                        <LogoBank  nameBank = {props.nameBank}/>
                     </div>
                     <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
                     <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister'></input>
@@ -453,6 +454,15 @@ function CardCreateAccount(){
     }
 
 
+}
+
+
+CardCreateAccount.propsTypes = {
+    nameBank: propsTypes.string
+}
+
+CardCreateAccount.defaultProps = {
+    nameBank: "Unified"
 }
 
 export default CardCreateAccount

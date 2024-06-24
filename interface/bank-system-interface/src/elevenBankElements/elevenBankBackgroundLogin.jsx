@@ -10,11 +10,11 @@ function ElevenBankBackgroundLogin(){
     function componentToRender(){
         if(type_sing_in =="login"){
             return(
-                <CardLoginAccount />
+                <CardLoginAccount nameBank={"Eleven"} />
             )
         } else{
             return(
-                <CardCreateAccount />
+                <CardCreateAccount  nameBank={"Eleven"} />
             )
         }
     }

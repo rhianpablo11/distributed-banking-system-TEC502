@@ -1,6 +1,23 @@
 import styles from "../style_modules/commonStyles.module.css"
+import propsTypes from 'prop-types'
+import {useEffect, useState } from "react"
 
-function CardInfoClientBalance(){
+function CardInfoClientBalance(props){
+
+    const [totalBalance, setTotalBalance] = useState(0)
+
+    
+        
+    
+    useEffect(()=>{
+        function calculateTotalBalance(){
+            const balance = parseFloat(props.balance)
+            const blockedBalance = parseFloat(props.blockedBalance)
+            setTotalBalance((balance+blockedBalance))
+        }
+        calculateTotalBalance()
+    },)
+    
 
     return (
         <>
@@ -9,20 +26,31 @@ function CardInfoClientBalance(){
                 <div className={styles.infoClientsBalanceValuesCards}>
                     <div className={styles.infoClientValueCard}>
                         <h5>Total Assets:</h5>
-                        <h4><p>US$</p> 5,000.00</h4> 
+                        <h4><p>US$</p> {totalBalance}</h4> 
                     </div>
                     <div className={styles.infoClientValueCard}>
                         <h5>Available:</h5>
-                        <h4><p>US$</p> 5,000.00</h4> 
+                        <h4><p>US$</p> {props.balance}</h4> 
                     </div>
                     <div className={styles.infoClientValueCard}>
                         <h5>Blocked:</h5>
-                        <h4><p>US$</p> 10,000.00</h4> 
+                        <h4><p>US$</p> {props.blockedBalance}</h4> 
                     </div>
                 </div>
             </div>
         </>
     )
 }
+
+CardInfoClientBalance.propsTypes = {
+    balance: propsTypes.string,
+    blockedBalance: propsTypes.string
+}
+
+CardInfoClientBalance.defaultProps = {
+    balance: "20.50",
+    blockedBalance:"300.00"
+}
+
 
 export default CardInfoClientBalance

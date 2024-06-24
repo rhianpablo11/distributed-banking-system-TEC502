@@ -1,8 +1,10 @@
 import styles from "../style_modules/commonStyles.module.css"
 import qrCodeInter from "../assets/qrCodeInter.jpg"
 import { useState } from "react"
+import propsTypes from 'prop-types'
 
-function CardDepositMoney(){
+
+function CardDepositMoney(props){
     const qrCode = <div className={styles.qrCodeImage}>
                         <img  src={qrCodeInter}></img>
                     </div>
@@ -19,6 +21,7 @@ function CardDepositMoney(){
     const [valueDepositChoice, setValueDepositChoice] = useState("")
     const [methodDeposit, setMethodDeposit] = useState("")
     const [isButtonClicked, setIsButtonClicked] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     function selectedOnlyNumber(event){
         let valueCaptured = event.target.value.replace(/[^0-9.]/g, '')
@@ -30,6 +33,7 @@ function CardDepositMoney(){
             partsValue[1] = partsValue[1].substring(0, 2);
             valueCaptured = partsValue.join('.');
         }
+        console.log(props.cpfCNPJ_user)
         setValueDepositChoice(valueCaptured)
     }
     
@@ -53,6 +57,55 @@ function CardDepositMoney(){
         
     }
     
+    const addressBank = localStorage.getItem("addressBank")
+
+    
+
+    const makeDeposit = async () => {
+        try {
+            const url =addressBank+"/account/deposit"
+            console.log(url)
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "cpfCNPJ1": props.cpfCNPJ_user,
+                    "value": valueDepositChoice,
+                    "method": methodDeposit
+                })
+
+            })
+            
+            setLoading(true)
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result)
+                // finalizar a apresentação do loading
+                setLoading(false);
+
+            } else {
+                // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+          //indicar que ocorreu um erro
+          //setNotBankConnection(true);
+        } finally {
+          // finalizar a apresentação do loading
+          setLoading(false);
+        }
+      };
+
+    function canMakeDeposit(){
+        if(valueDepositChoice != ""){
+            console.log("oie")
+            makeDeposit()
+            setValueDepositChoice("")
+        } 
+        //colocar o avliso de qu nao tem nada la e entao nao pode fazer o deposito
+    }
 
     return (
         <>
@@ -72,13 +125,23 @@ function CardDepositMoney(){
                         Bank Slip
                     </button>
                 </div>
-                {methodDeposit=="qrCode"? qrCode : ""}
-                <button className={styles.buttonPayDeposit}>
+                {methodDeposit=="qrCode" ? qrCode : ""}
+                <button onClick={canMakeDeposit} className={styles.buttonPayDeposit}>
                     Pay
                 </button>
             </div>
         </>
     )
+}
+
+
+
+CardDepositMoney.propsTypes = {
+    cpfCNPJ_user: propsTypes.string
+}
+
+CardDepositMoney.defaultProps = {
+    cpfCNPJ_user: "undefined"
 }
 
 export default CardDepositMoney

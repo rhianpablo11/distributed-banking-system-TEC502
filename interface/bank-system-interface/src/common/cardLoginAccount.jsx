@@ -2,14 +2,61 @@ import { useState } from "react"
 import styles from "../style_modules/commonStyles.module.css"
 import LogoBank from "./logoBank"
 import { useNavigate } from "react-router-dom"
+import propsTypes from 'prop-types'
 
-function CardLoginAccount(){
+function CardLoginAccount(props){
     const navigate = useNavigate()
     const borderNotFillInput ={
         'border': '3px solid #ba1111'
     }
 
     const [styleCampInput, setStyleCampInput] = useState()
+
+    const [userData, setUserData] = useState()
+
+    const addressBank = localStorage.getItem("addressBank")
+
+    const [loading, setLoading] = useState(false)
+
+    const requestUser = async (email, password) => {
+        try {
+            const url =addressBank+"/account/login"
+            console.log(url)
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "email": email,
+                    "password": password
+                })
+
+            })
+            
+            setLoading(true)
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result)
+                // finalizar a apresentação do loading
+                setLoading(false);
+                setUserData(result)
+                //vai para a pagina correta
+                console.log(userData.accountNumber)
+                return navigate("/logged/"+props.nameBank+"/"+userData.accountNumber)
+            } else {
+                // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+          //indicar que ocorreu um erro
+          //setNotBankConnection(true);
+        } finally {
+          // finalizar a apresentação do loading
+          setLoading(false);
+        }
+      };
+
 
     function verifyElementsFilled(){
         const email = document.getElementById("emailRegister").value
@@ -21,7 +68,8 @@ function CardLoginAccount(){
             setStyleCampInput()
             //verificar ainda a requisição ao servidor
             //esse valor apos o logged tem que definir ainda o que sera que vai usar
-            return navigate("/logged/598")
+            
+            requestUser(email,password)
         }
         
     }
@@ -30,7 +78,7 @@ function CardLoginAccount(){
         <>
             <div className={styles.createAccountBase}>
                 <div className={styles.logoBankPreLogin}>
-                    <LogoBank />
+                    <LogoBank nameBank = {props.nameBank} />
                 </div>
                 <div className={styles.inputsAreaLogin}>
                     <input style={styleCampInput} className={styles.inputPreLogin} type="email" placeholder="Email" id="emailRegister"></input>
@@ -45,6 +93,15 @@ function CardLoginAccount(){
             </dialog>
         </>
     )
+}
+
+
+CardLoginAccount.propsTypes = {
+    nameBank: propsTypes.string
+}
+
+CardLoginAccount.defaultProps = {
+    nameBank: "Unified"
 }
 
 export default CardLoginAccount

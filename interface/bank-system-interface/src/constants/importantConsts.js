@@ -1,2 +1,8 @@
-export const IPBank = 'localhost:8082'
+
 export const NameBank = 'elevenBank'
+
+function setIpBank(address){
+    const url = "http://localhost:"+address
+    return url
+}
+

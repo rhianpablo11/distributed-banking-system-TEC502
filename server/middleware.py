@@ -21,11 +21,11 @@ accountsLock = threading.Lock()
 
 
 listBanksConsortium = {
-    "1": ["http://localhost:8081", "Eleven Bank"],
-    "2": ["http://localhost:8082", "Automobili Bank"],
-    "3": ["http://localhost:8083", "Secret Bank"],
-    "4": ["http://localhost:8084", "Formula Bank"],
-    "5": ["http://localhost:8085", "Titanium Bank"]
+    "1": ["http://localhost:8081", "Eleven"],
+    "2": ["http://localhost:8082", "Automobili"],
+    "3": ["http://localhost:8083", "Secret"],
+    "4": ["http://localhost:8084", "Formula"],
+    "5": ["http://localhost:8085", "Titanium"]
 }
 
 

@@ -123,7 +123,8 @@ class Account:
                         typeTransaction="deposit",
                         idTransaction=self.idLastTransaction + 1,
                         bankReceptor=self.bank,
-                        bankSource=self.bank
+                        bankSource=self.bank,
+                        idTransactionExternal=""
                     )
         )
         self.operationLock.release()
@@ -144,7 +145,8 @@ class Account:
                         typeTransaction="receive pix",
                         idTransaction=self.idLastTransaction + 1,
                         bankReceptor=self.bank,
-                        bankSource=bankSourceName
+                        bankSource=bankSourceName,
+                        idTransactionExternal=""
                     )
         )
         self.operationLock.release()
@@ -181,7 +183,8 @@ class Account:
                             typeTransaction="send pix",
                             idTransaction=self.idLastTransaction + 1,
                             bankReceptor= "None",
-                            bankSource=self.bank
+                            bankSource=self.bank,
+                            idTransactionExternal=""
                         )
                 )
                 

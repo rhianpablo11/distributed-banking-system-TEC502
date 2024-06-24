@@ -19,11 +19,11 @@ accountsLock = threading.Lock()
 
 IP = '0.0.0.0'
 global bankName
-bankName = "elevenBank"
+bankName = "Eleven"
 
 global hashMapBanks
 hashMapBanks = {
-    "1": "localhost:8081"
+    "1": "localhost:8082"
 }
 
             
@@ -40,7 +40,11 @@ CORS(app)
 
 @app.route('/bank', methods=['GET'])
 def getNameBank():
-    return bankName, 200
+    dataSend = {
+        "nameBank": bankName
+    }
+    response = make_response(jsonify(dataSend))
+    return response, 200
 
 
 @app.route('/accounts', methods=['GET'])
@@ -78,11 +82,12 @@ def createaccount():
                                             password= cryptographyPassword(data["password"]),
                                             isFisicAccount= data["isFisicAccount"],
                                             isJoinetAccount=data["isJoinetAccount"],
-                                            accountNumber= accountNumbers.createAccountNumber(),
+                                            accountNumber= 5555,
                                             telephone= data["telephone"],
                                             bank=bankName,
                                             balance="0",
-                                            blockedBalance="0"    )
+                                            blockedBalance="0",
+                                            listBanks=[]    )
             
             response = make_response(jsonify(accounts[data["cpfCNPJ1"]].jsonComplet()))
             accountsLock.release()
@@ -96,7 +101,7 @@ def createaccount():
 Função para procurar um accounte, e retornar dados basicos deste accounte
 Esses dados são retornados para quem quer fazer o pix
 """
-@app.route('/account/pix', methods=['GET'])
+@app.route('/account/pix', methods=['POST'])
 def getaccountPixInfo(): #fazer o retorno de informações basicas para apresentar na hora do pix
     data = request.json
     if(len(accounts) >0):
@@ -151,7 +156,7 @@ def depositMoney():
 '''
 Função para realizar o login do usuario
 '''
-@app.route('/account/login', methods=['GET'])
+@app.route('/account/login', methods=['POST'])
 def loginaccount():
     data =  request.json
     if(len(accounts) >0):
@@ -167,12 +172,23 @@ def loginaccount():
     else:
         return "account not found", 404    
 
-
+@app.route('/account/data/<int:accountNumber>', methods=['GET'])
+def getInfoAboutAccount(accountNumber):
+    if(len(accounts) >0):
+        for account in accounts:
+            if(accounts[account].accountNumber == accountNumber):
+                response = make_response(jsonify(accounts[account].jsonComplet()))
+                return response, 200
+                
+        else:
+            return "account not found", 404 
+    else:
+        return "account not found", 404 
 
 '''
 Função para requisitar ao outro banco as informações do pix daquele usuario
 '''
-@app.route('/account/transaction/pix/infos', methods=['GET'])
+@app.route('/account/transaction/pix/infos', methods=['POST'])
 def getInfosForMakePix():
     data =  request.json
     if(data["bankID"] == "1"):
@@ -180,7 +196,7 @@ def getInfosForMakePix():
         keyPix = {
             "keyPix": str(data["keyPix"])
         }
-        infoReceived = requests.get(url,json=keyPix)
+        infoReceived = requests.post(url,json=keyPix)
         if (infoReceived.status_code == 200):
             print(infoReceived.json())
             response = make_response(infoReceived.json())

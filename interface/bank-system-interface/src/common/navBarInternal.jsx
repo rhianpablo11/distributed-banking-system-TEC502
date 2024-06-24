@@ -3,8 +3,9 @@ import styles from "../style_modules/commonStyles.module.css"
 import personIcon from "../assets/person.svg"
 import { useNavigate } from "react-router-dom"
 import logoutIcon from "../assets/logout.svg"
+import propsTypes from 'prop-types'
 
-function NavBarInternal(){
+function NavBarInternal(props){
     const navigate = useNavigate()
 
     function goTransactions(){
@@ -21,7 +22,7 @@ function NavBarInternal(){
             <div className={styles.navBarGeral}>
                 <div className={styles.navBarInternal}>
                     <div className={styles.navBarLogoArea}>
-                        <LogoBank />
+                        <LogoBank nameBank={props.nameBank}/>
                     </div>
                     <div className={styles.navBarInternalTexts}>
                         <h4>
@@ -62,5 +63,15 @@ function NavBarInternal(){
         </>
     )
 }
+
+
+NavBarInternal.propsTypes = {
+    nameBank: propsTypes.string
+}
+
+NavBarInternal.defaultProps = {
+    nameBank: "Unified"
+}
+
 
 export default NavBarInternal

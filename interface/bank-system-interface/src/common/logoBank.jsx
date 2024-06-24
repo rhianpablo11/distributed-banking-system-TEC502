@@ -4,14 +4,14 @@ import automobiliLogo from "../assets/Automobili Bank.svg"
 import { useNavigate } from "react-router-dom"
 import propsTypes from 'prop-types'
 import styles from "../style_modules/commonStyles.module.css"
-
+import { useParams } from "react-router-dom"
 
 function LogoBank(props){
     const navigate = useNavigate()
     function goToLanding(){
         return navigate("/")
     }
-
+    
 
     return(
         <>
@@ -29,7 +29,7 @@ LogoBank.propsTypes = {
 }
 
 LogoBank.defaultProps = {
-    nameBank: "Automobili"
+    nameBank: "Unified"
 }
 
 export default LogoBank
