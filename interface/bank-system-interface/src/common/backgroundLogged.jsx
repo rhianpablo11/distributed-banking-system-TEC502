@@ -50,7 +50,7 @@ function  BackgroundLogged(){
 
         requestUser()
         
-        const interval = setInterval(requestUser, 100)
+        const interval = setInterval(requestUser, 1000)
         return () => clearInterval(interval)
 
     },[])

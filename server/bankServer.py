@@ -82,7 +82,7 @@ def createaccount():
                                             password= cryptographyPassword(data["password"]),
                                             isFisicAccount= data["isFisicAccount"],
                                             isJoinetAccount=data["isJoinetAccount"],
-                                            accountNumber= 5555,
+                                            accountNumber= random.randint(1000, 9999),
                                             telephone= data["telephone"],
                                             bank=bankName,
                                             balance="0",

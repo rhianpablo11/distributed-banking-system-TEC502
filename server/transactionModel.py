@@ -12,9 +12,10 @@ class Transaction:
         self.idTransactionExternal = idTransactionExternal
 
     def getJsonTransaction(self):
-        print("receptor pivete",self.receptor)
+        
         auxJson = {
             "source": self.source,
+            "receptor":self.receptor,
             "value": self.value,
             "dateTransaction": self.dateTransaction,
             "concluded": self.concluded,
