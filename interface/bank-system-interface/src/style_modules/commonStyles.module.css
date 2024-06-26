@@ -475,8 +475,10 @@
     margin-left: 5px;
     margin-right: 5px;
     height: 110px;
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
+    width: auto;
+    white-space: nowrap;
 }
 
 .infoClientValueCard h5{
@@ -917,18 +919,24 @@
     height: 40px;
     background: var(--secondary-block-color);
     margin: 0px 5px;
+    padding-left: 10px;
     border-radius: 10px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items:end;
+    justify-content: left;
 }
 
 .infoOperationArea h1{
     color: var(--letter-color);
     padding: 7px;
-    text-align: center;
+    text-align:center;
     font-size: 1.2rem;
     font-weight: 400;
+}
+
+.infoOperationArea h2{
+    font-weight: 300;
+    padding-bottom: 4px;
 }
 
 .buttonRemoveTransaction{

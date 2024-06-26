@@ -1,28 +1,31 @@
 import LogoBank from "./logoBank"
 import styles from "../style_modules/commonStyles.module.css"
 import personIcon from "../assets/person.svg"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import logoutIcon from "../assets/logout.svg"
 import propsTypes from 'prop-types'
 
 function NavBarInternal(props){
     const navigate = useNavigate()
-
+    const {nameBank, accountNumber} = useParams()
     function goTransactions(){
-        return navigate("/logged/598/transactions")
+        return navigate("/logged/"+nameBank+"/"+accountNumber+"/transactions")
     }
 
     function goDashboard(){
-        return navigate("/logged/598")
+        return navigate("/logged/"+nameBank+"/"+accountNumber)
     }
     
+    function goLandingPage(){
+        return navigate("/"+nameBank)
+    }
 
     return(
         <>
             <div className={styles.navBarGeral}>
                 <div className={styles.navBarInternal}>
                     <div className={styles.navBarLogoArea}>
-                        <LogoBank nameBank={props.nameBank}/>
+                        <LogoBank nameBank={nameBank}/>
                     </div>
                     <div className={styles.navBarInternalTexts}>
                         <h4>
@@ -48,7 +51,7 @@ function NavBarInternal(props){
                         
                     </div>
                     <div className={styles.navBarButtons}>
-                        <button>
+                        <button onClick={goLandingPage}>
                             <img src={logoutIcon}></img>
                         </button>
                         <a href="#" className={styles.personIconNavBar}>

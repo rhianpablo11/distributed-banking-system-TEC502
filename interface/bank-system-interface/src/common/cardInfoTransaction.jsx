@@ -22,6 +22,9 @@ function CardInfoTransaction(props){
         else if(transaction.typeTransaction =='send pix'){
             setMoneyOutOrReceive(true)
             setTypeTransaction('Pix send')
+        }else if(transaction.typeTransaction =='receive pix'){
+            setMoneyOutOrReceive(false)
+            setTypeTransaction('Pix received')
         }
     }
     

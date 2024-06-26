@@ -26,7 +26,7 @@ function CardInfoClientBalance(props){
                 <div className={styles.infoClientsBalanceValuesCards}>
                     <div className={styles.infoClientValueCard}>
                         <h5>Total Assets:</h5>
-                        <h4><p>US$</p> {totalBalance}</h4> 
+                        <h4><p>US$</p>{totalBalance}</h4> 
                     </div>
                     <div className={styles.infoClientValueCard}>
                         <h5>Available:</h5>
@@ -48,8 +48,8 @@ CardInfoClientBalance.propsTypes = {
 }
 
 CardInfoClientBalance.defaultProps = {
-    balance: "20.50",
-    blockedBalance:"300.00"
+    balance: "0.00",
+    blockedBalance:"0.00"
 }
 
 

@@ -45,7 +45,7 @@ class Account:
         listTransactions = []
         for transaction in self.transactions:
             listTransactions.append(self.transactions[transaction].getJsonTransaction())
-
+        listTransactions.reverse()
         auxJson["transactions"] = listTransactions
 
         if(self.isJoinetAccount=="True"):
