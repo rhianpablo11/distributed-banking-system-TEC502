@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import styles from "../style_modules/commonStyles.module.css"
 import { useNavigate } from "react-router-dom"
+import Loading from "./loading"
 
 function CardRequestAgencyBank(){
     //fazer o request para pegar o nome do banco
@@ -36,6 +37,7 @@ function CardRequestAgencyBank(){
 
     const requestBankName = async () => {
         try {
+            setLoading(true)
             const response = await fetch(addressBank)
             
             if (response.ok) {
@@ -76,7 +78,7 @@ function CardRequestAgencyBank(){
                         <button onClick={setAddress}>Go to Bank Page</button>
                     </div>
                 </div>
-                
+                <Loading isOpen = {loading} />
             </div>
         
         </>

@@ -3,6 +3,7 @@ import styles from "../style_modules/commonStyles.module.css"
 import LogoBank from "./logoBank"
 import { useNavigate } from "react-router-dom"
 import propsTypes from 'prop-types'
+import Loading from "./loading"
 
 function CardLoginAccount(props){
     const navigate = useNavigate()
@@ -20,6 +21,7 @@ function CardLoginAccount(props){
 
     const requestUser = async (email, password) => {
         try {
+            setLoading(true)
             const url =addressBank+"/account/login"
             console.log(url)
             const response = await fetch(url, {
@@ -34,7 +36,7 @@ function CardLoginAccount(props){
 
             })
             
-            setLoading(true)
+            
             if (response.ok) {
                 const result = await response.json();
                 console.log(result)
@@ -87,7 +89,8 @@ function CardLoginAccount(props){
                 <button className={styles.buttonPreLogin} onClick={verifyElementsFilled}>
                     Login
                 </button>
-            </div>        
+            </div>
+            <Loading isOpen={loading}/>      
             <dialog>
                 <p>apresentar a info que nao tem todos os campos preenchidos</p>
             </dialog>

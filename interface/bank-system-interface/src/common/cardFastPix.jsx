@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "../style_modules/commonStyles.module.css"
 import propsTypes from 'prop-types'
+import Loading from "./loading";
 
 
 function CardFastPix(props){
@@ -82,6 +83,7 @@ function CardFastPix(props){
 
     const requestInfoAboutUserPix = async (keyPix, IdBank) => {
         try {
+            setLoading(true)
             const url =addressBank+"/account/transaction/pix/infos"
             console.log(url)
             const response = await fetch(url, {
@@ -96,7 +98,7 @@ function CardFastPix(props){
 
             })
             
-            setLoading(true)
+            
             if (response.ok) {
                 const result = await response.json();
                 console.log(result)
@@ -121,6 +123,7 @@ function CardFastPix(props){
     
     const sendPix = async (keyPix, IdBank, value) => {
         try {
+            setLoading(true)
             const url =addressBank+"/account/transactions/pix/send"
             console.log(url)
             const response = await fetch(url, {
@@ -138,7 +141,7 @@ function CardFastPix(props){
 
             })
             
-            setLoading(true)
+            
             if (response.ok) {
                 const result = await response.json();
                 console.log(result)
@@ -181,8 +184,9 @@ function CardFastPix(props){
                     Search
                 </button>
                 {clientReceiverFound ? dataAboutKeyPix : <></>}
-                
+                <Loading isOpen={loading} />
             </div>
+            
             
         </>
     )

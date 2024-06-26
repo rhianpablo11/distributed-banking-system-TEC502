@@ -10,6 +10,7 @@ function CardInfoTransaction(props){
     const dateTransactionFormated = new Date(transaction.dateTransaction)
     const teste = Date.UTC(dateTransactionFormated.toLocaleString())
     const [typeTransaction, setTypeTransaction] = useState('')
+    const [value, setValue] = useState(props.transaction.value)
 
     //se for true é pq saiu, se for false é pq entrou
     const [moneyOutOrReceive, setMoneyOutOrReceive] = useState(false)
@@ -27,10 +28,22 @@ function CardInfoTransaction(props){
             setTypeTransaction('Pix received')
         }
     }
+
+    function formatCurrency(value) {
+        const parts = value.toFixed(2).split('.');
+        const integerPart = parts[0];
+        const decimalPart = parts[1];
+        const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return formattedIntegerPart+","+decimalPart;
+    }
+
+
+
     
     useEffect(()=>{
         
         selectTextTransaction()
+        setValue(formatCurrency(parseFloat(props.transaction.value)))
     },[])
     
     return (
@@ -72,7 +85,7 @@ function CardInfoTransaction(props){
                     <div className={styles.infoValueAboutTransactionValueArea}>
                         <p>US$</p>
                         <h2 style={{'padding-left':'5px'}}>
-                            {transaction.value}
+                            {value}
                         </h2>
                     </div>
 

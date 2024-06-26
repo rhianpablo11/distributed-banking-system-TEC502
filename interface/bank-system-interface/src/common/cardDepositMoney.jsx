@@ -2,6 +2,7 @@ import styles from "../style_modules/commonStyles.module.css"
 import qrCodeInter from "../assets/qrCodeInter.jpg"
 import { useState } from "react"
 import propsTypes from 'prop-types'
+import Loading from "./loading";
 
 
 function CardDepositMoney(props){
@@ -129,6 +130,7 @@ function CardDepositMoney(props){
                 <button onClick={canMakeDeposit} className={styles.buttonPayDeposit}>
                     Pay
                 </button>
+                <Loading isOpen={loading} />
             </div>
         </>
     )

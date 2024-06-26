@@ -1,8 +1,23 @@
 import styles from "../style_modules/commonStyles.module.css"
 import propsTypes from 'prop-types'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 function CardInfoTransactionForMakeInPacket(props){
+    const [value, setValue] = useState(props.transactionInfo.value)
+
+    function formatCurrency(value) {
+        const parts = value.toFixed(2).split('.');
+        const integerPart = parts[0];
+        const decimalPart = parts[1];
+        const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return formattedIntegerPart+","+decimalPart;
+    }
+
+    useEffect(()=>{
+        setValue(formatCurrency(parseFloat(props.transactionInfo.value)))
+    },)
+
+
 
     const [clicked, setClicked] = useState(true)
     const setTransaction = (e) =>{
@@ -29,7 +44,7 @@ function CardInfoTransactionForMakeInPacket(props){
                     <h1 >{props.transactionInfo.keyPix}</h1>
                 </div>
                 <div className={styles.infoOperationArea}>
-                    <h1>US$ {props.transactionInfo.value}</h1>
+                    <h1>US$ {value}</h1>
                 </div>
                 <div className={styles.infoOperationArea}>
                     <h1>{props.transactionInfo.nameReceptor}</h1>
