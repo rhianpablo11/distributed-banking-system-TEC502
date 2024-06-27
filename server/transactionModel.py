@@ -1,5 +1,5 @@
 class Transaction:
-    def __init__(self, nameSource,cpfCPNJSource, nameReceiver, cpfCPNJReceiver, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource, idTransactionExternal):
+    def __init__(self, nameSource,cpfCPNJSource, nameReceiver, cpfCPNJReceiver, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource):
         self.nameSource = nameSource
         self.cpfCPNJSource = cpfCPNJSource
         self.nameReceiver = nameReceiver

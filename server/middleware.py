@@ -61,10 +61,12 @@ global tokenTimeOut
 global tokenID
 global disconnectionOcurred
 global transactionsToMake
-transactionsToMake = []
+global transactionsToMakeID
+transactionsToMakeID = 0
+transactionsToMake = {}
 disconnectionOcurred = False
 tokenID = [0,0,0,0,0]
-
+addOperationLock = threading.Lock()
 hasToken = False
 hadToken = False
 operationOccurring =  False
@@ -111,13 +113,28 @@ def searchClient():
     else:
         return 'user not registed in the bank', 404
 
-
+#aplicar o lock para essas operações, para que nao fique adicionando a torto e a direita e dar erro por ta mexendo no mesmo dicionario
 @app.route('/operations', methods=['POST'])
 def putOperationInList():
     dataReceived = request.json
     global transactionsToMake
-    transactionsToMake.append(dataReceived)
-    return "ok", 200
+    global operationOccurring
+    global transactionsToMakeID
+    global hasToken
+    transactionsToMakeIDWaiting = transactionsToMakeID
+    addOperationLock.acquire()
+    transactionsToMake[transactionsToMakeID] = {
+        'operation': dataReceived,
+        'response': None,
+        'executed': False
+    }
+    addOperationLock.release()
+    while (transactionsToMake[transactionsToMakeIDWaiting]["executed"]==False):
+        pass   
+    print(hasToken)
+    print(operationOccurring)
+    return transactionsToMake[transactionsToMakeIDWaiting]["response"][0],transactionsToMake[transactionsToMakeIDWaiting]["response"][1]
+
 
 @app.route('/accounts', methods=['GET'])
 def getaccountsList():
@@ -132,6 +149,90 @@ def getaccountsList():
     response.headers['Cache-Control'] = 'private, max-age=1'
 
     return response
+
+
+@app.route('/bank', methods=['GET'])
+def getNameBank():
+    dataSend = {
+        "nameBank": listBanksConsortium[selfID][1]
+    }
+    response = make_response(jsonify(dataSend))
+    return response, 200
+
+
+'''
+Função para realizar o login do usuario
+'''
+@app.route('/account/login', methods=['POST'])
+def loginaccount():
+    data =  request.json
+    if(len(accounts) >0):
+        for account in accounts:
+            if(accounts[account].email == data["email"]):
+                if(accounts[account].password == cryptographyPassword(data["password"])):
+                    response = make_response(jsonify(accounts[account].jsonComplet()))
+                    return response, 200
+                else:
+                    return "password incorrect", 401
+        else:
+            return "account not found", 404 
+    else:
+        return "account not found", 404    
+
+
+@app.route('/account/data/<int:accountNumber>', methods=['GET'])
+def getInfoAboutAccount(accountNumber):
+    if(len(accounts) >0):
+        for account in accounts:
+            if(accounts[account].accountNumber == accountNumber):
+                response = make_response(jsonify(accounts[account].jsonComplet()))
+                return response, 200
+                
+        else:
+            return "account not found", 404 
+    else:
+        return "account not found", 404 
+
+
+"""
+Função para procurar um accounte, e retornar dados basicos deste accounte
+Esses dados são retornados para quem quer fazer o pix
+"""
+@app.route('/account/pix', methods=['POST'])
+def getaccountPixInfo(): #fazer o retorno de informações basicas para apresentar na hora do pix
+    data = request.json
+    if(len(accounts) >0):
+        if(data["keyPix"] in accounts):
+            response = make_response(jsonify(accounts[data["keyPix"]].infoBasic()))
+            return response
+        else:
+            return "account not found", 404
+    else:
+        return "account not found", 404
+
+
+'''
+Função para requisitar ao outro banco as informações do pix daquele usuario
+'''
+#PRECISA DE CORREÇÃO
+@app.route('/account/transaction/pix/infos', methods=['POST'])
+def getInfosForMakePix():
+    data =  request.json
+    if(data["bankID"] == "1"):
+        url = "http://"+hashMapBanks[data["bankID"]]+"/account/pix"
+        keyPix = {
+            "keyPix": str(data["keyPix"])
+        }
+        infoReceived = requests.post(url,json=keyPix)
+        if (infoReceived.status_code == 200):
+            print(infoReceived.json())
+            response = make_response(infoReceived.json())
+            return response, 200
+        else:
+            print(infoReceived.status_code, infoReceived.text)
+            return "Error in requisition",400              
+    else:
+        return "Bank invalid", 404
 
 
 
@@ -195,8 +296,9 @@ def waitReceiveToken():
     global initiateCouter
     while True:
         if(hasToken):
-            sleep(0.5)
+            sleep(1)
             if(not operationOccurring):
+                print('NO OPERATIOON OCURRING')
                 passToken()
                 initiateCouter = False
 
@@ -247,30 +349,71 @@ def conectBeforeHostTest():
 
 def makeTransactionsOfTheList():
     global transactionsToMake
-    
     global operationOccurring
+    global transactionsToMakeID
     global hasToken
     while True:
         transactions = transactionsToMake.copy()
         if hasToken:
-            
             if(len(transactionsToMake)>0):
-                operationOccurring = True
-                print(transactionsToMake)
                 for transaction in transactions:
-                    print(transaction)
-                    if(transaction["operation"] == 'create'):
-                        if(transaction["dataOperation"]["cpfCNPJ1"] in accounts):
-                            operationOccurring = False
-                            return "cpf already in system", 405
-                        else:
-                            banksList=[]
-                            (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, transaction["dataOperation"]["cpfCNPJ1"])
-                            banksList.append(listBanksConsortium[selfID][1])
-                            accounts[transaction["dataOperation"]["cpfCNPJ1"]] = createAccountObject(transaction["dataOperation"],selfID, banksList)
-                            transactionsToMake.remove(transaction)
-                            
-                            operationOccurring = False
+                    if(transactions[transaction]["executed"] == False):
+                        operationOccurring = True
+                        operation = transactions[transaction]["operation"]
+                        transactionsToMakeID +=1
+                        print("OPERARTION",operation)
+                        if(operation["operation"] == 'create'):
+                            if(operation["dataOperation"]["cpfCNPJ1"] in accounts):
+                                addOperationLock.acquire()
+                                transactionsToMake[transaction]["response"] = ('cpf already in system',405)
+                                transactionsToMake[transaction]["executed"] = True
+                                addOperationLock.release()
+                                operationOccurring = False
+                                
+                                
+                            else:
+                                banksList=[]
+                                (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, operation["dataOperation"]["cpfCNPJ1"])
+                                banksList.append(listBanksConsortium[selfID][1])
+                                accounts[operation["dataOperation"]["cpfCNPJ1"]] = createAccountObject(operation["dataOperation"],selfID, banksList) 
+                                addOperationLock.acquire()
+                                transactionsToMake[transaction]["response"] = (accounts[operation["dataOperation"]["cpfCNPJ1"]].jsonComplet(), 200)
+                                transactionsToMake[transaction]["executed"] = True
+                                addOperationLock.release()
+                                operationOccurring = False
+
+                        elif(operation["operation"] == 'deposit'):
+                            if(operation['clientCpfCNPJ'] in accounts):
+                                addOperationLock.acquire()
+                                responseAboutOperation =accounts[operation['clientCpfCNPJ']].receiveDeposit(operation["dataOperation"]["value"])  
+                                if(responseAboutOperation):
+                                    transactionsToMake[transaction]["response"] = ("Money added with success", 200)
+                                    transactionsToMake[transaction]["executed"] = True
+                                    operationOccurring = False
+                                else:
+                                    transactionsToMake[transaction]["response"] = ("Error in adding money", 403)
+                                    transactionsToMake[transaction]["executed"] = True
+                                    operationOccurring = False
+                                addOperationLock.release()
+                        
+                        elif(operation["operation"]=="sendPix"):
+                            if(operation['clientCpfCNPJ'] in accounts):
+                                #enviar requisição para outro banco dizendo que quer fazer o pix
+                                #tem que mandar para o outro banco um request autorizado 
+                                    #para poder realizar a operação sem estar com o token
+                                
+                                #realiza primeiro a operação nessa conta que esta aqui
+                                    #tem que mandar os devidos dados, ai vai precisar que a interface mande tb
+                                    
+
+                                #mandar o seguinte conjunto de dados:
+                                    #nome de quem da enviando
+                                    #cpf de quem ta enviando
+                                    #valor
+                                    #bankSource Name
+
+                                #receber no retorno 
+                                    #id da transação para depois mandar p aquele banco colocar como confirmado
 
 
 

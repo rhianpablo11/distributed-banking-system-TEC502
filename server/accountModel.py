@@ -113,8 +113,10 @@ class Account:
         self.balance = float(self.balance) + float(value) 
         self.addTransaction(
             Transaction(
-                        source="none",
-                        receptor=self.name1,
+                        nameSource=self.name1,
+                        cpfCPNJSource=self.cpfCNPJ1,
+                        nameReceiver=self.name1,
+                        cpfCPNJReceiver=self.cpfCNPJ1,
                         value=value,
                         dateTransaction= datetime.now(),
                         concluded=True,
