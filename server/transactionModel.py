@@ -1,7 +1,9 @@
 class Transaction:
-    def __init__(self, source, receptor, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource, idTransactionExternal):
-        self.source = source
-        self.receptor = receptor
+    def __init__(self, nameSource,cpfCPNJSource, nameReceiver, cpfCPNJReceiver, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource, idTransactionExternal):
+        self.nameSource = nameSource
+        self.cpfCPNJSource = cpfCPNJSource
+        self.nameReceiver = nameReceiver
+        self.cpfCPNJReceiver = cpfCPNJReceiver
         self.value = value
         self.dateTransaction = dateTransaction
         self.concluded = concluded
@@ -9,13 +11,12 @@ class Transaction:
         self.idTransaction = idTransaction
         self.bankReceptor = bankReceptor
         self.bankSource = bankSource
-        self.idTransactionExternal = idTransactionExternal
 
     def getJsonTransaction(self):
         
         auxJson = {
-            "source": self.source,
-            "receptor":self.receptor,
+            "source": self.nameSource,
+            "receptor":self.nameReceiver,
             "value": self.value,
             "dateTransaction": self.dateTransaction,
             "concluded": self.concluded,

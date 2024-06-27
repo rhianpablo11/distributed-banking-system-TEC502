@@ -6,19 +6,8 @@ import threading
 import os
 from pathlib import Path
 from accountModel import Account
+from middleware import listBanksConsortium
 
-
-
-
-
-global listBanksConsortium
-listBanksConsortium = {
-    "1": "http://localhost:8081",
-    "2": "http://localhost:8082",
-    "3": "http://localhost:8083",
-    "4": "http://localhost:8084",
-    "5": "http://localhost:8085"
-}
 
 def cryptographyPassword(password):
     encryptedPassword = sha512(password.encode()).digest()
@@ -56,29 +45,58 @@ global accountNumbers
 accountNumbers = GenerateNumberAccountBank()
 
 
-
-
-
-
-
-
-def createAccountObject(dataReceived, selfID, bankName):
+def createAccountObject(dataReceived, selfID, banksList):
     
     account = Account(
-                                name1= dataReceived["name1"],
-                                cpfCNPJ1= dataReceived["cpfCNPJ1"],
-                                name2= dataReceived["name2"],
-                                cpfCNPJ2= dataReceived["cpfCNPJ2"],
-                                email=dataReceived["email"],
-                                password= cryptographyPassword(dataReceived["password"]),
-                                isFisicAccount= dataReceived["isFisicAccount"],
-                                isJoinetAccount=dataReceived["isJoinetAccount"],
-                                accountNumber= accountNumbers.createAccountNumber(),
-                                telephone= dataReceived["telephone"],
-                                bank=bankName,
-                                balance="0",
-                                blockedBalance="0",
-                                listBanks=dataReceived["listBanks"],
-                                )
+                name1= dataReceived["name1"],
+                cpfCNPJ1= dataReceived["cpfCNPJ1"],
+                name2= dataReceived["name2"],
+                cpfCNPJ2= dataReceived["cpfCNPJ2"],
+                email=dataReceived["email"],
+                password= cryptographyPassword(dataReceived["password"]),
+                isFisicAccount= dataReceived["isFisicAccount"],
+                isJoinetAccount=dataReceived["isJoinetAccount"],
+                accountNumber= accountNumbers.createAccountNumber(),
+                telephone= dataReceived["telephone"],
+                bank=listBanksConsortium[selfID][1],
+                balance="0",
+                blockedBalance="0",
+                listBanks=banksList,
+                )
+    print(account)
     return account
 
+def searchUserInOtherBanks(selfID, cpfCNPJ1):
+    nextNode = int(selfID) + 1
+    nodeIniciated = nextNode
+    nodeResponse = False
+    banksList = []
+    hostNotResponse= []
+    while not nodeResponse:
+        if(str(nextNode) == selfID):
+            nodeResponse = True
+        if(int(nextNode) > 5):
+            nextNode = 1
+        if(str(nextNode) == selfID):
+            nextNode = int(nextNode) +1
+
+        nextNode = str(nextNode)
+        url = f"{listBanksConsortium[nextNode][0]}/search-account"
+        print(url)
+        dataSend = {
+            'cpfCPNJ1': cpfCNPJ1,
+            'bankName': listBanksConsortium[str(selfID)][1] 
+        }
+        try:
+            infoReceived = requests.post(url=url, json=dataSend)
+            if(infoReceived.status_code == 200):
+                banksList.append(listBanksConsortium[nextNode][1])
+                pass
+            elif(infoReceived.status_code == 404):
+                nextNode = int(nextNode)
+                nextNode +=1
+        except:
+            hostNotResponse.append(nextNode)
+            nextNode = int(nextNode)
+            nextNode +=1
+    return (banksList, hostNotResponse)

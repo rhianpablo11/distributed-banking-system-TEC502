@@ -10,7 +10,7 @@ class Account:
         self.isJoinetAccount = isJoinetAccount
         self.isFisicAccount = isFisicAccount
         self.id = hash(cpfCNPJ1)
-        self.keyPix = None
+        self.keyPix = cpfCNPJ1
         self.accountNumber = accountNumber
         self.telephone = telephone
         self.bank = bank
@@ -65,7 +65,6 @@ class Account:
 
     def infoBasic(self): #verificar se a chave nao é a do mesmo usuario
         self.operationLock.acquire()
-        print("Thread info basic",threading.current_thread())
         print(datetime.now())
         auxJson = {}
         auxJson["bank"] = self.bank
@@ -109,8 +108,6 @@ class Account:
 
     def receiveDeposit(self, value):
         self.operationLock.acquire()
-        print("operation lock pegado ", self.operationLock)
-        print("Thread deposit",threading.current_thread())
         print(datetime.now())
         self.balance = float(self.balance) + float(value) 
         self.addTransaction(
@@ -123,12 +120,10 @@ class Account:
                         typeTransaction="deposit",
                         idTransaction=self.idLastTransaction + 1,
                         bankReceptor=self.bank,
-                        bankSource=self.bank,
-                        idTransactionExternal=""
+                        bankSource=self.bank
                     )
         )
         self.operationLock.release()
-        print("operation lock pegado ", self.operationLock)
         return 1
 
 

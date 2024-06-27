@@ -1,4 +1,6 @@
+
 import threading
+global accountNumbers
 import os
 import sys
 from time import sleep
@@ -28,7 +30,7 @@ hashMapBanks = {
 
             
 
-global accountNumbers
+
 accountNumbers = GenerateNumberAccountBank
 
 app = Flask(__name__)
