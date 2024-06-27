@@ -194,10 +194,11 @@ def waitReceiveToken():
     global operationOccurring
     global initiateCouter
     while True:
-        if(hasToken and not operationOccurring):
-            
-            passToken()
-            initiateCouter = False
+        if(hasToken):
+            sleep(0.5)
+            if(not operationOccurring):
+                passToken()
+                initiateCouter = False
 
 
 '''
@@ -251,7 +252,7 @@ def makeTransactionsOfTheList():
     global hasToken
     while True:
         transactions = transactionsToMake.copy()
-        while hasToken:
+        if hasToken:
             
             if(len(transactionsToMake)>0):
                 operationOccurring = True
@@ -263,13 +264,11 @@ def makeTransactionsOfTheList():
                             operationOccurring = False
                             return "cpf already in system", 405
                         else:
+                            banksList=[]
                             (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, transaction["dataOperation"]["cpfCNPJ1"])
-                            print(banksList)
+                            banksList.append(listBanksConsortium[selfID][1])
                             accounts[transaction["dataOperation"]["cpfCNPJ1"]] = createAccountObject(transaction["dataOperation"],selfID, banksList)
-                            print('TRABNSACTION ', transaction)
-                            print('TRABNSACTIONS    ', transactionsToMake)
                             transactionsToMake.remove(transaction)
-                            
                             
                             operationOccurring = False
 

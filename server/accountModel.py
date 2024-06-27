@@ -40,7 +40,8 @@ class Account:
             "isFisicAccount": self.isFisicAccount,
             "bank": self.bank,
             "balance": str(self.balance),
-            "blockedBalance": self.blockedBalance
+            "blockedBalance": self.blockedBalance,
+            "banksList": self.listBanks
         }
         listTransactions = []
         for transaction in self.transactions:
