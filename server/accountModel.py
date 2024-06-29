@@ -130,81 +130,108 @@ class Account:
         return 1
 
 
-    def receivePix(self, value, bankSourceName, source):
+    def receivePix(self, data):
         self.operationLock.acquire()
-        self.balance = float(self.balance) + float(value)
+        self.blockedBalance = float(self.blockedBalance) + float(data['value'])
         self.addTransaction(
             Transaction(
-                        source=source,
-                        receptor=self.name1,
-                        value=value,
+                        nameSource=data['nameSender'],
+                        cpfCPNJSource=data['cpfCNPJSender'],
+                        nameReceiver=self.name1,
+                        cpfCPNJReceiver=self.cpfCNPJ1,
+                        value=data['value'],
                         dateTransaction= datetime.now(),
-                        concluded=True,
-                        typeTransaction="receive pix",
+                        concluded="pending",
+                        typeTransaction="receive Pix",
                         idTransaction=self.idLastTransaction + 1,
                         bankReceptor=self.bank,
-                        bankSource=bankSourceName,
-                        idTransactionExternal=""
+                        bankSource=data['bankSourceName']
                     )
         )
         self.operationLock.release()
-        return 1
+        return (1, (self.idLastTransaction))
 
 
-    def sendPix(self, value, url, keyPixReceptor, receptorName):
+    def sendPix(self, url, data):
         self.operationLock.acquire()
-        if(float(self.balance) < float(value)):
-            return "Not money availible for this transaction", 0
-        elif(keyPixReceptor == self.keyPix):
-            return "error, key is same of client", 0
-        else: #verificar se a chave nao é a do mesmo usuario
-            #preparação para fazer o envio para o outro banco, ou para o outro usuario
-            datasForSend = {}
-            datasForSend["keyPix"] = keyPixReceptor
-            datasForSend["value"] = value
-            datasForSend["sender"] = self.cpfCNPJ1
-            datasForSend["bankName"] = self.bank
+        if(float(self.balance) < float(data["value"])): #verificar se tem saldo
+            return ("Not money availible for this transaction", 0)
+        elif((data["keyPix"] == self.keyPix) and (data['bankNameReceiver'])==self.bank): #verificar se a chave nao é a do mesmo usuario
+            return ("error, key is same of client", 0)
+        else: 
             balanceBackup = self.balance
             try:
-                infoReceivedByRequest = requests.patch(url, json = datasForSend)
-
+                print("AAAAAAA")
+                infoReceivedByRequest = requests.patch(url, json = data)
                 #atualizando as informações do sender
-                self.balance = float(self.balance) - float(value)
-                self.blockedBalance = float(self.blockedBalance) + float(value)
+                print("BBBBBBBBBBBB")
+                self.balance = float(self.balance) - float(data["value"])
+                self.blockedBalance = float(self.blockedBalance) + float(data["value"])
                 self.addTransaction(
                     Transaction(
-                            source=self.name1,
-                            receptor=receptorName,
-                            value=value,
+                            nameSource=self.name1,
+                            cpfCPNJSource=self.cpfCNPJ1,
+                            nameReceiver= data["nameReceiver"],
+                            cpfCPNJReceiver= data['keyPix'],
+                            value=data['value'],
                             dateTransaction= datetime.now(),
-                            concluded=False,
-                            typeTransaction="send pix",
+                            concluded="pending",
+                            typeTransaction="send Pix",
                             idTransaction=self.idLastTransaction + 1,
-                            bankReceptor= "None",
-                            bankSource=self.bank,
-                            idTransactionExternal=""
+                            bankReceptor=data['bankNameReceiver'],
+                            bankSource=data["bankSourceName"]
                         )
                 )
+                print("CCCCCCCC")
+                print(infoReceivedByRequest)
+                dataReceived = infoReceivedByRequest
                 
                 #verificando como foi a recepção desse dinheiro
                 if(infoReceivedByRequest.status_code == 200): #deu certo receber o dinheiro
-                    self.blockedBalance = float(self.blockedBalance) - float(value)
-                    self.transactions[self.idLastTransaction].concluded = True
                     self.operationLock.release()
-                    return "money send with sucess", 1
+                    dataReceivedJson = dataReceived.json()
+                    return ("money send with sucess", 200, (self.idLastTransaction),dataReceivedJson['idTransaction'])
                 else:
-                    self.blockedBalance = float(self.blockedBalance) - float(value)
-                    self.balance = float(self.balance) + float(value)
+                    self.blockedBalance = float(self.blockedBalance) - float(data['value'])
+                    self.balance = float(self.balance) + float(data['value'])
                     self.transactions[self.idLastTransaction].concluded = "error"
                     self.operationLock.release()
-                    return "error in requisition", 0
+                    return ("error in requisition", 400)
             
             except:
                 self.operationLock.release()
                 self.balance = balanceBackup
-                return "error in transaction", 406
+                self.transactions[self.idLastTransaction].concluded = "error"
+                return ("error in transaction", 406)
             
+
     def addBankToList(self, bankName):
         self.operationLock.acquire()
         self.listBanks.append(bankName)
+        self.operationLock.release()
+
+
+    def concludedTransaction(self, idTransaction):
+        self.operationLock.acquire()
+        self.transactions[idTransaction].concluded = True
+        if(self.transactions[idTransaction].typeTransaction == 'receive Pix'):
+            self.blockedBalance = float(self.blockedBalance) - float(self.transactions[idTransaction].value)
+            self.balance = float(self.transactions[idTransaction].value) + float(self.balance)
+            self.transactions[idTransaction].concluded= True
+
+        else:
+            self.blockedBalance = float(self.blockedBalance) - float(self.transactions[idTransaction].value)
+        self.transactions[idTransaction].concluded= True
+        self.operationLock.release()
+
+
+    def errorTransaction(self, idTransaction):
+        self.operationLock.acquire()
+        if(self.transactions[idTransaction].typeTransaction == 'receive Pix'):
+            self.blockedBalance = float(self.blockedBalance) - float(self.transactions[idTransaction].value)
+        else:
+            self.balance = float(self.transactions[idTransaction].value) + float(self.balance)
+            self.blockedBalance = float(self.blockedBalance) - float(self.transactions[idTransaction].value)
+        self.transactions[idTransaction].concluded = "error"
+        self.balance = float(self.transactions[idTransaction].value) - float(self.balance)
         self.operationLock.release()

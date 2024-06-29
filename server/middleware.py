@@ -62,6 +62,7 @@ global tokenID
 global disconnectionOcurred
 global transactionsToMake
 global transactionsToMakeID
+global canPasstokenID
 transactionsToMakeID = 0
 transactionsToMake = {}
 disconnectionOcurred = False
@@ -70,6 +71,7 @@ addOperationLock = threading.Lock()
 hasToken = False
 hadToken = False
 operationOccurring =  False
+canPasstokenID = False
 previousNode = int(selfID) - 1
 if(previousNode == 0):
     previousNode=5
@@ -81,21 +83,21 @@ def receiveToken():
     global operationOccurring
     global previousNode
     global tokenID
+    global canPasstokenID
     
     infoReceived = request.json
     previousNode = infoReceived["nodeSender"]
     tokenIDNew = infoReceived["tokenIDList"]
-    print(tokenIDNew)
-    print(tokenID)
-    print(tokenIDNew[int(selfID)-1])
-    print(tokenID[int(selfID)-1])
-    if(tokenIDNew[int(selfID)-1] == tokenID[int(selfID)-1]):
+    print("TOKEN QUE CHEGOU: ",tokenIDNew)
+    print("TOKEN QUE TENHO:  ",tokenID)
+    if((tokenIDNew[int(selfID)-1] >= tokenID[int(selfID)-1])):
         tokenID = tokenIDNew 
         tokenID[int(selfID)-1] +=1
         hasToken = True
-        print(tokenID)
+        print("TOKEN QUE ATUALIZEI:  ",tokenID)
         return "ok", 200
     else:
+        tokenID[int(infoReceived["nodeSender"])-1] = 0
         return 'you were disconnected', 405
 
 
@@ -128,6 +130,7 @@ def putOperationInList():
         'response': None,
         'executed': False
     }
+    transactionsToMakeID +=1
     addOperationLock.release()
     while (transactionsToMake[transactionsToMakeIDWaiting]["executed"]==False):
         pass   
@@ -235,6 +238,73 @@ def getInfosForMakePix():
         return "Bank invalid", 404
 
 
+@app.route('/account/receive-pix', methods=['PATCH'])
+def receiveMoneyWithPix():
+    dataReceived = request.json
+    if(len(accounts) == 0):
+        return "account not found", 404
+    elif(len(accounts)>0):
+        if(dataReceived['authorization']):
+            print(accounts)
+            print(dataReceived['keyPix'])
+            if(dataReceived['keyPix'] not in accounts):
+                print('OIIIII')
+                return "account not found", 404
+            else:
+                returnOperation = accounts[dataReceived['keyPix']].receivePix(dataReceived)
+                if(returnOperation[0]==1):
+                    dataSend = {
+                        'idTransaction': returnOperation[1],
+                        'mensage':"money received with sucess"
+                    }
+                    response = make_response(jsonify(dataSend))
+                    return response, 200
+        else:
+            return 'not authorized', 401
+
+
+"""
+essa função asera usada para quando o cliente acessar de outro banco e quiser mandar um dinheiro que esta nesse
+"""
+@app.route('/account/send-pix', methods=['POST'])
+def sendMoneyWithPix():
+    dataReceived = request.json
+    #adicionar a validação se esta autorizado ou nao para realizar aquilo
+    if(dataReceived['authorization']):
+        if(dataReceived['cpfCNPJSender'] not in accounts):
+            return 'account not found', 404
+        else:
+            response = accounts[dataReceived['cpfCNPJSender']].sendPix(dataReceived['url'], dataReceived)
+            return response[0], response[1]
+    else:
+        return 'not authorized', 401
+
+
+@app.route('/account/confirmation-operation', methods=['POST'])
+def confirmationOperation():
+    dataReceived = request.json
+    if(dataReceived['authorization']):
+        if(dataReceived['cpfCNPJ'] not in accounts):
+            return 'account not found', 404
+        else:
+            accounts[dataReceived['cpfCNPJ']].concludedTransaction(dataReceived['idTransaction'])
+            return "operation Confirmed", 200
+    else:
+        return 'not authorized', 401
+    
+
+@app.route('/account/error-transaction', methods=['POST'])
+def errorOperation():
+    dataReceived = request.json
+    if(dataReceived['authorization']):
+        if(dataReceived['cpfCNPJ'] not in accounts):
+            return 'account not found', 404
+        else:
+            accounts[dataReceived['cpfCNPJ1']].concludedTransaction(dataReceived['idTransaction'])
+            return "operation updated"
+    else:
+        return 'not authorized', 401
+
 
 tokenTimeOutSend = False
 initiateCouter =  False
@@ -246,8 +316,10 @@ def passToken():
     global initiateCouter
     global nextNode
     global tokenTimeOutSend
+    global tokenID
+    global canPasstokenID
     nodeResponse = False
-    if (hasToken and not operationOccurring and not tokenTimeOutSend):
+    if (hasToken and not operationOccurring and canPasstokenID):
         nextNode = int(selfID) + 1
         while not nodeResponse:
             if(str(nextNode) == selfID):
@@ -260,25 +332,33 @@ def passToken():
                 "nodeSender": selfID,
                 "tokenIDList": tokenID
             }
+            print('TOKEN QUE ESTOU ENVIANDO: ', tokenID)
             print("node da tentativa -> ",nextNode)
             nextNode = str(nextNode)
             url = f"{listBanksConsortium[nextNode][0]}/token"
             print(url)
             try:
-                infoReceived = requests.post(url=url, json=dataSend)
-                if(infoReceived.status_code == 200):
-                    hasToken = False                #nao tem mais o token
-                    operationOccurring = False      #nao tem operação acontecendo
-                    nodeResponse = True             #sair do while indicando que conseguiu mandar o token
-                    initiateCouter = True           #para iniciar o contador de que receber o token de novo
-                    print('eu estava c o token')
-                elif(infoReceived.status_code == 405):
-                    hasToken = False
-                    operationOccurring = False      #nao tem operação acontecendo
-                    nodeResponse = True             #sair do while indicando que conseguiu mandar o token
-                    initiateCouter = True           #para iniciar o contador de que receber o token de novo
-                    #error em passar isso
+                if(not operationOccurring):
+                    infoReceived = requests.post(url=url, json=dataSend, timeout=1)
+                    if(infoReceived.status_code == 200):
+                        hasToken = False                #nao tem mais o token
+                        operationOccurring = False      #nao tem operação acontecendo
+                        nodeResponse = True             #sair do while indicando que conseguiu mandar o token
+                        initiateCouter = True           #para iniciar o contador de que receber o token de novo
+                        canPasstokenID = False
+                        print('eu estava c o token')
+                    elif(infoReceived.status_code == 405):
+                        hasToken = False
+                        operationOccurring = False      #nao tem operação acontecendo
+                        nodeResponse = True             #sair do while indicando que conseguiu mandar o token
+                        initiateCouter = True           #para iniciar o contador de que receber o token de novo
+                        canPasstokenID = False
+                        #error em passar isso
+                        tokenID[int(selfID)-1] = 0
+                        pass
+                else:
                     pass
+                
             except:
                 print(f"node caiu -> {nextNode}")
                 nextNode = int(nextNode)
@@ -294,13 +374,21 @@ def waitReceiveToken():
     global hadToken
     global operationOccurring
     global initiateCouter
+    global canPasstokenID
     while True:
         if(hasToken):
-            sleep(1)
-            if(not operationOccurring):
-                print('NO OPERATIOON OCURRING')
-                passToken()
-                initiateCouter = False
+            idToOperate  = selectTransactionToOperate()
+            if(idToOperate[0]):
+                operateTransactionOfList(idToOperate[1])
+            passToken()
+
+
+
+            if(canPasstokenID):
+                if(not operationOccurring):
+                    print('NO OPERATIOON OCURRING')
+                    
+                    initiateCouter = False
 
 
 '''
@@ -311,17 +399,28 @@ A contagem so inicia a partir do momento em que ele envia o token
 def timeOutReceiveToken():
     global initiateCouter
     global hasToken
+    global operationOccurring
     counter = 0
+    attempts = 0
     while True:
         if(initiateCouter):
-            for a in range(50):
+            for a in range(100):
                 sleep(1)
                 counter +=1
             print(counter)
-            if(counter == 50):
+            if(counter == 100):
+                
                 if(conectBeforeHostTest()):
                     counter = 0
+                    attempts +=1
                     initiateCouter = True
+                    if(attempts == 2): #melhorar isso aq para poder enviar para todos que o novo token vai ta na rede
+                        print('NADA AINDA VEI')
+                        hasToken = True
+                        attempts = 0
+                        counter = 0
+                        initiateCouter = False
+                        operationOccurring = False
                 else:
                     hasToken = True
                     counter = 0
@@ -352,15 +451,20 @@ def makeTransactionsOfTheList():
     global operationOccurring
     global transactionsToMakeID
     global hasToken
+    global canPasstokenID
     while True:
         transactions = transactionsToMake.copy()
         if hasToken:
+            
             if(len(transactionsToMake)>0):
+                #print('TEM TRANSAÇÕES PARA EXECUTAR MEU\n', transactions)
                 for transaction in transactions:
+                    
                     if(transactions[transaction]["executed"] == False):
                         operationOccurring = True
+                        canPasstokenID = False
                         operation = transactions[transaction]["operation"]
-                        transactionsToMakeID +=1
+                        print('TRANSACTION A SER OPERADA: ', transactions[transaction]['operation']['operation'])
                         print("OPERARTION",operation)
                         if(operation["operation"] == 'create'):
                             if(operation["dataOperation"]["cpfCNPJ1"] in accounts):
@@ -368,6 +472,7 @@ def makeTransactionsOfTheList():
                                 transactionsToMake[transaction]["response"] = ('cpf already in system',405)
                                 transactionsToMake[transaction]["executed"] = True
                                 addOperationLock.release()
+                                
                                 operationOccurring = False
                                 
                                 
@@ -380,42 +485,147 @@ def makeTransactionsOfTheList():
                                 transactionsToMake[transaction]["response"] = (accounts[operation["dataOperation"]["cpfCNPJ1"]].jsonComplet(), 200)
                                 transactionsToMake[transaction]["executed"] = True
                                 addOperationLock.release()
+                                
                                 operationOccurring = False
+                                canPasstokenID = True
+                            break
 
                         elif(operation["operation"] == 'deposit'):
+                            print('AAAAAAAAAAAAAAAAA')
                             if(operation['clientCpfCNPJ'] in accounts):
+                                print('OLHA EU AQUI')
                                 addOperationLock.acquire()
                                 responseAboutOperation =accounts[operation['clientCpfCNPJ']].receiveDeposit(operation["dataOperation"]["value"])  
                                 if(responseAboutOperation):
                                     transactionsToMake[transaction]["response"] = ("Money added with success", 200)
                                     transactionsToMake[transaction]["executed"] = True
+                                    sleep(0.5)
                                     operationOccurring = False
                                 else:
                                     transactionsToMake[transaction]["response"] = ("Error in adding money", 403)
                                     transactionsToMake[transaction]["executed"] = True
+                                    sleep(0.5)
                                     operationOccurring = False
+                                    canPasstokenID = True
                                 addOperationLock.release()
-                        
+                                
+                            else:
+                                transactionsToMake[transaction]["response"] = ("Account not found", 404)
+                                transactionsToMake[transaction]["executed"] = True
+                                operationOccurring = False
+                                canPasstokenID = True
+                            break
                         elif(operation["operation"]=="sendPix"):
+                            addOperationLock.acquire()
                             if(operation['clientCpfCNPJ'] in accounts):
                                 #enviar requisição para outro banco dizendo que quer fazer o pix
                                 #tem que mandar para o outro banco um request autorizado 
                                     #para poder realizar a operação sem estar com o token
-                                
+                                dataSend = {
+                                    'authorization': hasToken,
+                                    'nameSender': accounts[operation['clientCpfCNPJ']].name1,
+                                    'cpfCNPJSender': operation['clientCpfCNPJ'],
+                                    'value': operation["dataOperation"]["value"],
+                                    'bankSourceName': listBanksConsortium[selfID][1],
+                                    'keyPix': operation["dataOperation"]["keyPix"],
+                                    'nameReceiver': operation["dataOperation"]["nameReceiver"],
+                                    'bankNameReceiver': operation["dataOperation"]["bankNameReceiver"]
+                                }
+                                url = str(listBanksConsortium[str(operation["dataOperation"]["idBank"])][0])+'/account/receive-pix'
+                                print(url)
+                                response = accounts[operation['clientCpfCNPJ']].sendPix(url, dataSend)
+                                if(response[1]==200):
+                                    accounts[operation['clientCpfCNPJ']].concludedTransaction(response[2])
+                                    dataSend = {
+                                        'cpfCNPJ': operation["dataOperation"]["keyPix"],
+                                        'idTransaction':response[3],
+                                        'authorization': hasToken
+                                    }
+                                    url = str(listBanksConsortium[str(operation["dataOperation"]["idBank"])][0])+'/account/confirmation-operation'
+                                    ok =False
+                                    while not ok:
+                                        try:
+                                            infoReceivedByRequest = requests.post(url, json = dataSend)
+                                            if(infoReceivedByRequest.status_code == 200):
+                                                ok = True
+                                        except:
+                                            sleep(1)
+                                            ok = False
+                                transactionsToMake[transaction]["response"] = (response[0], response[1])
+                                transactionsToMake[transaction]["executed"] = True
+                                sleep(0.5)
+                                operationOccurring = False
+                                canPasstokenID = True
+                            
+                            addOperationLock.release()
+                            break
                                 #realiza primeiro a operação nessa conta que esta aqui
                                     #tem que mandar os devidos dados, ai vai precisar que a interface mande tb
-                                    
-
-                                #mandar o seguinte conjunto de dados:
-                                    #nome de quem da enviando
-                                    #cpf de quem ta enviando
-                                    #valor
-                                    #bankSource Name
-
                                 #receber no retorno 
                                     #id da transação para depois mandar p aquele banco colocar como confirmado
+                        elif(operation["operation"]=="packetPix"):
+                            if(operation['clientCpfCNPJ'] in accounts):
+                                packetTransactions = operation['dataOperation']
+                                listConfirmation = 0
+                                transactionsMade =0
+                                for transaction in packetTransactions:
+                                    print(transaction)
+                                    idBankSender = ''
+                                    if(transaction['bankSourceMoney'] == 'Eleven'):
+                                        idBankSender = '1'
+                                    elif(transaction['bankSourceMoney'] == 'Automobili'):
+                                        idBankSender = '2'
+                                    elif(transaction['bankSourceMoney'] == 'Secret'):
+                                        idBankSender = '3'
+                                    elif(transaction['bankSourceMoney'] == 'Formula'):
+                                        idBankSender = '4'
+                                    elif(transaction['bankSourceMoney'] == 'Titanium'):
+                                        idBankSender = '5'
+
+                                    dataSend = {
+                                        'authorization': hasToken,
+                                        'nameSender': accounts[operation['clientCpfCNPJ']].name1,
+                                        'cpfCNPJSender': operation['clientCpfCNPJ'],
+                                        'value': transaction['value'],
+                                        'keyPix': transaction['keyPix'],
+                                        'nameReceiver': transaction['nameReceiver'],
+                                        'bankSourceName': transaction['bankSourceMoney'],
+                                        'idBank': transaction['idBank'],
+                                        'bankNameReceiver': listBanksConsortium[transaction['idBank']][1],
+                                        'url': str(listBanksConsortium[transaction['idBank']][0])+'/account/receive-pix'
+                                    }
 
 
+
+                                    try:
+                                        url = str(listBanksConsortium[idBankSender][0])+'/account/send-pix'
+                                        infoReceived = requests.post(url,json=dataSend)
+                                        if(infoReceived.status_code == 200):
+                                            listConfirmation +=1
+                                        else:
+                                            break #colocar a logica para fazer depois do for
+                                    except:
+                                        break #colocar a logica para fazer depois do for
+
+                            break   
+                else:
+                    canPasstokenID = True
+            else:
+                canPasstokenID = True
+
+
+
+def operateTransactionOfList():
+
+
+def selectTransactionToOperate():
+    global transactionsToMake
+    transactions = transactionsToMake.copy()
+    for transaction in transactions:
+        if(transactions[transaction]["executed"] == False):
+            return (True, transaction)
+    else:
+        return (False, None)
 
 def searchUserInOtherBanks(selfID, cpfCNPJ1):
     nextNode = int(selfID) + 1
@@ -442,7 +652,7 @@ def searchUserInOtherBanks(selfID, cpfCNPJ1):
             'bankName': listBanksConsortium[str(selfID)][1] 
         }
         try:
-            infoReceived = requests.post(url=url, json=dataSend)
+            infoReceived = requests.post(url=url, json=dataSend, timeout=1)
             if(infoReceived.status_code == 200):
                 banksList.append(listBanksConsortium[nextNode][1])
                 nextNode = int(nextNode)
@@ -505,6 +715,7 @@ accountNumbers = GenerateNumberAccountBank()
 
 if(selfID == "1"):
     hasToken = True
+    canPasstokenID = True
 
 threading.Thread(target=waitReceiveToken, daemon=True).start()
 threading.Thread(target=timeOutReceiveToken, daemon=True).start()
