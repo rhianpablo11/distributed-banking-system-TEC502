@@ -4,11 +4,12 @@ import elevenBankLogo from "../assets/Eleven Bank.svg"
 import ButtonCreateAccount from "../common/buttonCreateAccount"
 import ButtonLoginAccount from "../common/buttonLoginAccount"
 import elevenBankGif from "../assets/globo.gif"
+import { useParams } from "react-router-dom"
 
 function LandingPage(){
     const bank = elevenBankLogo
     const gifElevenBank = elevenBankGif
-
+    const {nameBank} =useParams()
 
 
     return(
@@ -17,11 +18,11 @@ function LandingPage(){
                 <div className={styles.navBarBackground}>
                     <div className={styles.navBarLandingPage}>
                         <div className={styles.logoBankArea}>
-                            <LogoBank nameBank={"Eleven"}/>
+                            <LogoBank nameBank={nameBank}/>
                         </div>
                         <div className={styles.buttonLadingPage}>
-                            <ButtonCreateAccount  nameBank={"Eleven"}/>
-                            <ButtonLoginAccount  nameBank={"Eleven"}/>
+                            <ButtonCreateAccount  nameBank={nameBank}/>
+                            <ButtonLoginAccount  nameBank={nameBank}/>
                         </div>
                     </div>
                 </div>

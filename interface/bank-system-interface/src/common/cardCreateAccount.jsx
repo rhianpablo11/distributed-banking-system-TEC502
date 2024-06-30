@@ -3,11 +3,15 @@ import { useNavigate } from "react-router-dom"
 import styles from "../style_modules/commonStyles.module.css"
 import LogoBank from "./logoBank"
 import propsTypes from 'prop-types'
+import { useParams } from "react-router-dom"
+import Loading from "./loading";
 
 
 function CardCreateAccount(props){
     const navigate = useNavigate()
     const [everyThingOk, setEveryThingOk] = useState(false);
+    const {nameBank} =useParams()
+    console.log(nameBank)
     const borderNotFillInput ={
         'border': '3px solid #ba1111'
     }
@@ -38,20 +42,73 @@ function CardCreateAccount(props){
     const [passwordIsEqual, setPasswordIsEqual] = useState(true)
     const [cpfIsEqual, setCpfIsEqual] = useState(false)
     const [passwordInInterval, setPasswordInInterval] = useState(true)
+    const [email, setEmail] = useState('')
+    const [name1, setName1] = useState('')
+    const [name2, setName2] = useState('')
+    const [telephone, setTelephone] = useState('')
+    const [valueCpfHolder, setValueCpfHolder] = useState("")
+    const [valueCpfHolder2, setValueCpfHolder2] = useState("")
+    const [personalAccount, setPersonalAccount] = useState("none")
+    const [isJoinetAccount, setJoinetAccount] = useState("none")
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const addressBank = localStorage.getItem("addressBank")
+    const [userData, setUserData] = useState()
 
-    const createAccount = async ()=>{
-        const email = document.getElementById('emailRegister').value;
-        const name = document.getElementById('nameRegister').value;
-        const telephone = document.getElementById('telephoneRegister').value;
-        const cpf = document.getElementById('cpfHoldRegister').value;
-        const password = document.getElementById('passwordRegister').value;
-        const personalAccount = document.getElementById('emailRegister').value;
-        const joinetAccount = document.getElementById('emailRegister').value;
-    }
 
+    const createAccount = async () => {
+        try {
+            setLoading(true)
+            const url =addressBank+"/operations"
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "operation": "create",
+                    "clientCpfCNPJ": valueCpfHolder,
+                    "dataOperation": {
+                        "name1": name1,
+                        "cpfCNPJ1": valueCpfHolder,
+                        "name2": name2,
+                        "cpfCNPJ2": valueCpfHolder2,
+                        "email": email,
+                        "password":password,
+                        "telephone": telephone,
+                        "isFisicAccount": personalAccount,
+                        "isJoinetAccount": isJoinetAccount
+                    }
+                })
 
+            })
+            
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result)
+                // finalizar a apresentação do loading
+                setLoading(false);
+                setUserData(result)
+                console.log('oi')
+                console.log(userData)
+                console.log("url: "+ "/logged/"+nameBank+"/"+userData.accountNumber)
 
+                return navigate("/logged/"+nameBank+"/"+userData.accountNumber)
+            } else {
+                // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+          //indicar que ocorreu um erro
+          //setNotBankConnection(true);
+        } finally {
+          // finalizar a apresentação do loading
+          setLoading(false);
+        }
+      };
 
+    
 
     function verifyFields(){
         const email = document.getElementById('emailRegister').value;
@@ -85,9 +142,6 @@ function CardCreateAccount(props){
                 } else{
                     setStyleCampInput()
                     setStyleCampInputPassword()
-                    //verificar ainda a requisição ao servidor
-                    //esse valor apos o logged tem que definir ainda o que sera que vai usar
-                    return navigate("/logged/598")
                 }
             }
             else{
@@ -131,7 +185,8 @@ function CardCreateAccount(props){
                     setStyleCampInputPassword()
                     //verificar ainda a requisição ao servidor
                     //esse valor apos o logged tem que definir ainda o que sera que vai usar
-                    return navigate("/logged/598")
+                    
+                    createAccount()
                 }
             } else{
                 if(cpf1.length <14){
@@ -158,11 +213,26 @@ function CardCreateAccount(props){
                     setStyleCampInputPassword()
                     //verificar ainda a requisição ao servidor
                     //esse valor apos o logged tem que definir ainda o que sera que vai usar
-                    return navigate("/logged/598")
+                    
+                    createAccount()
                 }
             }
         } else{
             console.log(cpf1.length)
+            console.log(
+                "operation =>" +"create",
+                "clientCpfCNPJ =>"+ valueCpfHolder,
+                "dataOperation =>",
+                    "name1 =>"+ name1,
+                    "cpfCNPJ1 =>" +valueCpfHolder,
+                    "name2 =>" +name2,
+                    "cpfCNPJ2 =>"+ valueCpfHolder2,
+                    "email =>" +email,
+                    "password =>"+password,
+                    "telephone =>"+ telephone,
+                    "isFisicAccountv"+ personalAccount,
+                    "isJoinetAccount =>"+ isJoinetAccount
+                )
             if(cpf1.length <18){
                 setMensageErrorAboutCpfCNPJ(CNPJError)
                 setValueCpfCNPJ1isInvalid(true)
@@ -186,7 +256,7 @@ function CardCreateAccount(props){
                 setStyleCampInputPassword()
                 //verificar ainda a requisição ao servidor
                 //esse valor apos o logged tem que definir ainda o que sera que vai usar
-                return navigate("/logged/598")
+                createAccount()
             }
         }
           
@@ -206,10 +276,7 @@ function CardCreateAccount(props){
 
     }
 
-    const [valueCpfHolder, setValueCpfHolder] = useState("")
-    const [valueCpfHolder2, setValueCpfHolder2] = useState("")
-    const [personalAccount, setPersonalAccount] = useState("none")
-    const [isJoinetAccount, setJoinetAccount] = useState("none")
+    
 
     function isPersonalAccount(event){
         console.log(event.target.value)
@@ -262,17 +329,17 @@ function CardCreateAccount(props){
         }
         setValueCpfHolder2(valueCPF)
     }
-
+    console.log(email)
     if(personalAccount =="none"){
         return(
             <>
                 <div className={styles.createAccountBase}>
                     <div className={styles.logoBankPreLogin}>
-                        <LogoBank nameBank = {props.nameBank} />
+                        <LogoBank nameBank = {nameBank} />
                     </div>
-                    <input className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
-                    <input className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister'></input>
-                    <input className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister'></input>
+                    <input className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister" value={email} onChange={()=>setEmail(event.target.value)} ></input>
+                    <input className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister' value={name1} onChange={()=>setName1(event.target.value)} ></input>
+                    <input className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister'  value={telephone} onChange={()=>setTelephone(event.target.value)} ></input>
                     <div className={styles.choiceRadioButton}>
                         <h6 className={styles.textInputCheckBox}>Personal Account: </h6>
                         <form>
@@ -294,11 +361,11 @@ function CardCreateAccount(props){
                 <>
                     <div className={styles.createAccountBase}>
                         <div className={styles.logoBankPreLogin}>
-                            <LogoBank />
+                            <LogoBank nameBank = {nameBank} />
                         </div>
-                        <input className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
-                        <input className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister'></input>
-                        <input className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister'></input>
+                        <input className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister" value={email} onChange={()=>setEmail(event.target.value)} ></input>
+                        <input className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister' value={name1} onChange={()=>setName1(event.target.value)} ></input>
+                        <input className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister' value={telephone} onChange={()=>setTelephone(event.target.value)} ></input>
                         <div className={styles.choiceRadioButton}>
                             <h6 className={styles.textInputCheckBox}>Personal Account: </h6>
                             <form>
@@ -327,11 +394,11 @@ function CardCreateAccount(props){
                 <>
                     <div className={styles.createAccountBase}>
                         <div className={styles.logoBankPreLogin}>
-                            <LogoBank  nameBank = {props.nameBank}/>
+                            <LogoBank nameBank = {nameBank}  />
                         </div>
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder" id='nameRegister'></input>
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister'></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister" value={email} onChange={()=>setEmail(event.target.value)} ></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder" id='nameRegister' value={name1} onChange={()=>setName1(event.target.value)} ></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister' value={telephone} onChange={()=>setTelephone(event.target.value)} ></input>
                         <div className={styles.choiceRadioButton}>
                             <h6 className={styles.textInputCheckBox}>Personal Account: </h6>
                             <form>
@@ -354,17 +421,18 @@ function CardCreateAccount(props){
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CPF holder 1" id="cpfHoldRegister" value={valueCpfHolder} onChange={cpfCNPJCamp}></input>
                         {valueCpfCNPJ1isValid ? mensageErrorAboutCpfCNPJ : <></>}
                         {cpfIsEqual ? CpfEqual : <></>}
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder 2" id='nameRegister2'></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder 2" id='nameRegister2' value={name2} onChange={()=>setName2(event.target.value)} ></input>
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CPF holder 2" id="cpfHoldRegister2" value={valueCpfHolder2} onChange={cpfCNPJCamp2}></input>
                         {valueCpfCNPJ2isValid ? mensageErrorAboutCpfCNPJ : <></>}
                         {cpfIsEqual ? CpfEqual : <></>}
                         <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister" onChange={infosAboutPassword}></input>
-                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'></input>
+                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'  value={password} onChange={()=>setPassword(event.target.value)} ></input>
                         {passwordIsEqual ? <></> : passwordUnequal}
                         {passwordInInterval ? <></> : passwordLenght}
                         <button className={styles.buttonPreLogin} onClick={verifyFields}>
                             Create
                         </button>
+                        <Loading isOpen={loading} />
                     </div>        
                     <dialog>
                         <p>apresentar a info que nao tem todos os campos preenchidos</p>
@@ -376,11 +444,11 @@ function CardCreateAccount(props){
                 <>
                     <div className={styles.createAccountBase}>
                         <div className={styles.logoBankPreLogin}>
-                            <LogoBank  nameBank = {props.nameBank}/>
+                            <LogoBank nameBank = {nameBank}  />
                         </div>
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder" id='nameRegister'></input>
-                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister'></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister" value={email} onChange={()=>setEmail(event.target.value)} ></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name Holder" id='nameRegister' value={name1} onChange={()=>setName1(event.target.value)} ></input>
+                        <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister' value={telephone} onChange={()=>setTelephone(event.target.value)} ></input>
                         <div className={styles.choiceRadioButton}>
                             <h6 className={styles.textInputCheckBox}>Personal Account: </h6>
                             <form>
@@ -403,16 +471,18 @@ function CardCreateAccount(props){
                         <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CPF holder" id="cpfHoldRegister" value={valueCpfHolder} onChange={cpfCNPJCamp}></input>
                         {valueCpfCNPJ1isValid ? mensageErrorAboutCpfCNPJ : <></>}
                         <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister" onChange={infosAboutPassword}></input>
-                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'></input>
+                        <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm' value={password} onChange={()=>setPassword(event.target.value)} ></input>
                         {passwordIsEqual ? <></> : passwordUnequal}
                         {passwordInInterval ? <></> : passwordLenght}
                         <button className={styles.buttonPreLogin} onClick={verifyFields}>
                             Create
                         </button>
+                        <Loading isOpen={loading} />
                     </div>        
                     <dialog>
                         <p>apresentar a info que nao tem todos os campos preenchidos</p>
                     </dialog>
+                    
                 </>
             )
         }
@@ -422,11 +492,11 @@ function CardCreateAccount(props){
             <>
                 <div className={styles.createAccountBase}>
                     <div className={styles.logoBankPreLogin}>
-                        <LogoBank  nameBank = {props.nameBank}/>
+                        <LogoBank nameBank = {nameBank} />
                     </div>
-                    <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister"></input>
-                    <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister'></input>
-                    <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister'></input>
+                    <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Email" id="emailRegister" value={email} onChange={()=>setEmail(event.target.value)} ></input>
+                    <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Name" id='nameRegister' value={name1} onChange={()=>setName1(event.target.value)} ></input>
+                    <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="Telephone" id='telephoneRegister' value={telephone} onChange={()=>setTelephone(event.target.value)} ></input>
                     <div className={styles.choiceRadioButton}>
                         <h6 className={styles.textInputCheckBox}>Personal Account: </h6>
                         <form>
@@ -439,16 +509,18 @@ function CardCreateAccount(props){
                     <input style={styleCampInput} className={styles.inputPreLogin} type="text" placeholder="CNPJ holder" id="cpfHoldRegister" value={valueCpfHolder} onChange={cpfCNPJCamp}></input>
                     {valueCpfCNPJ1isValid ? mensageErrorAboutCpfCNPJ : <></>}
                     <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Password" id="passwordRegister" onChange={infosAboutPassword}></input>
-                    <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'></input>
+                    <input style={styleCampInputPassword} className={styles.inputPreLogin} type="password" placeholder="Confirm Password" id='passwordConfirm'  value={password} onChange={()=>setPassword(event.target.value)} ></input>
                     {passwordIsEqual ? <></> : passwordUnequal}
                     {passwordInInterval ? <></> : passwordLenght}
                     <button className={styles.buttonPreLogin} onClick={verifyFields}>
                         Create
                     </button>
+                    <Loading isOpen={loading} />
                 </div>        
                 <dialog>
                     <p>apresentar a info que nao tem todos os campos preenchidos</p>
                 </dialog>
+                
             </>
         )
     }

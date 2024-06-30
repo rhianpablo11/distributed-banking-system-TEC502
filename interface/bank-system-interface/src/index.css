@@ -4,6 +4,7 @@
   box-sizing: border-box;
   font-family: "Inter", Verdana, Geneva, Tahoma, sans-serif;
   color: var(--letter-color);
+  outline: none;
 }
 
 body{

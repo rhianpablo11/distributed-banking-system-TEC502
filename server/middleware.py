@@ -209,7 +209,7 @@ Função para requisitar ao outro banco as informações do pix daquele usuario
 def getInfosForMakePix():
     data =  request.json
     if(data["bankID"] == "1"):
-        url = "http://"+hashMapBanks[data["bankID"]]+"/account/pix"
+        url = listBanksConsortium[data["bankID"]]+"/account/pix"
         keyPix = {
             "keyPix": str(data["keyPix"])
         }

@@ -18,11 +18,11 @@ const router = createBrowserRouter([
     element: <CardRequestAgencyBank />
   },
   {
-    path: "/Eleven",
+    path: "/:nameBank",
     element: <LandingPage />
   },
   {
-    path: "/go/Eleven/:type_sing_in",
+    path: "/go/:nameBank/:type_sing_in",
     element: <ElevenBankBackgroundLogin />
   },
   {
