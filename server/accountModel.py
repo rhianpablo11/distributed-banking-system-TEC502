@@ -207,7 +207,8 @@ class Account:
 
     def addBankToList(self, bankName):
         self.operationLock.acquire()
-        self.listBanks.append(bankName)
+        if(bankName not in self.listBanks):
+            self.listBanks.append(bankName)
         self.operationLock.release()
 
 
@@ -228,10 +229,12 @@ class Account:
     def errorTransaction(self, idTransaction):
         self.operationLock.acquire()
         if(self.transactions[idTransaction].typeTransaction == 'receive Pix'):
+            print('RETIRANDO')
+            print('antes: ', self.blockedBalance)
             self.blockedBalance = float(self.blockedBalance) - float(self.transactions[idTransaction].value)
+            print('depois: ', self.blockedBalance)
         else:
             self.balance = float(self.transactions[idTransaction].value) + float(self.balance)
             self.blockedBalance = float(self.blockedBalance) - float(self.transactions[idTransaction].value)
         self.transactions[idTransaction].concluded = "error"
-        self.balance = float(self.transactions[idTransaction].value) - float(self.balance)
         self.operationLock.release()

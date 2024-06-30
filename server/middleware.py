@@ -84,7 +84,8 @@ def receiveToken():
     global previousNode
     global tokenID
     global canPasstokenID
-    
+    global initiateCouter
+    initiateCouter = False
     infoReceived = request.json
     previousNode = infoReceived["nodeSender"]
     tokenIDNew = infoReceived["tokenIDList"]
@@ -94,7 +95,6 @@ def receiveToken():
         tokenID = tokenIDNew 
         tokenID[int(selfID)-1] +=1
         hasToken = True
-        print("TOKEN QUE ATUALIZEI:  ",tokenID)
         return "ok", 200
     else:
         tokenID[int(infoReceived["nodeSender"])-1] = 0
@@ -119,23 +119,10 @@ def searchClient():
 @app.route('/operations', methods=['POST'])
 def putOperationInList():
     dataReceived = request.json
-    global transactionsToMake
-    global operationOccurring
-    global transactionsToMakeID
-    global hasToken
-    transactionsToMakeIDWaiting = transactionsToMakeID
-    addOperationLock.acquire()
-    transactionsToMake[transactionsToMakeID] = {
-        'operation': dataReceived,
-        'response': None,
-        'executed': False
-    }
-    transactionsToMakeID +=1
-    addOperationLock.release()
+    transactionsToMakeIDWaiting = putOperationInList(dataReceived)
     while (transactionsToMake[transactionsToMakeIDWaiting]["executed"]==False):
         pass   
     print(hasToken)
-    print(operationOccurring)
     return transactionsToMake[transactionsToMakeIDWaiting]["response"][0],transactionsToMake[transactionsToMakeIDWaiting]["response"][1]
 
 
@@ -274,8 +261,15 @@ def sendMoneyWithPix():
         if(dataReceived['cpfCNPJSender'] not in accounts):
             return 'account not found', 404
         else:
+            #ESSA RESPOSTA NAO PODE SER SIMPLISMENTE ESSA, TEM QUE MANDAR UM JSON COM AS INFOS DAS TRANSAÇÕES E SEUS IDs
             response = accounts[dataReceived['cpfCNPJSender']].sendPix(dataReceived['url'], dataReceived)
-            return response[0], response[1]
+            dataSend = {
+                'idTransactionSender': response[2],
+                'idTransactionReceiver': response[3]
+            }
+            print('JSON ENVIADO: ', dataSend)
+            response = make_response(jsonify(dataSend))
+            return response, 200
     else:
         return 'not authorized', 401
 
@@ -300,8 +294,8 @@ def errorOperation():
         if(dataReceived['cpfCNPJ'] not in accounts):
             return 'account not found', 404
         else:
-            accounts[dataReceived['cpfCNPJ1']].concludedTransaction(dataReceived['idTransaction'])
-            return "operation updated"
+            accounts[dataReceived['cpfCNPJ']].errorTransaction(dataReceived['idTransaction'])
+            return "operation updated",200
     else:
         return 'not authorized', 401
 
@@ -364,6 +358,57 @@ def passToken():
                 nextNode = int(nextNode)
                 nextNode +=1
 
+
+def passToken2():
+    global hasToken
+    global hadToken
+    global operationOccurring
+    global initiateCouter
+    global nextNode
+    global tokenTimeOutSend
+    global tokenID
+    global canPasstokenID
+    nodeResponse = False
+    nextNode = int(selfID) + 1
+    while not nodeResponse:
+        if(str(nextNode) == selfID):
+            nextNode = int(nextNode) +1
+        if(int(nextNode) > 5):
+            nextNode = 1
+        if(str(nextNode) == selfID):
+            nextNode = int(nextNode) +1
+        dataSend={
+            "nodeSender": selfID,
+            "tokenIDList": tokenID
+        }
+        print('TOKEN QUE ESTOU ENVIANDO: ', tokenID)
+        print("node da tentativa -> ",nextNode)
+        nextNode = str(nextNode)
+        url = f"{listBanksConsortium[nextNode][0]}/token"
+        
+        try:
+            hasToken = False                
+            infoReceived = requests.post(url=url, json=dataSend)
+            if(infoReceived.status_code == 200):
+                nodeResponse = True             #sair do while indicando que conseguiu mandar o token
+                initiateCouter = True           #para iniciar o contador de que receber o token de novo
+            elif(infoReceived.status_code == 405):
+                hasToken = False
+                nodeResponse = True             #sair do while indicando que conseguiu mandar o token
+                initiateCouter = True           #para iniciar o contador de que receber o token de novo
+                #error em passar isso
+                tokenID[int(selfID)-1] = 0
+                pass
+            else:
+                pass
+            
+        except Exception as e:
+            print('ERROR: ', e)
+            print(f"node caiu -> {nextNode}")
+            nextNode = int(nextNode)
+            nextNode +=1
+
+
 tokenTimeOut = False
 
 requestPreviusNode = False
@@ -371,24 +416,14 @@ requestPreviusNode = False
 #para se esse caso acontecer ele pegar e mandar o token p frente
 def waitReceiveToken():
     global hasToken
-    global hadToken
-    global operationOccurring
-    global initiateCouter
-    global canPasstokenID
     while True:
         if(hasToken):
             idToOperate  = selectTransactionToOperate()
             if(idToOperate[0]):
+                print(idToOperate)
                 operateTransactionOfList(idToOperate[1])
-            passToken()
+            passToken2()
 
-
-
-            if(canPasstokenID):
-                if(not operationOccurring):
-                    print('NO OPERATIOON OCURRING')
-                    
-                    initiateCouter = False
 
 
 '''
@@ -399,7 +434,6 @@ A contagem so inicia a partir do momento em que ele envia o token
 def timeOutReceiveToken():
     global initiateCouter
     global hasToken
-    global operationOccurring
     counter = 0
     attempts = 0
     while True:
@@ -407,25 +441,52 @@ def timeOutReceiveToken():
             for a in range(100):
                 sleep(1)
                 counter +=1
-            print(counter)
+                print('VALOR DO CONTADOR: ', counter)
+                '''
+                verificação para o caso em que ele esta contando, e no meio ele recebeu o token
+                1. ele reinicia a variavel contadora de tempo que esta sem receber conexão
+                2. ele reinicia a variavel contadora de tentativas de conexão com o host anterior
+                3. ele faz um break para sair do for
+                '''
+                if(not initiateCouter):
+                    counter = 0
+                    attempts = 0
+                    break
+
+            '''
+            verificação para a contagem de tempo sem chegar o token
+            1. verifica se bateu o tempo definido
+            2. chama a função que verifica se o host que lhe enviou o token esta ativo
+                2.1 se o host estiver ativo ele:
+                    2.1.1 zera o contador de tempo
+                    2.1.2 adiciona 1 na contagem de tentativas de comunicação com o anterior
+                    2.1.3 mantem a variavel que deixa o contador ativo, como True
+                    2.1.4 se houve 3 tentativas de conexão com o host anterior
+                        2.1.4.1 vai colocar o token na rede de novo, ja que o anterior esta com problemas
+                2.2 se o host nao estiver ativo ele:
+                    2.2.1 fica com o token
+                    2.2.2 zera o contado de tempo
+                    2.2.3 indica para parar de contar o contador
+                    2.2.4 ele vai nesse caso, o sistema, iniciar o processo como se tivesse recebido o token
+                        2.2.4.1 vai verificar se tem alguma operação para realizar, se tiver realiza e depois passa o token
+            '''
             if(counter == 100):
-                
                 if(conectBeforeHostTest()):
                     counter = 0
                     attempts +=1
                     initiateCouter = True
-                    if(attempts == 2): #melhorar isso aq para poder enviar para todos que o novo token vai ta na rede
-                        print('NADA AINDA VEI')
+                    if(attempts == 3): #melhorar isso aq para poder enviar para todos que o novo token vai ta na rede
                         hasToken = True
                         attempts = 0
                         counter = 0
                         initiateCouter = False
-                        operationOccurring = False
                 else:
                     hasToken = True
                     counter = 0
                     initiateCouter = False
-                
+        else:
+            counter = 0
+            attempts = 0
 
 
 """
@@ -440,12 +501,14 @@ def conectBeforeHostTest():
             return 1 #nesse caso, o host ta ativo, entao reinicia a contagem
         else:
             #error em passar isso
-            pass
+            return 0
     except:
         #se entrou aq é pq nao conseguiu contato com o host anterior, e entao realmente vai ter que colocar o token de novo na rede
         return 0 #nesse caso, vai colocar o token na rede de novo, pq o anterior caiu
 
-
+'''
+função inativada
+'''
 def makeTransactionsOfTheList():
     global transactionsToMake
     global operationOccurring
@@ -615,7 +678,276 @@ def makeTransactionsOfTheList():
 
 
 
-def operateTransactionOfList():
+def operateTransactionOfList(idTransaction):
+    global transactionsToMake
+    global transactionsToMakeID
+    transaction = transactionsToMake[idTransaction]
+    addOperationLock.acquire()
+    operation = transaction['operation']
+    if(operation["operation"] == 'create'):
+        if(operation["dataOperation"]["cpfCNPJ1"] in accounts):
+            transactionsToMake[idTransaction]["response"] = ('cpf already in system',405)
+            transactionsToMake[idTransaction]["executed"] = True    
+        else:
+            banksList=[]
+            hostNotResponse = []
+            (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, operation["dataOperation"]["cpfCNPJ1"])
+            banksList.append(listBanksConsortium[selfID][1])
+            accounts[operation["dataOperation"]["cpfCNPJ1"]] = createAccountObject(operation["dataOperation"],selfID, banksList) 
+            if(len(hostNotResponse)>0):
+                data = {
+                    'operation': 'completBanksListClient',
+                    'clientCpfCNPJ': operation["dataOperation"]["cpfCNPJ1"],
+                    'dataOperation': {
+                        'banksNotResponse': hostNotResponse
+                    }
+                }
+                transactionsToMake[transactionsToMakeID] = {
+                                                'operation': data,
+                                                'response': None,
+                                                'executed': False
+                                            }
+                transactionsToMakeID +=1
+            transactionsToMake[idTransaction]["response"] = (accounts[operation["dataOperation"]["cpfCNPJ1"]].jsonComplet(), 200)
+            transactionsToMake[idTransaction]["executed"] = True
+    elif(operation["operation"] == 'completBanksListClient'):
+        listToSearch = operation['dataOperation']['banksNotResponse']
+        banksList = []
+        hostNotResponse = []
+        (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, operation["clientCpfCNPJ"])
+        for bank in banksList:
+            accounts[operation["clientCpfCNPJ"]].addBankToList(bank)
+        if(len(hostNotResponse)>0):
+            data = {
+                'operation': 'completBanksListClient',
+                'clientCpfCNPJ': operation["clientCpfCNPJ"],
+                'dataOperation': {
+                    'banksNotResponse': hostNotResponse
+                }
+            }
+            transactionsToMake[transactionsToMakeID] = {
+                                            'operation': data,
+                                            'response': None,
+                                            'executed': False
+                                        }
+            transactionsToMakeID +=1
+        else:
+            transactionsToMake[idTransaction]["response"] = ('Search in all banks complete', 200)
+            transactionsToMake[idTransaction]["executed"] = True
+        
+    #essa operação de deposit vai acontecer e nao depende dos outros hosts para poder operar
+    #sendo assim ela pode ser concluida mesmo quando a conexão é perdida
+    elif(operation["operation"] == 'deposit'):
+        if(operation['clientCpfCNPJ'] in accounts):
+            responseAboutOperation =accounts[operation['clientCpfCNPJ']].receiveDeposit(operation["dataOperation"]["value"])  
+            if(responseAboutOperation):
+                transactionsToMake[idTransaction]["response"] = ("Money added with success", 200)
+                transactionsToMake[idTransaction]["executed"] = True
+
+            else:
+                transactionsToMake[idTransaction]["response"] = ("Error in adding money", 403)
+                transactionsToMake[idTransaction]["executed"] = True
+        else:
+            transactionsToMake[idTransaction]["response"] = ("Account not found", 404)
+            transactionsToMake[idTransaction]["executed"] = True
+    elif(operation["operation"]=="sendPix"):
+        if(operation['clientCpfCNPJ'] not in accounts):
+            transactionsToMake[idTransaction]["response"] = ("Account not found", 404)
+            transactionsToMake[idTransaction]["executed"] = True
+        if(operation['clientCpfCNPJ'] in accounts):
+            #enviar requisição para outro banco dizendo que quer fazer o pix
+            #tem que mandar para o outro banco um request autorizado 
+                #para poder realizar a operação sem estar com o token
+            dataSend = {
+                'authorization': hasToken,
+                'nameSender': accounts[operation['clientCpfCNPJ']].name1,
+                'cpfCNPJSender': operation['clientCpfCNPJ'],
+                'value': operation["dataOperation"]["value"],
+                'bankSourceName': listBanksConsortium[selfID][1],
+                'keyPix': operation["dataOperation"]["keyPix"],
+                'nameReceiver': operation["dataOperation"]["nameReceiver"],
+                'bankNameReceiver': operation["dataOperation"]["bankNameReceiver"]
+            }
+            url = str(listBanksConsortium[str(operation["dataOperation"]["idBank"])][0])+'/account/receive-pix'
+            response = accounts[operation['clientCpfCNPJ']].sendPix(url, dataSend)
+            if(response[1]==200):
+                
+                dataSend = {
+                    'cpfCNPJ': operation["dataOperation"]["keyPix"],
+                    'idTransaction':response[3],
+                    'authorization': hasToken
+                }
+                url = str(listBanksConsortium[str(operation["dataOperation"]["idBank"])][0])+'/account/confirmation-operation'
+                ok =False
+                while not ok:
+                    try:
+                        infoReceivedByRequest = requests.post(url, json = dataSend)
+                        if(infoReceivedByRequest.status_code == 200):
+                            ok = True
+                            accounts[operation['clientCpfCNPJ']].concludedTransaction(response[2])
+                    except:
+                        sleep(1)
+                        ok = False
+            transactionsToMake[idTransaction]["response"] = (response[0], response[1])
+            transactionsToMake[idTransaction]["executed"] = True
+    elif(operation["operation"]=="packetPix"):
+        if(operation['clientCpfCNPJ'] in accounts):
+            packetTransactions = operation['dataOperation']
+            listConfirmation = 0
+            transactionsMadeInfo = []
+            sendOK=True
+            #PRIMEIRO FOR PARA ENVIAR O DINHEIRO
+            for transaction in packetTransactions:
+                print(transaction)
+                if(sendOK):
+                    #selecao do id de onde vai sair o dinheiro
+                    idBankSender = ''
+                    if(transaction['bankSourceMoney'] == 'Eleven'):
+                        idBankSender = '1'
+                    elif(transaction['bankSourceMoney'] == 'Automobili'):
+                        idBankSender = '2'
+                    elif(transaction['bankSourceMoney'] == 'Secret'):
+                        idBankSender = '3'
+                    elif(transaction['bankSourceMoney'] == 'Formula'):
+                        idBankSender = '4'
+                    elif(transaction['bankSourceMoney'] == 'Titanium'):
+                        idBankSender = '5'
+
+                    #montagem dos dados que o outro banco vai precisar para executar a operação
+                    dataSend = {
+                        'authorization': hasToken,
+                        'nameSender': accounts[operation['clientCpfCNPJ']].name1,
+                        'cpfCNPJSender': operation['clientCpfCNPJ'],
+                        'value': transaction['value'],
+                        'keyPix': transaction['keyPix'],
+                        'nameReceiver': transaction['nameReceiver'],
+                        'bankSourceName': transaction['bankSourceMoney'],
+                        'idBank': transaction['idBank'],
+                        'bankNameReceiver': listBanksConsortium[transaction['idBank']][1],
+                        'url': str(listBanksConsortium[transaction['idBank']][0])+'/account/receive-pix'
+                    }
+
+
+                    #tenta mandar para o banco que vai sair o dinheiro
+                    try:
+                        url = str(listBanksConsortium[idBankSender][0])+'/account/send-pix'
+                        infoReceived = requests.post(url,json=dataSend)
+                        print('passeando por ca')
+                        if(infoReceived.status_code == 200):
+                            listConfirmation +=1
+                            print('mais interno')
+                            print(infoReceived)
+                            infoReceivedJson = infoReceived.json()
+                            print(infoReceivedJson)
+                            
+                            print(transactionsMadeInfo)
+                            transactionsMadeInfo.append(
+                                {
+                                    'idTransactionSender':infoReceivedJson['idTransactionSender'],
+                                    'idTransactionReceiver':infoReceivedJson['idTransactionReceiver'],
+                                    'idBankSender':idBankSender,
+                                    'keyPix':transaction['keyPix'],
+                                    'cpfCNPJSender':operation['clientCpfCNPJ'],
+                                    'idBankReceiver':transaction['idBank']
+                                }
+                            )
+                            # transactionsMadeInfo[transaction]['idTransactionSender'] = infoReceivedJson['idTransactionSender']
+                            # transactionsMadeInfo[transaction]['idTransactionReceiver'] = infoReceivedJson['idTransactionReceiver']
+                            # transactionsMadeInfo[transaction]['idBankSender'] = idBankSender
+                            # transactionsMadeInfo[transaction]['idBankReceiver'] = transaction['idBank']
+                            # transactionsMadeInfo[transaction]['keyPix'] =  transaction['keyPix']
+                            # transactionsMadeInfo[transaction]['cpfCNPJSender'] =  operation['clientCpfCNPJ']
+                            print(transactionsMadeInfo)
+                        else:
+                            sendOK = False
+                            #colocar a logica para fazer depois do for
+                    #se der erro nessa operação, ja nao vai operar mais 
+                    except:
+                        print('entrei bem aqui')
+                        sendOK = False
+            if(listConfirmation != len(packetTransactions)):
+                print('para para para')
+                #SEGUNDO FOR PARA ENVIAR QUE DEU ERRADO PARA A GALERA
+                for transaction in transactionsMadeInfo:
+                    url = listBanksConsortium[transaction['idBankSender']][0]+'/account/error-transaction'
+                    dataSend = {
+                        'cpfCNPJ': transaction['cpfCNPJSender'],
+                        'idTransaction': transaction['idTransactionSender'],
+                        'authorization': hasToken
+                    }
+                    ok = False
+                    while not ok:
+                        try:
+                            infoReceivedByRequest = requests.post(url, json = dataSend)
+                            if(infoReceivedByRequest.status_code == 200):
+                                ok = True
+                        except:
+                            sleep(1)
+                            ok = False
+                    url = listBanksConsortium[transaction['idBankReceiver']][0]+'/account/error-transaction'
+                    dataSend = {
+                        'cpfCNPJ': transaction['keyPix'],
+                        'idTransaction': transaction['idTransactionReceiver'],
+                        'authorization': hasToken
+                    }
+                    ok = False
+                    while not ok:
+                        try:
+                            infoReceivedByRequest = requests.post(url, json = dataSend)
+                            if(infoReceivedByRequest.status_code == 200):
+                                ok = True
+                        except:
+                            sleep(1)
+                            ok = False
+                transactionsToMake[idTransaction]["response"] = ('one, or more, transaction(s) not ok', 400)
+                transactionsToMake[idTransaction]["executed"] = True  
+            
+            
+            elif(listConfirmation == len(packetTransactions)):
+                print('oieee')
+                print(transactionsMadeInfo)
+                #SEGUNDO FOR PARA ENVIAR A TODOS A CONFIRMAÇÃO DA OPERAÇÃO
+                for transaction in transactionsMadeInfo:
+                    print('transaction')
+                    print(transaction)
+                    print('id do banco')
+                    print(transaction['idBankSender'])
+                    print('acessando dicio')
+                    print(transaction)
+                    url = listBanksConsortium[transaction['idBankSender']][0]+'/account/confirmation-operation'
+                    dataSend = {
+                        'cpfCNPJ': transaction['cpfCNPJSender'],
+                        'idTransaction': transaction['idTransactionSender'],
+                        'authorization': hasToken
+                    }
+                    ok = False
+                    while not ok:
+                        try:
+                            infoReceivedByRequest = requests.post(url, json = dataSend)
+                            if(infoReceivedByRequest.status_code == 200):
+                                ok = True
+                        except:
+                            sleep(1)
+                            ok = False
+                    url = listBanksConsortium[transaction['idBankReceiver']][0]+'/account/confirmation-operation'
+                    dataSend = {
+                        'cpfCNPJ': transaction['keyPix'],
+                        'idTransaction': transaction['idTransactionReceiver'],
+                        'authorization': hasToken
+                    }
+                    ok = False
+                    while not ok:
+                        try:
+                            infoReceivedByRequest = requests.post(url, json = dataSend)
+                            if(infoReceivedByRequest.status_code == 200):
+                                ok = True
+                        except:
+                            sleep(1)
+                            ok = False
+                transactionsToMake[idTransaction]["response"] = ('transactions made are ok', 200)
+                transactionsToMake[idTransaction]["executed"] = True
+
+    addOperationLock.release()
 
 
 def selectTransactionToOperate():
@@ -623,6 +955,7 @@ def selectTransactionToOperate():
     transactions = transactionsToMake.copy()
     for transaction in transactions:
         if(transactions[transaction]["executed"] == False):
+            print(transaction)
             return (True, transaction)
     else:
         return (False, None)
@@ -641,9 +974,6 @@ def searchUserInOtherBanks(selfID, cpfCNPJ1):
         if(str(nextNode) == str(selfID)):
             break
             print("ENTREI")
-
-
-
         nextNode = str(nextNode)
         url = f"{listBanksConsortium[nextNode][0]}/search-account"
         print(url)
@@ -665,6 +995,24 @@ def searchUserInOtherBanks(selfID, cpfCNPJ1):
             nextNode = int(nextNode)
             nextNode +=1
     return (banksList, hostNotResponse)
+
+
+def putOperationInList(dataReceived):
+    global transactionsToMake
+    global operationOccurring
+    global transactionsToMakeID
+    global hasToken
+    transactionsToMakeIDWaiting = transactionsToMakeID
+    addOperationLock.acquire()
+    transactionsToMake[transactionsToMakeID] = {
+        'operation': dataReceived,
+        'response': None,
+        'executed': False
+    }
+    transactionsToMakeID +=1
+    addOperationLock.release()
+    return transactionsToMakeIDWaiting
+
 
 
 def createAccountObject(dataReceived, selfID, banksList):
@@ -719,7 +1067,7 @@ if(selfID == "1"):
 
 threading.Thread(target=waitReceiveToken, daemon=True).start()
 threading.Thread(target=timeOutReceiveToken, daemon=True).start()
-threading.Thread(target=makeTransactionsOfTheList, daemon=True).start()
+#threading.Thread(target=makeTransactionsOfTheList, daemon=True).start()
 
 app.run(addressBank, portBank, debug=False, threaded=True)
 
