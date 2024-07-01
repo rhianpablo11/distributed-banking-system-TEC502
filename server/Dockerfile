@@ -12,7 +12,7 @@ COPY . ./app
 WORKDIR /app
 
 # Exponha as portas TCP, UDP e HTTP
-EXPOSE 8080
+
 
 # Comando para iniciar o aplicativo
 CMD ["python", "middleware.py"]

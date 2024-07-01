@@ -30,26 +30,42 @@ listBanksConsortium = {
     "4": ["http://localhost:8084", "Formula"],
     "5": ["http://localhost:8085", "Titanium"]
 }
+print(os.getenv('HOST_1'))
+ip1 = os.getenv('HOST_1')
+ip2 = os.getenv('HOST_2')
+ip3 = os.getenv('HOST_3')
+ip4 = os.getenv('HOST_4')
+ip5 = os.getenv('HOST_5')
 
-listBanksConsortium["1"] = os.getenv('HOST_1')+":8080"
-listBanksConsortium["2"] = os.getenv('HOST_2')+":8080"
-listBanksConsortium["3"] = os.getenv('HOST_3')+":8080"
-listBanksConsortium["4"] = os.getenv('HOST_4')+":8080"
-listBanksConsortium["5"] = os.getenv('HOST_5')+":8080"
+listBanksConsortium["1"][0] = "http://"+os.getenv('HOST_1')+":8080"
+listBanksConsortium["2"][0] = "http://"+os.getenv('HOST_2')+":8081"
+listBanksConsortium["3"][0] = "http://"+os.getenv('HOST_3')+":8082"
+listBanksConsortium["4"][0] = "http://"+os.getenv('HOST_4')+":8083"
+listBanksConsortium["5"][0] = "http://"+os.getenv('HOST_5')+":8084"
 print(listBanksConsortium)
 print('IP DO PC: ', socket.gethostbyname(socket.gethostname()))
 
 argumento =os.getenv('ID')
 print(argumento)
 selfID=argumento
-if(argumento[0] == "1" or argumento[0] == "2" or argumento[0] == "3" or argumento[0] == "4" or argumento[0] == "5"):
+if(argumento == "1" or argumento == "2" or argumento == "3" or argumento == "4" or argumento == "5"):
         
-    value = listBanksConsortium[argumento[0]][0]
+    value = listBanksConsortium[argumento][0]
     print(value)
     value=value.split(":")
     valueIP = ""
     valuePort = ""
     portBank = value[len(value)-1]
+    if(argumento=="1"):
+        addressBank = ip1
+    if(argumento=="2"):
+        addressBank = ip2
+    if(argumento=="3"):
+        addressBank = ip3
+    if(argumento=="4"):
+        addressBank = ip4
+    if(argumento=="5"):
+        addressBank = ip5
 
 
 bankName = listBanksConsortium[selfID][1]
