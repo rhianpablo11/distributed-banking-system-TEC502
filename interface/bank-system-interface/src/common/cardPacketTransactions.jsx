@@ -4,6 +4,8 @@ import styles from "../style_modules/commonStyles.module.css"
 import CardInfoTransactionForMakeInPacket from "./cardInfoTransactionForMakeInPacket";
 import propsTypes from 'prop-types'
 import { useParams } from "react-router-dom"
+import Loading from "./loading";
+import ErrorOperation from "./errorOperation";
 
 function CardPacketTransactions(props){
     const {nameBank, accountNumber} =useParams()
@@ -29,6 +31,11 @@ function CardPacketTransactions(props){
     const [IdBank, setIdBank] = useState()
     const [keyPix, setKeyPix] = useState()
     const [bankSourceMoney, setBankSourceMoney] = useState()
+    const [isError, setIsError] = useState(false)
+    const [errorMensage,setErrorMensage] = useState()
+    const closeErrorModal = () => {
+        setIsError(false);
+    };
 
     const addressBank = localStorage.getItem(nameBank)
     console.log('address bank: '+addressBank+ ' nome bank: '+nameBank)
@@ -78,6 +85,10 @@ function CardPacketTransactions(props){
 
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                setIsError(true)
+                console.log('OI EU')
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
@@ -86,6 +97,8 @@ function CardPacketTransactions(props){
         } finally {
           // finalizar a apresentação do loading
           setLoading(false);
+          setKeyInserted("")
+          setValueTransaction('')
         }
     };
 
@@ -115,9 +128,15 @@ function CardPacketTransactions(props){
                 console.log(result)
                 // finalizar a apresentação do loading
                 setLoading(false)
+                setListTransactionsToMake([])
+                setListTransactionsToMakeFormatedToSend([])
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
-                
+                setLoading(false)
+                setIsError(true)
+                console.log('OI EU')
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
@@ -202,7 +221,7 @@ function CardPacketTransactions(props){
                     <div className={styles.textExplainCampsArea}>
                         <div className={styles.textExplainCamps}>
                             <h1>
-                                Bank Name:
+                                Bank Source Money:
                             </h1>
                             <h1>
                                 Key Pix:
@@ -227,6 +246,8 @@ function CardPacketTransactions(props){
                 </div>
                 
                 <button onClick={sendPacket} className={styles.buttonMakePacketTransaction}>Make Transaction</button>
+                <Loading isOpen={loading} />
+                <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             </div>
         </>
     )

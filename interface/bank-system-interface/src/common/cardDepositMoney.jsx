@@ -3,6 +3,7 @@ import qrCodeInter from "../assets/qrCodeInter.jpg"
 import { useState } from "react"
 import propsTypes from 'prop-types'
 import Loading from "./loading";
+import ErrorOperation from "./errorOperation";
 import { useParams } from "react-router-dom"
 
 
@@ -25,6 +26,11 @@ function CardDepositMoney(props){
     const [methodDeposit, setMethodDeposit] = useState("")
     const [isButtonClicked, setIsButtonClicked] = useState(true)
     const [loading, setLoading] = useState(false)
+    const [isError, setIsError] = useState(false)
+    const [errorMensage,setErrorMensage] = useState()
+    const closeErrorModal = () => {
+        setIsError(false);
+    };
 
     function selectedOnlyNumber(event){
         let valueCaptured = event.target.value.replace(/[^0-9.]/g, '')
@@ -93,6 +99,11 @@ function CardDepositMoney(props){
                 setLoading(false);
 
             } else {
+                setLoading(false)
+                setIsError(true)
+                console.log('OI EU')
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
                 throw new Error('Network response was not ok');
             }
@@ -104,6 +115,10 @@ function CardDepositMoney(props){
           setLoading(false);
         }
       };
+
+    
+
+
 
     function canMakeDeposit(){
         if(valueDepositChoice != ""){
@@ -137,6 +152,7 @@ function CardDepositMoney(props){
                     Pay
                 </button>
                 <Loading isOpen={loading} />
+                <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             </div>
         </>
     )

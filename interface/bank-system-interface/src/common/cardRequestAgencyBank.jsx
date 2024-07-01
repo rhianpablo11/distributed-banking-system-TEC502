@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import styles from "../style_modules/commonStyles.module.css"
 import { useNavigate } from "react-router-dom"
 import Loading from "./loading"
+import ErrorOperation from "./errorOperation";
 
 function CardRequestAgencyBank(){
     //fazer o request para pegar o nome do banco
@@ -15,6 +16,13 @@ function CardRequestAgencyBank(){
     //avisar que nao preencheu o input
     const [addressSeted, setAddressSeted] = useState(true)
     const [addressTyped, setAddressTyped] = useState("")
+    const [isError, setIsError] = useState(false)
+    const [errorMensage,setErrorMensage] = useState()
+    const closeErrorModal = () => {
+        setIsError(false);
+    };
+
+
 
     function goBank(bankName){
         return navigate("/"+bankName)
@@ -53,6 +61,11 @@ function CardRequestAgencyBank(){
                 
             } else {
                 // Caso a resposta não esteja ok, lança um erro
+                setLoading(false)
+                setIsError(true)
+                console.log('OI EU')
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
@@ -83,6 +96,7 @@ function CardRequestAgencyBank(){
                     </div>
                 </div>
                 <Loading isOpen = {loading} />
+                <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             </div>
         
         </>

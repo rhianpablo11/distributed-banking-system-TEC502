@@ -201,7 +201,21 @@ class Account:
             except:
                 self.operationLock.release()
                 self.balance = balanceBackup
-                self.transactions[self.idLastTransaction].concluded = "error"
+                self.addTransaction(
+                    Transaction(
+                            nameSource=self.name1,
+                            cpfCPNJSource=self.cpfCNPJ1,
+                            nameReceiver= data["nameReceiver"],
+                            cpfCPNJReceiver= data['keyPix'],
+                            value=data['value'],
+                            dateTransaction= datetime.now(),
+                            concluded="error",
+                            typeTransaction="send Pix",
+                            idTransaction=self.idLastTransaction + 1,
+                            bankReceptor=data['bankNameReceiver'],
+                            bankSource=data["bankSourceName"]
+                        )
+                )
                 return ("error in transaction", 406)
             
 

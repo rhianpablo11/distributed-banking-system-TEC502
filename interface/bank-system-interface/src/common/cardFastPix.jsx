@@ -3,6 +3,7 @@ import styles from "../style_modules/commonStyles.module.css"
 import propsTypes from 'prop-types'
 import Loading from "./loading";
 import { useParams } from "react-router-dom"
+import ErrorOperation from "./errorOperation";
 
 
 function CardFastPix(props){
@@ -19,6 +20,15 @@ function CardFastPix(props){
         'text-align': 'end',
         'padding-right': '10px'
     }
+
+
+    const [isError, setIsError] = useState(false)
+    const [errorMensage,setErrorMensage] = useState()
+    const closeErrorModal = () => {
+        setIsError(false);
+    };
+
+
     const dataAboutKeyPix =<>
                                <div className={styles.fastPixInfoReceiver}>
                                     <div className={styles.fastPixInfoReceiverData}>
@@ -84,7 +94,7 @@ function CardFastPix(props){
 
     const requestInfoAboutUserPix = async (keyPix, IdBank) => {
         try {
-            setLoading(true)
+            
             const url =addressBank+"/account/transaction/pix/infos"
             console.log(url)
             const response = await fetch(url, {
@@ -98,7 +108,8 @@ function CardFastPix(props){
                 })
 
             })
-            
+            console.log(response)
+            setLoading(true)
             
             if (response.ok) {
                 const result = await response.json();
@@ -109,16 +120,24 @@ function CardFastPix(props){
                 setClientReceiverFound(true)
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                setLoading(false);
                 setClientReceiverFound(false)
+                setKeyPixInserted("")
+                setIsError(true)
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
           //indicar que ocorreu um erro
           //setNotBankConnection(true);
+          setKeyPixInserted("")
+          setLoading(false)
         } finally {
           // finalizar a apresentação do loading
           setLoading(false);
         }
+        
     };
 
     
@@ -152,17 +171,26 @@ function CardFastPix(props){
                 console.log(result)
                 // finalizar a apresentação do loading
                 setLoading(false)
+                setKeyPixInserted("")
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                setLoading(false)
+                setKeyPixInserted("")
                 setClientReceiverFound(false)
+                setIsError(true)
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
           //indicar que ocorreu um erro
           //setNotBankConnection(true);
+          setKeyPixInserted("")
+          setLoading(false)
         } finally {
           // finalizar a apresentação do loading
           setLoading(false);
+          setKeyPixInserted("")
         }
     };
 
@@ -173,8 +201,8 @@ function CardFastPix(props){
         }
     }
 
-
-
+ 
+    const [keyPixInserted, setKeyPixInserted] = useState()
 
     return (
         <>
@@ -182,7 +210,7 @@ function CardFastPix(props){
                 <h1>Fast Pix</h1>
                 <div className={styles.inputArea}>
                     <div className={styles.inputKeyPix}>
-                        <input placeholder="Key:" type="text" id='keyInserted'></input>
+                        <input placeholder="Key:" type="text" id='keyInserted' value={keyPixInserted} onChange={()=>setKeyPixInserted(event.target.value)}></input>
                     </div>
                 </div>
                 <button onClick={searchInformationReceiverPix}>
@@ -190,6 +218,7 @@ function CardFastPix(props){
                 </button>
                 {clientReceiverFound ? dataAboutKeyPix : <></>}
                 <Loading isOpen={loading} />
+                <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             </div>
             
             

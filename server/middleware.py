@@ -789,6 +789,7 @@ def operateTransactionOfList(idTransaction):
                     except:
                         sleep(1)
                         ok = False
+            
             transactionsToMake[idTransaction]["response"] = (response[0], response[1])
             transactionsToMake[idTransaction]["executed"] = True
     elif(operation["operation"]=="packetPix"):

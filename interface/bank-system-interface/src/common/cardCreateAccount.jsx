@@ -5,7 +5,7 @@ import LogoBank from "./logoBank"
 import propsTypes from 'prop-types'
 import { useParams } from "react-router-dom"
 import Loading from "./loading";
-
+import ErrorOperation from "./errorOperation";
 
 function CardCreateAccount(props){
     const navigate = useNavigate()
@@ -54,6 +54,13 @@ function CardCreateAccount(props){
     const [loading, setLoading] = useState(false)
     const addressBank = localStorage.getItem(nameBank)
     const [userData, setUserData] = useState()
+    const [isError, setIsError] = useState(false)
+    const [errorMensage,setErrorMensage] = useState()
+    const closeErrorModal = () => {
+        setIsError(false);
+    };
+
+
 
 
     const createAccount = async () => {
@@ -97,6 +104,11 @@ function CardCreateAccount(props){
                 return navigate("/logged/"+nameBank+"/"+result.accountNumber)
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                setLoading(false)
+                setIsError(true)
+                console.log('OI EU')
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
@@ -433,6 +445,7 @@ function CardCreateAccount(props){
                             Create
                         </button>
                         <Loading isOpen={loading} />
+                        <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
                     </div>        
                     <dialog>
                         <p>apresentar a info que nao tem todos os campos preenchidos</p>
@@ -478,6 +491,7 @@ function CardCreateAccount(props){
                             Create
                         </button>
                         <Loading isOpen={loading} />
+                        <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
                     </div>        
                     <dialog>
                         <p>apresentar a info que nao tem todos os campos preenchidos</p>
@@ -516,6 +530,7 @@ function CardCreateAccount(props){
                         Create
                     </button>
                     <Loading isOpen={loading} />
+                    <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
                 </div>        
                 <dialog>
                     <p>apresentar a info que nao tem todos os campos preenchidos</p>

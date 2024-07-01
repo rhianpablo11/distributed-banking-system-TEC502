@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import propsTypes from 'prop-types'
 import Loading from "./loading"
 import { useParams } from "react-router-dom"
+import ErrorOperation from "./errorOperation";
 
 function CardLoginAccount(props){
     const navigate = useNavigate()
@@ -20,6 +21,13 @@ function CardLoginAccount(props){
     const addressBank = localStorage.getItem(nameBank)
 
     const [loading, setLoading] = useState(false)
+
+    const [isError, setIsError] = useState(false)
+    const [errorMensage,setErrorMensage] = useState()
+    const closeErrorModal = () => {
+        setIsError(false);
+    };
+
 
     const requestUser = async (email, password) => {
         try {
@@ -50,11 +58,17 @@ function CardLoginAccount(props){
                 return navigate("/logged/"+nameBank+"/"+result.accountNumber)
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                setLoading(false)
+                setIsError(true)
+                console.log('OI EU')
+                const auxTemp = await response.text()
+                setErrorMensage(auxTemp)
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
           //indicar que ocorreu um erro
           //setNotBankConnection(true);
+          setLoading(false);
         } finally {
           // finalizar a apresentação do loading
           setLoading(false);
@@ -93,6 +107,7 @@ function CardLoginAccount(props){
                 </button>
             </div>
             <Loading isOpen={loading}/>      
+            <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             <dialog>
                 <p>apresentar a info que nao tem todos os campos preenchidos</p>
             </dialog>
