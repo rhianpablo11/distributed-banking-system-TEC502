@@ -31,11 +31,17 @@ listBanksConsortium = {
     "5": ["http://localhost:8085", "Titanium"]
 }
 
+listBanksConsortium["1"] = os.getenv('HOST_1')+":8080"
+listBanksConsortium["2"] = os.getenv('HOST_2')+":8080"
+listBanksConsortium["3"] = os.getenv('HOST_3')+":8080"
+listBanksConsortium["4"] = os.getenv('HOST_4')+":8080"
+listBanksConsortium["5"] = os.getenv('HOST_5')+":8080"
+print(listBanksConsortium)
+print('IP DO PC: ', socket.gethostbyname(socket.gethostname()))
 
-
-argumento =sys.argv[1:]
+argumento =os.getenv('ID')
 print(argumento)
-selfID=argumento[0]
+selfID=argumento
 if(argumento[0] == "1" or argumento[0] == "2" or argumento[0] == "3" or argumento[0] == "4" or argumento[0] == "5"):
         
     value = listBanksConsortium[argumento[0]][0]
@@ -694,7 +700,7 @@ def operateTransactionOfList(idTransaction):
             (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, operation["dataOperation"]["cpfCNPJ1"])
             banksList.append(listBanksConsortium[selfID][1])
             accounts[operation["dataOperation"]["cpfCNPJ1"]] = createAccountObject(operation["dataOperation"],selfID, banksList) 
-            hostNotResponse = []
+            hostNotResponse = [] #REMOVER ISSO
             if(len(hostNotResponse)>0):
                 data = {
                     'operation': 'completBanksListClient',
@@ -1064,6 +1070,7 @@ accountNumbers = GenerateNumberAccountBank()
 
 
 if(selfID == "1"):
+    sleep(2)
     hasToken = True
     canPasstokenID = True
 

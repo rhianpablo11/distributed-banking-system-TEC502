@@ -100,7 +100,7 @@ function CardDepositMoney(props){
 
             } else {
                 setLoading(false)
-                setIsError(true)
+                setIsError(true) 
                 console.log('OI EU')
                 const auxTemp = await response.text()
                 setErrorMensage(auxTemp)

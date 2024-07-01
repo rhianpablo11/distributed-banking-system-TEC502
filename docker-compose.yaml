@@ -1,0 +1,103 @@
+version: '3.7'
+
+services:
+  interface:
+    build: 
+      context: ./interface/bank-system-interface
+    container_name: interface
+    networks:
+      - system-network
+    environment:
+      - IP_API_BROKER=192.168.0.115:8082
+    ports:
+      - "3000:3000"
+  elevenbank:
+    build:
+      context: ./server
+    container_name: elevenbank
+    environment:
+      - HOST_1= elevenbank
+      - HOST_2= automobilibank
+      - HOST_3= secretbank
+      - HOST_4= formulabank
+      - HOST_5= titaniumbank
+      - ID="1"
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+    networks:
+      - system-network
+  automobilibank:
+    build:
+      context: ./server
+    container_name: automobilibank
+    environment:
+      - HOST_1= elevenbank
+      - HOST_2= automobilibank
+      - HOST_3= secretbank
+      - HOST_4= formulabank
+      - HOST_5= titaniumbank
+      - ID="2"
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8081"
+    networks:
+      - system-network
+  secretbank:
+    build:
+      context: ./server
+    container_name: secretbank
+    environment:
+      - HOST_1= elevenbank
+      - HOST_2= automobilibank
+      - HOST_3= secretbank
+      - HOST_4= formulabank
+      - HOST_5= titaniumbank
+      - ID="3"
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8082"
+    networks:
+      - system-network
+  formulabank:
+    build:
+      context: ./server
+    container_name: formulabank
+    environment:
+      - HOST_1= elevenbank
+      - HOST_2= automobilibank
+      - HOST_3= secretbank
+      - HOST_4= formulabank
+      - HOST_5= titaniumbank
+      - ID="4"
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8083"
+    networks:
+      - system-network
+  titaniumbank:
+    build:
+      context: ./server
+    container_name: titaniumbank
+    environment:
+      - HOST_1= elevenbank
+      - HOST_2= automobilibank
+      - HOST_3= secretbank
+      - HOST_4= formulabank
+      - HOST_5= titaniumbank
+      - ID="5"
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8084"
+    networks:
+      - system-network
+
+
+networks:
+  system-network:
+    driver: bridge
