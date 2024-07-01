@@ -20,8 +20,8 @@ function  BackgroundLogged(){
         'accountNumber': undefined,
         'transactions': undefined
     })
-    const addressBank = localStorage.getItem("addressBank")
-
+    const addressBank = localStorage.getItem(nameBank)
+    
     //requisitar os dados daquele user
     useEffect(() =>{
         const requestUser = async () => {

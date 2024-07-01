@@ -3,9 +3,11 @@ import qrCodeInter from "../assets/qrCodeInter.jpg"
 import { useState } from "react"
 import propsTypes from 'prop-types'
 import Loading from "./loading";
+import { useParams } from "react-router-dom"
 
 
 function CardDepositMoney(props){
+    const {nameBank, accountNumber} =useParams()
     const qrCode = <div className={styles.qrCodeImage}>
                         <img  src={qrCodeInter}></img>
                     </div>
@@ -58,28 +60,32 @@ function CardDepositMoney(props){
         
     }
     
-    const addressBank = localStorage.getItem("addressBank")
+    const addressBank = localStorage.getItem(nameBank)
 
     
 
     const makeDeposit = async () => {
         try {
-            const url =addressBank+"/account/deposit"
+            setLoading(true)
+            const url =addressBank+"/operations"
             console.log(url)
             const response = await fetch(url, {
-                method: 'PATCH',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    "cpfCNPJ1": props.cpfCNPJ_user,
-                    "value": valueDepositChoice,
-                    "method": methodDeposit
+                    "operation": "deposit",
+                    "clientCpfCNPJ": props.cpfCNPJ_user,
+                    "dataOperation": {
+                        "value": valueDepositChoice,
+                        "method": methodDeposit
+                    }
                 })
 
             })
             
-            setLoading(true)
+            
             if (response.ok) {
                 const result = await response.json();
                 console.log(result)

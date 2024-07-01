@@ -1,12 +1,16 @@
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import styles from "../style_modules/commonStyles.module.css"
 import CardInfoTransactionForMakeInPacket from "./cardInfoTransactionForMakeInPacket";
+import propsTypes from 'prop-types'
+import { useParams } from "react-router-dom"
 
-function CardPacketTransactions(){
+function CardPacketTransactions(props){
+    const {nameBank, accountNumber} =useParams()
     const [valueTransaction, setValueTransaction] = useState()
     const [listTransactionsToMake, setListTransactionsToMake] = useState([])
-    
+    const [listTransactionsToMakeFormatedToSend, setListTransactionsToMakeFormatedToSend] = useState([])
+
     function selectedOnlyNumber(event){
         let valueCaptured = event.target.value.replace(/[^0-9.]/g, '')
         const partsValue = valueCaptured.split('.');
@@ -26,8 +30,8 @@ function CardPacketTransactions(){
     const [keyPix, setKeyPix] = useState()
     const [bankSourceMoney, setBankSourceMoney] = useState()
 
-    const addressBank = localStorage.getItem("addressBank")
-
+    const addressBank = localStorage.getItem(nameBank)
+    console.log('address bank: '+addressBank+ ' nome bank: '+nameBank)
     const requestInfoAboutUserPix = async (keyPix, IdBank) => {
         try {
             const url =addressBank+"/account/transaction/pix/infos"
@@ -52,13 +56,21 @@ function CardPacketTransactions(){
                 setLoading(false);
                 setAccountDataParcial(result)
                 const transactionPartObject = {
-                    'bankSource': "Eleven",
+                    'bankSource': bankSelected,
                     'keyPix': IdBank+"?"+keyPix,
                     'value': valueTransaction,
                     'nameReceptor': result.name
                 }
                 //adicionar esse objeto na lista
                 setListTransactionsToMake([...listTransactionsToMake, transactionPartObject])
+                const formatedTransactionObject = {
+                    'value': valueTransaction,
+                    'keyPix': keyPix,
+                    'idBank': IdBank,
+                    'nameReceiver': result.name,
+                    'bankSourceMoney': bankSelected
+                }
+                setListTransactionsToMakeFormatedToSend([...listTransactionsToMakeFormatedToSend, formatedTransactionObject])
                 setKeyInserted('')
                 setValueTransaction("")
                 console.log(listTransactionsToMake)
@@ -77,10 +89,53 @@ function CardPacketTransactions(){
         }
     };
 
+    const sendPacket = async () => {
+        try {
+            setLoading(true)
+            const url =addressBank+"/operations"
+            console.log(url)
+            const objectToSend = {
+                    "operation": "packetPix",
+                    "clientCpfCNPJ": props.cpfCNPJ_user,
+                    "dataOperation": listTransactionsToMakeFormatedToSend
+            }
+            console.log(objectToSend)
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(objectToSend)
+
+            })
+            
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result)
+                // finalizar a apresentação do loading
+                setLoading(false)
+            } else {
+                // Caso a resposta não esteja ok, lança apresentação de senha incorreta
+                
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+          //indicar que ocorreu um erro
+          //setNotBankConnection(true);
+        } finally {
+          // finalizar a apresentação do loading
+          setLoading(false);
+        }
+    };
+
+    
 
     function deleteTransaction(indexTransaction){
         const transactionsUpdated = listTransactionsToMake.filter((_, i)=> i !==indexTransaction)
         setListTransactionsToMake(transactionsUpdated)
+        const newListTransactionsFormated = listTransactionsToMakeFormatedToSend.filter((_, i)=> i !==indexTransaction)
+        setListTransactionsToMakeFormatedToSend(newListTransactionsFormated)
     }   
 
 
@@ -103,7 +158,27 @@ function CardPacketTransactions(){
         setKeyInserted(keyCaptured)
     }
 
+    const [listOptions, setListOptions] = useState([{
+        value: 'None', label: "Select your bank source money"
+    }])
+    const [banksAccount, setBanksAccount] = useState([])
 
+    useEffect(() =>{
+        setBanksAccount(props.listBanksAccount)
+    },[props.listBanksAccount])
+
+    useEffect(() =>{
+        banksAccount.forEach(function(bank){
+            const objectPartial = {
+                value: bank, label: bank+" Bank"
+            }
+            setListOptions([...listOptions, objectPartial])
+        })
+    },[banksAccount])
+    const [bankSelected, setBankSelected] = useState()
+
+
+    console.log(listTransactionsToMakeFormatedToSend)
     return(
         <>
             <div className={styles.superiorPartTransactions}>
@@ -111,9 +186,13 @@ function CardPacketTransactions(){
                     Mount Packet of Transactions:
                 </h1>
                 <div className={styles.constructTrasaction}>
-                    <select>
+                    <select value={bankSelected} onChange={()=>setBankSelected(event.target.value)}>
                             <option value=''>Select your bank source money</option>
-                            <option value='elevenBank'>Eleven Bank</option>
+                            {banksAccount.map((bank, index)=>(
+                                <option key={index} value={bank}>
+                                    {bank}
+                                </option>
+                            ))}
                     </select>
                     <input type="text" placeholder="Key Pix" value={keyInserted} onChange={setTheKey} id="keyPix"></input>
                     <input type="text" placeholder="Value" id="value" value={valueTransaction} onChange={selectedOnlyNumber}></input>
@@ -147,10 +226,22 @@ function CardPacketTransactions(){
                     </ul>
                 </div>
                 
-                <button className={styles.buttonMakePacketTransaction}>Make Transaction</button>
+                <button onClick={sendPacket} className={styles.buttonMakePacketTransaction}>Make Transaction</button>
             </div>
         </>
     )
 }
+
+CardPacketTransactions.propsTypes = {
+    cpfCNPJ_user: propsTypes.string,
+    listBanksAccount : propsTypes.array
+}
+
+CardPacketTransactions.defaultProps = {
+    cpfCNPJ_user: "undefined",
+    listBanksAccount: [] 
+}
+
+
 
 export default CardPacketTransactions

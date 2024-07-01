@@ -14,6 +14,7 @@ function CardRequestAgencyBank(){
     const [addressBank, setAddressBank] = useState("")
     //avisar que nao preencheu o input
     const [addressSeted, setAddressSeted] = useState(true)
+    const [addressTyped, setAddressTyped] = useState("")
 
     function goBank(bankName){
         return navigate("/"+bankName)
@@ -30,6 +31,7 @@ function CardRequestAgencyBank(){
             localStorage.setItem("addressBank", urlBank)
             localStorage.setItem('ipBank', address)
             setAddressBank(url)
+            setAddressTyped(address)
             requestBankName()
         }
         
@@ -45,7 +47,9 @@ function CardRequestAgencyBank(){
                 
                 // finalizar a apresentação do loading
                 setLoading(false);
-                goBank(result.nameBank)
+                const urlBank = "http://localhost:"+ addressTyped
+                localStorage.setItem(result.nameBank, urlBank)
+                return navigate("/"+result.nameBank)
                 
             } else {
                 // Caso a resposta não esteja ok, lança um erro

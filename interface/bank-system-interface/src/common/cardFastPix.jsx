@@ -2,10 +2,11 @@ import { useState } from "react";
 import styles from "../style_modules/commonStyles.module.css"
 import propsTypes from 'prop-types'
 import Loading from "./loading";
+import { useParams } from "react-router-dom"
 
 
 function CardFastPix(props){
-    
+    const {nameBank, accountNumber} =useParams()
     const [cpfOrCNPJ, setCpfCNPJ] = useState("CNPJ")
     const [valueSendPix, setvalueSendPix] = useState("")
     const [clientReceiverFound, setClientReceiverFound ] = useState(false)
@@ -79,7 +80,7 @@ function CardFastPix(props){
     }
 
     const [loading, setLoading] = useState(false)
-    const addressBank = localStorage.getItem("addressBank")
+    const addressBank = localStorage.getItem(nameBank)
 
     const requestInfoAboutUserPix = async (keyPix, IdBank) => {
         try {
@@ -124,7 +125,7 @@ function CardFastPix(props){
     const sendPix = async (keyPix, IdBank, value) => {
         try {
             setLoading(true)
-            const url =addressBank+"/account/transactions/pix/send"
+            const url =addressBank+"/operations"
             console.log(url)
             const response = await fetch(url, {
                 method: 'POST',
@@ -132,11 +133,15 @@ function CardFastPix(props){
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    "keyPix": keyPix,
-                    "bankID": IdBank,
-                    "value": value,
-                    "nameReceptor": clientData.name,
-                    "cpfCNPJ1": props.cpfCNPJ_user
+                    "operation": "sendPix",
+                    "clientCpfCNPJ": props.cpfCNPJ_user,
+                    "dataOperation": {
+                        "value": value,
+                        "keyPix": keyPix,
+                        "idBank": IdBank,
+                        "bankNameReceiver":clientData.bank,
+                        "nameReceiver": clientData.name
+                    }
                 })
 
             })

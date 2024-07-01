@@ -17,7 +17,7 @@ function BackgroundTransactions(){
         'accountNumber': undefined,
         'transactions': undefined
     })
-    const addressBank = localStorage.getItem("addressBank")
+    const addressBank = localStorage.getItem(nameBank)
 
     //requisitar os dados daquele user
     useEffect(() =>{
@@ -44,7 +44,7 @@ function BackgroundTransactions(){
               //setNotBankConnection(true);
             }
         };
-
+        
         requestUser()
         
         const interval = setInterval(requestUser, 1000)
@@ -52,9 +52,9 @@ function BackgroundTransactions(){
 
     },[])
 
+    console.log(userData)
 
-
-
+    
 
     return (
         <>
@@ -74,7 +74,7 @@ function BackgroundTransactions(){
                             <CardInfoClientBalance  balance={userData.balance} blockedBalance={userData.blockedBalance}  />
                         </div>
                         <div className={styles.cardsLeftTransactionPage}>
-                            <CardPacketTransactions />
+                            <CardPacketTransactions cpfCNPJ_user={userData.cpfCNPJ1}  listBanksAccount = {userData.banksList}  />
                         </div>
                     </div>
                     

@@ -52,7 +52,7 @@ function CardCreateAccount(props){
     const [isJoinetAccount, setJoinetAccount] = useState("none")
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
-    const addressBank = localStorage.getItem("addressBank")
+    const addressBank = localStorage.getItem(nameBank)
     const [userData, setUserData] = useState()
 
 
@@ -92,9 +92,9 @@ function CardCreateAccount(props){
                 setUserData(result)
                 console.log('oi')
                 console.log(userData)
-                console.log("url: "+ "/logged/"+nameBank+"/"+userData.accountNumber)
+                console.log("url: "+ "/logged/"+nameBank+"/"+result.accountNumber)
 
-                return navigate("/logged/"+nameBank+"/"+userData.accountNumber)
+                return navigate("/logged/"+nameBank+"/"+result.accountNumber)
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
                 throw new Error('Network response was not ok');
@@ -186,7 +186,7 @@ function CardCreateAccount(props){
                     //verificar ainda a requisição ao servidor
                     //esse valor apos o logged tem que definir ainda o que sera que vai usar
                     
-                    createAccount()
+                    return createAccount()
                 }
             } else{
                 if(cpf1.length <14){
@@ -214,7 +214,7 @@ function CardCreateAccount(props){
                     //verificar ainda a requisição ao servidor
                     //esse valor apos o logged tem que definir ainda o que sera que vai usar
                     
-                    createAccount()
+                    return createAccount()
                 }
             }
         } else{
@@ -256,7 +256,7 @@ function CardCreateAccount(props){
                 setStyleCampInputPassword()
                 //verificar ainda a requisição ao servidor
                 //esse valor apos o logged tem que definir ainda o que sera que vai usar
-                createAccount()
+                return createAccount()
             }
         }
           

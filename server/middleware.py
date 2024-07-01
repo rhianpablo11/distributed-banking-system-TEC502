@@ -208,8 +208,8 @@ Função para requisitar ao outro banco as informações do pix daquele usuario
 @app.route('/account/transaction/pix/infos', methods=['POST'])
 def getInfosForMakePix():
     data =  request.json
-    if(data["bankID"] == "1"):
-        url = listBanksConsortium[data["bankID"]]+"/account/pix"
+    if(data["bankID"] == "1" or data["bankID"] == "2" or data["bankID"] == "3" or data["bankID"] == "4" or data["bankID"] == "5"):
+        url = listBanksConsortium[data["bankID"]][0]+"/account/pix"
         keyPix = {
             "keyPix": str(data["keyPix"])
         }
@@ -694,6 +694,7 @@ def operateTransactionOfList(idTransaction):
             (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, operation["dataOperation"]["cpfCNPJ1"])
             banksList.append(listBanksConsortium[selfID][1])
             accounts[operation["dataOperation"]["cpfCNPJ1"]] = createAccountObject(operation["dataOperation"],selfID, banksList) 
+            hostNotResponse = []
             if(len(hostNotResponse)>0):
                 data = {
                     'operation': 'completBanksListClient',

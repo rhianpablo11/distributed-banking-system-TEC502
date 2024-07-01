@@ -4,9 +4,11 @@ import LogoBank from "./logoBank"
 import { useNavigate } from "react-router-dom"
 import propsTypes from 'prop-types'
 import Loading from "./loading"
+import { useParams } from "react-router-dom"
 
 function CardLoginAccount(props){
     const navigate = useNavigate()
+    const {nameBank} =useParams()
     const borderNotFillInput ={
         'border': '3px solid #ba1111'
     }
@@ -15,7 +17,7 @@ function CardLoginAccount(props){
 
     const [userData, setUserData] = useState()
 
-    const addressBank = localStorage.getItem("addressBank")
+    const addressBank = localStorage.getItem(nameBank)
 
     const [loading, setLoading] = useState(false)
 
@@ -45,7 +47,7 @@ function CardLoginAccount(props){
                 setUserData(result)
                 //vai para a pagina correta
                 console.log(userData.accountNumber)
-                return navigate("/logged/"+props.nameBank+"/"+userData.accountNumber)
+                return navigate("/logged/"+nameBank+"/"+result.accountNumber)
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
                 throw new Error('Network response was not ok');
