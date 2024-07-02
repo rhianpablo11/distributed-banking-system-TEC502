@@ -26,7 +26,8 @@ services:
       - ID=1
     stdin_open: true
     tty: true
-
+    ports:
+      - "8081:8081"
     networks:
       system-network:
         ipv4_address: 192.168.0.11
@@ -44,7 +45,8 @@ services:
       - ID=2
     stdin_open: true
     tty: true
-
+    ports:
+      - "8082:8082"
     networks:
       system-network:
         ipv4_address: 192.168.0.12
@@ -62,7 +64,8 @@ services:
       - ID=3
     stdin_open: true
     tty: true
-
+    ports:
+      - "8083:8083"
     networks:
       system-network:
         ipv4_address: 192.168.0.13
@@ -80,7 +83,8 @@ services:
       - ID=4
     stdin_open: true
     tty: true
-
+    ports:
+      - "8084:8084"
     networks:
       system-network:
         ipv4_address: 192.168.0.14
@@ -98,7 +102,8 @@ services:
       - ID=5
     stdin_open: true
     tty: true
-
+    ports:
+      - "8085:8085"
     networks:
       system-network:
         ipv4_address: 192.168.0.15

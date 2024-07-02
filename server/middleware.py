@@ -37,11 +37,11 @@ ip3 = os.getenv('HOST_3')
 ip4 = os.getenv('HOST_4')
 ip5 = os.getenv('HOST_5')
 
-listBanksConsortium["1"][0] = "http://"+os.getenv('HOST_1')+":8080"
-listBanksConsortium["2"][0] = "http://"+os.getenv('HOST_2')+":8081"
-listBanksConsortium["3"][0] = "http://"+os.getenv('HOST_3')+":8082"
-listBanksConsortium["4"][0] = "http://"+os.getenv('HOST_4')+":8083"
-listBanksConsortium["5"][0] = "http://"+os.getenv('HOST_5')+":8084"
+listBanksConsortium["1"][0] = "http://"+os.getenv('HOST_1')+":8081"
+listBanksConsortium["2"][0] = "http://"+os.getenv('HOST_2')+":8082"
+listBanksConsortium["3"][0] = "http://"+os.getenv('HOST_3')+":8083"
+listBanksConsortium["4"][0] = "http://"+os.getenv('HOST_4')+":8084"
+listBanksConsortium["5"][0] = "http://"+os.getenv('HOST_5')+":8085"
 print(listBanksConsortium)
 print('IP DO PC: ', socket.gethostbyname(socket.gethostname()))
 
@@ -107,6 +107,8 @@ def receiveToken():
     global tokenID
     global canPasstokenID
     global initiateCouter
+    global counter 
+    counter = 0
     initiateCouter = False
     infoReceived = request.json
     previousNode = infoReceived["nodeSender"]
@@ -268,6 +270,14 @@ def receiveMoneyWithPix():
                     }
                     response = make_response(jsonify(dataSend))
                     return response, 200
+                else:
+                    dataSend = {
+                        'idTransaction': returnOperation[1],
+                        'mensage':"error in operation"
+                    }
+                    response = make_response(jsonify(dataSend))
+                    return response, 400
+
         else:
             return 'not authorized', 401
 
@@ -410,7 +420,7 @@ def passToken2():
         
         try:
             hasToken = False                
-            infoReceived = requests.post(url=url, json=dataSend)
+            infoReceived = requests.post(url=url, json=dataSend, timeout=2)
             if(infoReceived.status_code == 200):
                 nodeResponse = True             #sair do while indicando que conseguiu mandar o token
                 initiateCouter = True           #para iniciar o contador de que receber o token de novo
@@ -456,11 +466,12 @@ A contagem so inicia a partir do momento em que ele envia o token
 def timeOutReceiveToken():
     global initiateCouter
     global hasToken
+    global counter 
     counter = 0
     attempts = 0
     while True:
         if(initiateCouter):
-            for a in range(100):
+            for a in range(30):
                 sleep(1)
                 counter +=1
                 print('VALOR DO CONTADOR: ', counter)
@@ -474,7 +485,7 @@ def timeOutReceiveToken():
                     counter = 0
                     attempts = 0
                     break
-
+            print('VALOR DO CONTADOR AO SAIR DO LOOP: ', counter)
             '''
             verificação para a contagem de tempo sem chegar o token
             1. verifica se bateu o tempo definido
@@ -492,7 +503,7 @@ def timeOutReceiveToken():
                     2.2.4 ele vai nesse caso, o sistema, iniciar o processo como se tivesse recebido o token
                         2.2.4.1 vai verificar se tem alguma operação para realizar, se tiver realiza e depois passa o token
             '''
-            if(counter == 100):
+            if(counter == 30):
                 if(conectBeforeHostTest()):
                     counter = 0
                     attempts +=1
@@ -716,7 +727,7 @@ def operateTransactionOfList(idTransaction):
             (banksList, hostNotResponse) = searchUserInOtherBanks(selfID, operation["dataOperation"]["cpfCNPJ1"])
             banksList.append(listBanksConsortium[selfID][1])
             accounts[operation["dataOperation"]["cpfCNPJ1"]] = createAccountObject(operation["dataOperation"],selfID, banksList) 
-            hostNotResponse = [] #REMOVER ISSO
+            
             if(len(hostNotResponse)>0):
                 data = {
                     'operation': 'completBanksListClient',
