@@ -38,6 +38,9 @@ A execução do projeto utiliza, conforme requisitado, o docker como ferramenta 
 
 O projeto em questão possui alguns pontos principais, que foram tratados ao longo do desenvolvimento. Dentre estes pontos se encontram a criação de um unico servidor, em que este pode ser instânciado mais de uma vez, e realizando a comunicação entre as suas instancias para troca de mensagens. Sendo assim, cada servidor, a depender do ID atribuido a ele, representa um dos bancos presente no consórcio. 
 
+-teve o uso do lock
+-teve o uso do algoritmo de token
+
 ## Metodologia
 
 ## Implementação
@@ -55,18 +58,55 @@ O projeto em questão possui alguns pontos principais, que foram tratados ao lon
 - [**`TransactionModel`**](#transactionmodel):
   - Classe responsavel por armazenar os dados relacionados a transação, para facilitar manipulações sobre ela, como por exemplo realizar a reversão de uma operação em que ocorreu um erro.
   - Desenvolvido utilizando a linguagem Python
+
+### Comunicação
+
+Para realizar a comunicação entre os servidores dos bancos, bem como permitir que esses servidores sejam acessados pela interface, seja para requisição de dados ou inserir dados, foi utilizado uma API no padrão REST, a qual faz uso do protocolo HTTP. Para auxiliar na criação da API foi feito uso do framework Flask, desenvolvido para linguagem python. Ademais, também foi feito uso da biblioteca requests, desenvolvido para liguagem python. Esta permite realizar requests para a API, e receber os dados do retorno, o que foi essencial para permitir a troca de mensagens interna entre os bancos. Com isso, a comunicação se divide em duas partes: servidor-interface, e servidor-servidor.
+
+#### Comunicação servidor-servidor
+A comunicação entre servidores tem dois principais usos, realizar o envio do token para o outro servidor, para que ele com o token possa realizar uma operação, e para enviar uma requisição para o outro servidor realizar a operação requisitada pelo cliente. Esta ultima situação ocorre quando o usuário possui conta em mais de um banco, e este deseja enviar um montante de dinheiro que está na sua conta em outro banco. Sendo assim para poder opera precisa o banco em que ele esta logado enviar uma requisição autorizada para o outro banco poder realizar a operação.
+
+A primeira situação de comunicação, para envio do token, é uma das mais importantes, já que cada servidor bancario, só realiza uma operação quando possui o token. Ao receber o token, o servidor faz uma busca na lista de operações para executar, caso ainda tenha operação a ser feita, é realizado uma operação e passado o token, caso não tenha nenhuma operação a ser realizada, o token é passado.
+
+A comunicação entre os bancos ocorre em rotas especificas, em que são utilizadas apenas entre os bancos. As rotas, os dados em que esperam receber em cada rota, e o dado em que retornam esta presente na Tabela [Rotas de comunicação interna aos bancos](#rotas-de-comunicação-internas-aos-bancos)
+
+Vale ressaltar a questão da confiabilidade para comunicação entre os bancos.
+-falar da questão de quando vai tentar realizar uma operação
+-falar da questao de quando vai transferir o token
+-falar da questao de quando nao precisa dessa confiabilidade
+--operações de deposito nao precisa
+
+#### Comunicação servidor-interface
+
+A comunicação  realizada entre o servidor e a interface, ocorre visando entregar ao usuário uma experiencia mais usavel.
+
 ### ServerBank
+
+-falar do lock
 
 ### AccountModel
 
+O accountModel é uma classe em que foi pensada como um dos pontos centrais no quesito de realizar as transações. Diante disso, o servidor do banco ao receber uma requisição de deposito, por exemplo, verifica a existencia daquela conta no banco de dados, e existindo chama o metodo daquela classe para poder realizar o deposito. Dessa forma fica separado cada função, o servidor fica responsavel por coordenar as operações e mante-las em ordem, e o objeto da classe, é quem fica encarregado de colocar, retirar ou enviar dinheiro para outra conta, ou para a propria.
+
+Ainda vale ressaltar que com o uso dessa classe é possivel construir um dicionario contendo informações sobre esse usuario para ser enviado para a interface, ou para enviar dados parciais sobre o usuario quando requisitado as informações dele para realizar a transferencia via pix. Este dicionario é convertido num objeto json antes de ser enviado. Isso permite a interface ser apresentar os dados de forma humanizada*.
+
+-falar do lock
+
 ### TransactionModel
 
-#### Comunicação entre os bancos
+O transactionModel é uma classe, em que visa simplificar o armazenamento de dados sobre cada operação, e com isso consegue realizar um melhor controle sobre aquela conta. Tal controle permite facilitar o "roll back" das transações em que ocorrem erro, ou realizar a confirmação da transação.
+
+Entre os dados que cada transação possui, o seu status, o valor da transação, o tipo da transação - indicar se foi envio, recebimento, ou deposito de dinheiro - são informações importantes para a operação. Ao realizar uma operação em que envolve mais de uma conta, a transação é adicionada na lista presente na conta, contudo com o status "pending", e é retornado o ID daquela operação. Ao fim da operação, o banco responsavel por enviar o dinheiro envia outra requisição novamente para informar a conclusão, ou informar o erro na operação, e a partir do ID é possível acessar a transação, alterar o seu status para concluida, ou para que deu error, e retirar o dinheiro da parte de saldo bloqueado, para a parte o saldo comum, em caso de operação confirmada, ou para nenhum local em caso de erro.
+
 
 #### Algoritmo Token Ring
 
-<div align="center">
+Um dos contratempos do projeto, ocorre com a questão de concorrencia de operações, situação decorrente de multiplas operações sobre uma mesma conta, e envolvendo ela, poderem ser disparadas para executar ao mesmo tempo. Sem controlar a ordem dessas operações, multiplos erros poderiam ocorrer, podendo resultar em duplo gasto, trasanções sendo enviadas sem o usuario possuir dinheiro, entre outros casos de erro.
 
+Sobe esse viés, em que o algoritmo Token Ring foi implmentado, visando permitir que as operações sejam executadas em cada banco apenas quando ele estiver com o token. Cada banco possui sua fila de transações, e a cada passagem do token por aquele banco, apenas uma operação é executada. Isso traz maior performance pensando num conjunto, e é uma forma de dividir o tempo igualmente entre os servidores dos bancos, já que ao permitir um banco realizar toda a sua fila de operações antes de passar o token, os outros bancos seriam prejudicados por um tempo maior de espera para realizar as suas operações proprias.
+
+<div align="center">
+****
   #### Rotas de comunicação internas aos bancos
 
   | Rotas | Metodo | Retorno                   | Dado recebido                         |

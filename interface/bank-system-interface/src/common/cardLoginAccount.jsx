@@ -97,7 +97,7 @@ function CardLoginAccount(props){
         <>
             <div className={styles.createAccountBase}>
                 <div className={styles.logoBankPreLogin}>
-                    <LogoBank nameBank = {props.nameBank} />
+                    <LogoBank nameBank = {nameBank} />
                 </div>
                 <div className={styles.inputsAreaLogin}>
                     <input style={styleCampInput} className={styles.inputPreLogin} type="email" placeholder="Email" id="emailRegister"></input>

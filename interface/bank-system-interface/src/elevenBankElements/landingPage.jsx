@@ -10,7 +10,10 @@ function LandingPage(){
     const bank = elevenBankLogo
     const gifElevenBank = elevenBankGif
     const {nameBank} =useParams()
-
+    if(nameBank == "Formula"){
+        //document.documentElement.style.setProperty('--block-color', "#");
+        
+    }
 
     return(
         <>
