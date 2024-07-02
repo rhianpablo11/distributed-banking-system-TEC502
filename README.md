@@ -38,7 +38,12 @@ A execução do projeto utiliza, conforme requisitado, o docker como ferramenta 
 
 O projeto em questão possui alguns pontos principais, que foram tratados ao longo do desenvolvimento. Dentre estes pontos se encontram a criação de um unico servidor, em que este pode ser instânciado mais de uma vez, e realizando a comunicação entre as suas instancias para troca de mensagens. Sendo assim, cada servidor, a depender do ID atribuido a ele, representa um dos bancos presente no consórcio. 
 
--teve o uso do lock
+Algumas questões, relacionadas com concorrencia, foram encontradas no desenvolvimento do projeto, e que necessitaram de soluções cabiveis a cada uma delas. Essas questões se encontravam com a manipulação de um mesmo dado, visto que por o servidor ser configurado como multithread, logo mais de um thread poderia realizar a alteração de um dado ao mesmo tempo, gerando conflitos. Outro problema relacionado com a concorrencia, esta presente nas operações sobre uma mesma conta em que - explicar problema q fez precisar usar o token ring
+
+Visando solucionar o primeiro problema, uma opção encontrada foi o uso do objeto "lock", que é disponibilizado pela biblioteca Threading do python. Esse objeto possui dois métodos, um responsavel por "adquirir" o "lock", e o outro responsavel por "soltar" o "lock". Com isso foi possivel implementa-lo nas operações em que envolvem adição de dados, ou manipulação dos dados salvos. Tendo em vista que na linha de codigo em que é colocado para realizar a "adquirição" do "lock", caso ele não esteja disponivel, o programa fica preso naquela linha, saindo apenas quando o lock é liberado por "quem havia adquirido". Com isso por mais que varios threads tentem alterar o dado, eles tem de esperar um "soltar" o lock para outro operar, ficando apenas uma operação por vez sendo executada. Neste projeto o "lock" foi utilizado dentro das contas, ou seja cada conta possui o seu proprio "lock", e com isso antes de realizar alguma operação é primeiro requerido o "lock", para após realizar a operação e ao final da mesma o "lock" é devolvido, e fica disponivel para outras operações serem realizadas.
+
+Em busca de uma solução em que permitisse ordenar os eventos, e permitir que apenas um realize a operação por vez, é que foi utilizado o algoritmo do token ring. Este algoritmo 
+
 -teve o uso do algoritmo de token
 
 ## Metodologia
@@ -104,6 +109,8 @@ Entre os dados que cada transação possui, o seu status, o valor da transação
 Um dos contratempos do projeto, ocorre com a questão de concorrencia de operações, situação decorrente de multiplas operações sobre uma mesma conta, e envolvendo ela, poderem ser disparadas para executar ao mesmo tempo. Sem controlar a ordem dessas operações, multiplos erros poderiam ocorrer, podendo resultar em duplo gasto, trasanções sendo enviadas sem o usuario possuir dinheiro, entre outros casos de erro.
 
 Sobe esse viés, em que o algoritmo Token Ring foi implmentado, visando permitir que as operações sejam executadas em cada banco apenas quando ele estiver com o token. Cada banco possui sua fila de transações, e a cada passagem do token por aquele banco, apenas uma operação é executada. Isso traz maior performance pensando num conjunto, e é uma forma de dividir o tempo igualmente entre os servidores dos bancos, já que ao permitir um banco realizar toda a sua fila de operações antes de passar o token, os outros bancos seriam prejudicados por um tempo maior de espera para realizar as suas operações proprias.
+
+
 
 <div align="center">
 ****
