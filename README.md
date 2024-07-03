@@ -42,9 +42,8 @@ Algumas questões, relacionadas com concorrencia, foram encontradas no desenvolv
 
 Visando solucionar o primeiro problema, uma opção encontrada foi o uso do objeto "lock", que é disponibilizado pela biblioteca Threading do python. Esse objeto possui dois métodos, um responsavel por "adquirir" o "lock", e o outro responsavel por "soltar" o "lock". Com isso foi possivel implementa-lo nas operações em que envolvem adição de dados, ou manipulação dos dados salvos. Tendo em vista que na linha de codigo em que é colocado para realizar a "adquirição" do "lock", caso ele não esteja disponivel, o programa fica preso naquela linha, saindo apenas quando o lock é liberado por "quem havia adquirido". Com isso por mais que varios threads tentem alterar o dado, eles tem de esperar um "soltar" o lock para outro operar, ficando apenas uma operação por vez sendo executada. Neste projeto o "lock" foi utilizado dentro das contas, ou seja cada conta possui o seu proprio "lock", e com isso antes de realizar alguma operação é primeiro requerido o "lock", para após realizar a operação e ao final da mesma o "lock" é devolvido, e fica disponivel para outras operações serem realizadas.
 
-Em busca de uma solução em que permitisse ordenar os eventos, e permitir que apenas um realize a operação por vez, é que foi utilizado o algoritmo do token ring. Este algoritmo 
+Em busca de uma solução em que permitisse ordenar os eventos, e permitir que apenas um realize a operação por vez, é que foi utilizado o algoritmo do token ring. Este algoritmo utiliza uma topologia do tipo anel, em que um token percorre por todos os hosts presentes na rede. Quando o host possui alguma operação a ser feita este aguarda por o token chegar ate ele para realizar, ao finalizar essa ação ele coloca o token na rede novamente. Originalmente, essa metodologia pode gerar problemas, tendo em vista o risco de um host ser desconectado e todo os outros ficarem esperando a reconexão deste para conseguir seja, passar o token que estava com ele, ou para fechar o anel e permitir a passagem do token, com ele recebendo o token e passando para o proximo host. Pensando nessas questões que adaptações na implementação foram feitas para um melhor funcionamento.
 
--teve o uso do algoritmo de token
 
 ## Metodologia
 
@@ -83,7 +82,76 @@ Vale ressaltar a questão da confiabilidade para comunicação entre os bancos.
 
 #### Comunicação servidor-interface
 
-A comunicação  realizada entre o servidor e a interface, ocorre visando entregar ao usuário uma experiencia mais usavel.
+A comunicação  realizada entre o servidor e a interface, ocorre com um contrato de comunicação mais simples do que ocorre na comunicação entre os bancos. Tendo em vista que a interface, envia dados para o servidor do banco em especifico, afim deste realizar operações monetarias para aquela conta, ou para criação de uma conta. Ademais a interface faz diversos requests de dados para o servidor, com o objetivo de apresentar valores atualizados na interface em que o usuario esta logado.
+
+Para estabelecer essa comunicação entre eles, é feito uso de requisições para as rotas especificas em que a interface envia dados para o servidor. Essas rotas podem ser vistas na tabela [Rotas de comunicação com a interface](#rotas-de-comunicação-com-a-interface).
+
+Afim facilitar o papel do servidor ao identificar o tipo de transação e como ela deve operar, foi desenvolvido um padrão nas requisições de operar dados, em que elas devem possuir no json uma especie de cabeçalho com informações basicas e logo após os dados para realizar aquela operação. Um exemplo de como deve estar os dados:
+```javascript
+{
+    "operation": "create"/"deposit"/"sendPix"/"packetPix",
+    "clientCpfCNPJ": "111.111.111-11",
+    "dataOperation":{
+        "aqui estao os dados presentes para realizar cada operação"
+    }
+}
+```
+
+Para operações de **criar conta**, o padrão de dado esperado pelo servidor é:
+```javascript
+"dataOperation": {
+    "name1": "nome do usuario principal",
+    "cpfCNPJ1": "cpf/cnpj do usuario principal",
+    "name2": "preenchido com o nome do usuario associado a conta, caso seja conta conjunta",
+    "cpfCNPJ2": "preenchido com o cpf/cnpj do usuario associado a conta, caso seja conta conjunta",
+    "email": "email do usuario",
+    "password":"senha da conta",
+    "telephone": "numero de telefone do usuario",
+    "isFisicAccount": "indica se a conta é de pessoa fisica ou de empresa",
+    "isJoinetAccount": "indica se a conta é conjunta ou não"
+}
+
+```
+
+Para operação de **realizar um deposito**, o padrão de dado esperado pelo servidor é:
+```javascript
+"dataOperation": {
+    "value": "valor do deposito",
+    "method": "metodo em que foi depositado, seja dinheiro/qr code/boleto bancario"
+}
+```
+
+Para operação de **enviar um pix**, o padrão de dado esperado pelo servidor é:
+```javascript
+"dataOperation": {
+    "value": "valor a ser enviado",
+    "keyPix": "chave pix do cliente que receberá",
+    "idBank": "ID do banco onde o cliente possui aquela chave",
+    "bankNameReceiver":"nome do banco que irá receber o dinheiro",
+    "nameReceiver": "nome de quem esta recebendo o dinheiro"
+}
+```
+Para operação de **enviar um pacpte de pix**, o padrão de dado esperado pelo servidor é:
+```javascript
+"dataOperation": [
+    {
+        "value": "valor a ser enviado",
+        "keyPix": "chave pix do cliente que receberá",
+        "idBank": "ID do banco onde o cliente possui aquela chave",
+        "nameReceiver": "nome de quem esta recebendo o dinheiro",
+        'bankSourceMoney': "nome do banco que irá sair o dinheiro"
+    },
+    {
+        "value": "valor a ser enviado",
+        "keyPix": "chave pix do cliente que receberá",
+        "idBank": "ID do banco onde o cliente possui aquela chave",
+        "nameReceiver": "nome de quem esta recebendo o dinheiro",
+        'bankSourceMoney': "nome do banco que irá sair o dinheiro"
+    }, ...
+]
+    
+
+```
 
 ### ServerBank
 
@@ -93,9 +161,9 @@ A comunicação  realizada entre o servidor e a interface, ocorre visando entreg
 
 O accountModel é uma classe em que foi pensada como um dos pontos centrais no quesito de realizar as transações. Diante disso, o servidor do banco ao receber uma requisição de deposito, por exemplo, verifica a existencia daquela conta no banco de dados, e existindo chama o metodo daquela classe para poder realizar o deposito. Dessa forma fica separado cada função, o servidor fica responsavel por coordenar as operações e mante-las em ordem, e o objeto da classe, é quem fica encarregado de colocar, retirar ou enviar dinheiro para outra conta, ou para a propria.
 
-Ainda vale ressaltar que com o uso dessa classe é possivel construir um dicionario contendo informações sobre esse usuario para ser enviado para a interface, ou para enviar dados parciais sobre o usuario quando requisitado as informações dele para realizar a transferencia via pix. Este dicionario é convertido num objeto json antes de ser enviado. Isso permite a interface ser apresentar os dados de forma humanizada*.
+Ainda vale ressaltar que com o uso dessa classe é possivel construir um dicionario contendo informações sobre esse usuario para ser enviado para a interface, ou para enviar dados parciais sobre o usuario quando requisitado as informações dele para realizar a transferencia via pix. Este dicionario é convertido num objeto json antes de ser enviado. Isso permite a interface ser apresentar os dados para o usuário de forma mais visivel e informativa.
 
--falar do lock
+Cabe citar ainda a presença de um objeto lock, da biblioteca Threading do python. Este tem a serventia de controlar as multiplas operações que podem ocorrer envolvendo aquela mesma conta naquele banco. Com a presença do lock, apenas uma operação de mudança de dados é executada por vez, em ordem de chegada, já que ao ser "adquirido" um lock, outra operação a ser realizada por outro thread tem que aguardar o lock ser "solto" para ele pegar e realizar a operação. Dessa maneira a concorrencia interna de alteração de dados fica solucionada.
 
 ### TransactionModel
 
@@ -110,10 +178,19 @@ Um dos contratempos do projeto, ocorre com a questão de concorrencia de operaç
 
 Sobe esse viés, em que o algoritmo Token Ring foi implmentado, visando permitir que as operações sejam executadas em cada banco apenas quando ele estiver com o token. Cada banco possui sua fila de transações, e a cada passagem do token por aquele banco, apenas uma operação é executada. Isso traz maior performance pensando num conjunto, e é uma forma de dividir o tempo igualmente entre os servidores dos bancos, já que ao permitir um banco realizar toda a sua fila de operações antes de passar o token, os outros bancos seriam prejudicados por um tempo maior de espera para realizar as suas operações proprias.
 
+O token, trafega entre os bancos carregando dados consigo que servem para melhora da confiabilidade do sistema. Esses dados fazem parte da adaptação do algoritmo, afim de evitar que a desconexão de um host afete o trafego do token, e em consequencia afetando os outros servidores de banco, que ficariam ativos na rede contudo sem poder operar por não estarem com o token. Dentre os dados enviados, estão o ID do servidor que esta enviado o token para o proximo servidor da fila, além de um *Array* contendo um contador de passagens do token por aquele servidor, neste *Array* estão presentes os valores de todos os host.
+
+O sistema ao ser iniciado, o host com ID atribuido igual a "1", é o indicado para por o token na rede, para isso é definido que este possui o token, e graças a um thread que fica ativo sempre verificando se possui o token para, em caso positivo, procurar por uma operação ainda não realizada, e caso não tenha nenhuma operação esse mesmo thread chama a função que será responsavel pela passagem do token. Nesta algumas operações ocorrem, como verificação de para qual host ele irá tentar mandar o token, além de preencher os dados que serão enviados. Ao saber qual é o proximo host, ou seja o host que esta ao seu lado esperando para receber, é feita uma tentiva de passar o token, contudo caso não seja possível efetivar essa passagem, por o outro host ter sido desconectado, é então feita uma tentativa com o proximo do proximo, e por ai em diante até conseguir enviar para alguem. Nesse momento, há uma verificação para impedir que ele envie para ele mesmo o token, ou seja quando chega na vez de enviar para ele mesmo, ele reinicia o loop para enviar para o seu proximo. Caso somente este host esteja ativo na rede, ele permanece em loop tentando enviar para algum outro host.
+
+Um dos sistemas para evitar que dois tokens estejam circulando na rede é o uso do *Array* com o valor da quantidade de passagens do token por aquele host. Esse sistema funciona com ao receber um token, o servidor verifica o valor presente na sua posição do *Array*, se esse valor for igual ao que ele possui atualmente, ou se for maior, o servidor aceita o token, adiciona um no valor presente na sua posição do *Array* e salva este consigo, e passa para frente ele já com o valor atualizado. Caso o servidor receba um token, que contém um *Array* e na sua posição esta um valor inferior, isso significa que quem está enviando foi desconectado, e o token foi posto na rede novamente, logo o valor do servidor foi incrementado, enquanto o que caiu ficou com o *Array* desatualizado. Nesse ultimo caso, é retornado para o servidor que foi desconectado, a informação sobre isso, e ele fica aguardando para que o token passe por ele novamente, e ele possa atualizar o *Array* para propagar um valor atualizado.
+
+Outra proteção contra quedas de hosts, está presente com um temporizador para saber quando o token deve passar por ele novamente. Este tempostizador é iniciado no momento em que o token é passado e aguarda por 30 segundos, caso não recebe o token nesse tempo, é feita uma verificação com o host que lhe mandaou o token para conferir a atividade deste na rede. Tal verificação tem como objetivo evitar por um token na rede sem necessidade, gerando problemas por ter 2 tokens. As verificações com o host anterior ocorrem até 3 vezes, logo caso o host anterior passe 90 segundos, 30 segundos entre cada verificação, sem enviar o token, um novo token é posto na rede. Caso a verificação falhe, é definido que este servidor possui o token, e ele irá passar o token para frente.
+
+Diante de todas essas verificações, 
 
 
 <div align="center">
-****
+
   #### Rotas de comunicação internas aos bancos
 
   | Rotas | Metodo | Retorno                   | Dado recebido                         |
@@ -143,6 +220,7 @@ Sobe esse viés, em que o algoritmo Token Ring foi implmentado, visando permitir
 
 ### Interface
 
+A interface apresenta todas as operações em q 
 
 ## Testes
 
