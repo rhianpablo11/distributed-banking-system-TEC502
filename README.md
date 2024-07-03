@@ -153,9 +153,9 @@ Para operação de **enviar um pacpte de pix**, o padrão de dado esperado pelo 
 
 ```
 
-### ServerBank
+### Middleware
 
--falar do lock
+Este componente do projeto é responsável por coordenar todas as operações e possibilitar a comunicação seja [servidor-servidor](#), ou [servidor-interface](). No que se trata de realização de operações 
 
 ### AccountModel
 
@@ -176,7 +176,7 @@ Entre os dados que cada transação possui, o seu status, o valor da transação
 
 Um dos contratempos do projeto, ocorre com a questão de concorrencia de operações, situação decorrente de multiplas operações sobre uma mesma conta, e envolvendo ela, poderem ser disparadas para executar ao mesmo tempo. Sem controlar a ordem dessas operações, multiplos erros poderiam ocorrer, podendo resultar em duplo gasto, trasanções sendo enviadas sem o usuario possuir dinheiro, entre outros casos de erro.
 
-Sobe esse viés, em que o algoritmo Token Ring foi implmentado, visando permitir que as operações sejam executadas em cada banco apenas quando ele estiver com o token. Cada banco possui sua fila de transações, e a cada passagem do token por aquele banco, apenas uma operação é executada. Isso traz maior performance pensando num conjunto, e é uma forma de dividir o tempo igualmente entre os servidores dos bancos, já que ao permitir um banco realizar toda a sua fila de operações antes de passar o token, os outros bancos seriam prejudicados por um tempo maior de espera para realizar as suas operações proprias.
+Sobe esse viés, em que o algoritmo Token Ring foi implmentado, visando permitir que as operações sejam executadas em cada banco apenas quando ele estiver com o token. Cada banco possui sua fila de transações, e a cada passagem do token por aquele banco, apenas uma operação é executada. Isso traz maior performance pensando num conjunto, e é uma forma de dividir o tempo igualmente entre os servidores dos bancos, já que ao permitir um banco realizar toda a sua fila de operações antes de passar o token, os outros bancos seriam prejudicados por um tempo maior de espera para realizar as suas operações proprias. E além disso se torna possível contornar o problema de concorrência entre as operações, ja que elas são executadas conforme a ordem em que chegaram e foram adicionadas na fila, e somente uma por vez quando o banco está em posse do token. Logo as operações não operam em paralelo.
 
 O token, trafega entre os bancos carregando dados consigo que servem para melhora da confiabilidade do sistema. Esses dados fazem parte da adaptação do algoritmo, afim de evitar que a desconexão de um host afete o trafego do token, e em consequencia afetando os outros servidores de banco, que ficariam ativos na rede contudo sem poder operar por não estarem com o token. Dentre os dados enviados, estão o ID do servidor que esta enviado o token para o proximo servidor da fila, além de um *Array* contendo um contador de passagens do token por aquele servidor, neste *Array* estão presentes os valores de todos os host.
 
@@ -186,7 +186,7 @@ Um dos sistemas para evitar que dois tokens estejam circulando na rede é o uso 
 
 Outra proteção contra quedas de hosts, está presente com um temporizador para saber quando o token deve passar por ele novamente. Este tempostizador é iniciado no momento em que o token é passado e aguarda por 30 segundos, caso não recebe o token nesse tempo, é feita uma verificação com o host que lhe mandaou o token para conferir a atividade deste na rede. Tal verificação tem como objetivo evitar por um token na rede sem necessidade, gerando problemas por ter 2 tokens. As verificações com o host anterior ocorrem até 3 vezes, logo caso o host anterior passe 90 segundos, 30 segundos entre cada verificação, sem enviar o token, um novo token é posto na rede. Caso a verificação falhe, é definido que este servidor possui o token, e ele irá passar o token para frente.
 
-Diante de todas essas verificações, 
+Diante de todas essas verificações,é possível 
 
 
 <div align="center">
