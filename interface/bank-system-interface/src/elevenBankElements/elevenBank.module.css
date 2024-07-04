@@ -10,6 +10,7 @@
     padding: 0px;
     height: 100vh;
     color: #eeeeee;
+    width: 100%;
 }
 
 .logoBankArea{
@@ -26,7 +27,9 @@
     color: #eeeeee;
 }
 
-.navBarLandingPage{
+
+
+.navBarBackground{
     width: 98.8%;
     display: inline-flex;
     background: rgba(255, 255, 255, 0.082);
@@ -34,6 +37,14 @@
     margin: 8px 8px;
     margin-bottom: 0px;
     color: #eeeeee;
+    justify-content: center;
+}
+
+.navBarLandingPage{
+    display: inline-flex;
+    max-width: 1440px;
+    width: 100%;
+    
 }
 
 .buttonLadingPage{

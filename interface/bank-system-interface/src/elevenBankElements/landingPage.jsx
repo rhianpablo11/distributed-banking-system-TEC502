@@ -11,8 +11,17 @@ function LandingPage(){
     const gifElevenBank = elevenBankGif
     const {nameBank} =useParams()
     if(nameBank == "Formula"){
+        //document.documentElement.style.setProperty('--background-color', "#");
+        //document.documentElement.style.setProperty('--background-body-color', "#");
         //document.documentElement.style.setProperty('--block-color', "#");
-        
+        //document.documentElement.style.setProperty('--secondary-block-color', "#");
+        //document.documentElement.style.setProperty('--button-color', "#");
+        //document.documentElement.style.setProperty('--button-hover-color', "#");
+        //document.documentElement.style.setProperty('--input-color', "#");
+        //document.documentElement.style.setProperty('--input-secondary-color', "#");
+        //document.documentElement.style.setProperty('--letter-color', "#");
+        //document.documentElement.style.setProperty('--letter-placeholder-color', "#");
+        //document.documentElement.style.setProperty('--letter-hover-color', "#");
     }
 
     return(

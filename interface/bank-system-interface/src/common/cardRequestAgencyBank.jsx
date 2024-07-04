@@ -34,8 +34,8 @@ function CardRequestAgencyBank(){
         if(address == ""){
             setAddressSeted(false)
         } else{
-            const url = "http://localhost:"+address+"/bank"
-            const urlBank = "http://localhost:"+address
+            const url = "http://"+address+"/bank"
+            const urlBank = "http://"+address
             localStorage.setItem("addressBank", urlBank)
             localStorage.setItem('ipBank', address)
             setAddressBank(url)
@@ -48,16 +48,22 @@ function CardRequestAgencyBank(){
     const requestBankName = async () => {
         try {
             setLoading(true)
+            console.log('parte 0')
             const response = await fetch(addressBank)
-            
+            console.log(response)
+            console.log('parte 1')
+
             if (response.ok) {
-                const result = await response.json();
-                
+                console.log(response)
+                const result = await response.json()
+                console.log(result)
+                console.log('parte 2')
                 // finalizar a apresentação do loading
                 setLoading(false);
-                const urlBank = "http://localhost:"+ addressTyped
+                const urlBank = "http://"+ addressTyped
                 localStorage.setItem(result.nameBank, urlBank)
-                return navigate("/"+result.nameBank)
+                console.log("oi oi")
+                navigate("/"+result.nameBank)
                 
             } else {
                 // Caso a resposta não esteja ok, lança um erro

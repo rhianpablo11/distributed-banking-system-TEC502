@@ -469,9 +469,10 @@ def timeOutReceiveToken():
     global counter 
     counter = 0
     attempts = 0
+    timeToWait = 30 + (int(selfID)**2)**2
     while True:
         if(initiateCouter):
-            for a in range(30):
+            for a in range(timeToWait):
                 sleep(1)
                 counter +=1
                 print('VALOR DO CONTADOR: ', counter)
@@ -503,7 +504,7 @@ def timeOutReceiveToken():
                     2.2.4 ele vai nesse caso, o sistema, iniciar o processo como se tivesse recebido o token
                         2.2.4.1 vai verificar se tem alguma operação para realizar, se tiver realiza e depois passa o token
             '''
-            if(counter == 30):
+            if(counter >= timeToWait):
                 if(conectBeforeHostTest()):
                     counter = 0
                     attempts +=1
