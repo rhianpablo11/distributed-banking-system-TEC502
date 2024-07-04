@@ -23,7 +23,7 @@ git clone https://github.com/rhianpablo11/distributed-banking-system-TEC502.git
 ## Como executar
 
 
-A execução do projeto utiliza, conforme requisitado, o docker como ferramenta para criação de containers e execução dos mesmos. Considerando a necessidade dos servidores dos bancos estarem conectados na mesma rede, além dos containers, foi criada uma rede interna ao docker. Essa operação foi automatizada* ao criar um docker compose, em que com um comando todo o sistema fica ativo.
+A execução do projeto utiliza, conforme requisitado, o docker como ferramenta para criação de containers e execução dos mesmos. Considerando a necessidade dos servidores dos bancos estarem conectados na mesma rede, além dos containers, foi criada uma rede interna ao docker. Essa operação foi automatizada ao criar um docker compose, em que com um comando todo o sistema fica ativo.
 
 
 ###  Procedimento para a primeira execução
@@ -83,7 +83,7 @@ O projeto em questão possui alguns pontos principais, que foram tratados ao lon
 Algumas questões, relacionadas com concorrencia, foram encontradas no desenvolvimento do projeto, e que necessitaram de soluções cabíveis a cada uma delas. Essas questões se encontravam com a manipulação de um mesmo dado, visto que por o servidor ser configurado como multithread, logo mais de um thread poderia realizar a alteração de um dado ao mesmo tempo, gerando conflitos. Outro problema relacionado com a concorrência, está presente nas operações sobre uma mesma conta em que - explica problema q fez precisar usar o token ring
 
 
-Visando solucionar o primeiro problema, uma opção encontrada foi o uso do objeto "lock", que é disponibilizado pela biblioteca Threading do python. Esse objeto possui dois métodos, um responsável por "adquirir" o "lock", e o outro responsável por "soltar" o "lock". Com isso foi possível implementá-lo nas operações em que envolvem adição de dados, ou manipulação dos dados salvos. Tendo em vista que na linha de código em que é colocado para realizar a aquisição do "lock", caso ele não esteja disponível, o programa fica preso naquela linha, saindo apenas quando o lock é liberado por "quem havia adquirido". Com isso, por mais que várias threads tentem alterar o dado, eles têm de esperar um "soltar" o lock para outro operar, ficando apenas uma operação por vez sendo executada. Neste projeto o "lock" foi utilizado dentro das contas, ou seja cada conta possui o seu próprio "lock", e com isso antes de realizar alguma operação é primeiro requerido o "lock", para após realizar a operação e ao final da mesma o "lock" é devolvido, e fica disponível para outras operações serem realizadas.
+Visando solucionar o primeiro problema, uma opção encontrada foi o uso do objeto *lock*, que é disponibilizado pela biblioteca Threading do python. Esse objeto possui dois métodos, um responsável por "adquirir" o *lock*, e o outro responsável por "soltar" o *lock*. Com isso foi possível implementá-lo nas operações em que envolvem adição de dados, ou manipulação dos dados salvos. Tendo em vista que na linha de código em que é colocado para realizar a aquisição do *lock*, caso ele não esteja disponível, o programa fica preso naquela linha, saindo apenas quando o*locké* liberado por "quem havia adquirido". Com isso, por mais que várias threads tentem alterar o dado, eles têm de esperar um "soltar" o*lockpara* outro operar, ficando apenas uma operação por vez sendo executada. Neste projeto o *lock* foi utilizado dentro das contas, ou seja cada conta possui o seu próprio *lock*, e com isso antes de realizar alguma operação é primeiro requerido o *lock*, para após realizar a operação e ao final da mesma o *lock* é devolvido, e fica disponível para outras operações serem realizadas.
 
 
 Em busca de uma solução em que permitisse ordenar os eventos, e permitir que apenas um realize a operação por vez, é que foi utilizado o algoritmo do token ring. Este algoritmo utiliza uma topologia do tipo anel, em que um token percorre por todos os hosts presentes na rede. Quando o host possui alguma operação a ser feita este aguarda por o token chegar até ele para realizar, ao finalizar essa ação ele coloca o token na rede novamente. Originalmente, essa metodologia pode gerar problemas, tendo em vista o risco de um host ser desconectado e todo os outros ficarem esperando a reconexão deste para conseguir seja, passar o token que estava com ele, ou para fechar o anel e permitir a passagem do token, com ele recebendo o token e passando para o próximo host. Pensando nessas questões, que adaptações na implementação foram feitas para um melhor funcionamento.
@@ -97,7 +97,7 @@ Não menos importante, também foi implementado o protocolo *2 Phase Commit* par
 ## Metodologia
 
 
-A Fim de realizar o desenvolvimento do projeto, cumprindo com os requisitos exigidos pelo problema, tornou-se essencial a aplicação dos conceitos teóricos presentes na seção [Fundamentação teórica](#fundamentação-teórica) na implementação. Uma das principais questões para ser resolvida estava presente na concorrência entre os servidores, e como solucionar para evitar inconsistência de dados durante as transações. Tal concorrência presente seja na modificação interna do mesmo dado por mais de um thread, ou por múltiplos bancos requisitando uma transação sobre a mesma conta no mesmo banco para eles. Considerando tais questões que o uso do algoritmo de token ring foi utilizado, bem como o uso do "lock".
+A Fim de realizar o desenvolvimento do projeto, cumprindo com os requisitos exigidos pelo problema, tornou-se essencial a aplicação dos conceitos teóricos presentes na seção [Fundamentação teórica](#fundamentação-teórica) na implementação. Uma das principais questões para ser resolvida estava presente na concorrência entre os servidores, e como solucionar para evitar inconsistência de dados durante as transações. Tal concorrência presente seja na modificação interna do mesmo dado por mais de um thread, ou por múltiplos bancos requisitando uma transação sobre a mesma conta no mesmo banco para eles. Considerando tais questões que o uso do algoritmo de token ring foi utilizado, bem como o uso do *lock*.
 
 
 Vale ressaltar ainda o uso da ferramenta *Docker*, para possibilitar a criação de containers em que estes rodam em ambientes separados. Sendo assim, foi utilizado de outra ferramenta do *Docker* o *Docker compose*, este que possibilita criar os 6 container necessários para essa aplicação de forma simplificada, tanto no momento de construção, bem como para definir as variáveis de ambiente. Os 5 últimos containers criados, representam cada um dos bancos, e o primeiro container representa a interface.
@@ -107,10 +107,10 @@ Vale ressaltar ainda o uso da ferramenta *Docker*, para possibilitar a criação
 
 
 ### Estrutura do projeto
-- [**`Interface`**](#):
+- [**`Interface`**](#interface):
   - Responsável por permitir que os usuários criem, ou façam login em suas contas no banco escolhido. Além disso, é possível realizar operações na sua conta, seja ela presente no banco ao qual se conectou, ou operando sobre o dinheiro presente em outro banco.
   - Desenvolvido utilizando a framework "React Js" para o JavaScript
-- [**`Middleware`**](#):
+- [**`Middleware`**](#middleware):
   - Responsável por receber requisições provindas da interface, e dos outros bancos e realizar o devido retorno correto dos dados. Além disso ele é responsável por armazenar os dados das contas bancárias presentes nele, e controlar a ordem das operações a serem realizadas.
   - Desenvolvido utilizando a linguagem Python
 - [**`AccountModel`**](#accountmodel):
@@ -258,13 +258,13 @@ Para operação de **enviar um pacote de pix**, o padrão de dado esperado pelo 
 
 
 
-### Middleware
+### [Middleware](https://github.com/rhianpablo11/distributed-banking-system-TEC502/blob/main/server/middleware.py)
 
 
-Este componente do projeto é responsável por coordenar todas as operações e possibilitar a comunicação seja [servidor-servidor](#), ou [servidor-interface](). No que se trata de realização de operações ele apresenta a lógica para cuidar dessas
+Este componentedo projeto é responsável por coordenar todas as operações e possibilitar a comunicação seja [servidor-servidor](#comunicação-servidor-servidor), ou [servidor-interface](#comunicação-servidor-interface). Para coordenar as operações em paralelo ao receber requisições, foi ativado no Flask, framework para utilizado para construção da API, o modo *threaded*, em que ele opera com multiplos threads. Outros 2 threads são fixos, sendo um deles mantendo a função que verifica a presença do token, para possível execução de uma operação, caso haja alguma ainda não executada na fila, e por fim passar o token para o proximo servidor. O outro thread se responsabiliza em manter o temporizador ativo, para detectar se o tempo limite para receber o token novamente foi atingido ou não.
 
 
-### AccountModel
+### [AccountModel](https://github.com/rhianpablo11/distributed-banking-system-TEC502/blob/main/server/accountModel.py)
 
 
 O accountModel é uma classe em que foi pensada como um dos pontos centrais no quesito de realizar as transações. Diante disso, o servidor do banco ao receber uma requisição de depósito, por exemplo, verifica a existência daquela conta no banco de dados, e existindo chama o método daquela classe para poder realizar o depósito. Dessa forma fica separado cada função, o servidor fica responsável por coordenar as operações e mantê-las em ordem, e o objeto da classe, é quem fica encarregado de colocar, retirar ou enviar dinheiro para outra conta, ou para a própria.
@@ -273,10 +273,10 @@ O accountModel é uma classe em que foi pensada como um dos pontos centrais no q
 Ainda vale ressaltar que com o uso dessa classe é possível construir um dicionário contendo informações sobre esse usuário para ser enviado para a interface, ou para enviar dados parciais sobre o usuário quando requisitado as informações dele para realizar a transferência via pix. Este dicionário é convertido num objeto json antes de ser enviado. Isso permite a interface ser apresentar os dados para o usuário de forma mais visível e informativa.
 
 
-Cabe citar ainda a presença de um objeto lock, da biblioteca Threading do python. Este tem a serventia de controlar as múltiplas operações que podem ocorrer envolvendo aquela mesma conta naquele banco. Com a presença do lock, apenas uma operação de mudança de dados é executada por vez, em ordem de chegada, já que ao ser "adquirido" um lock, outra operação a ser realizada por outro thread tem que aguardar o lock ser "solto" para ele pegar e realizar a operação. Dessa maneira a concorrência interna de alteração de dados fica solucionada.
+Cabe citar ainda a presença de um objeto *lock*, da biblioteca Threading do python. Este tem a serventia de controlar as múltiplas operações que podem ocorrer envolvendo aquela mesma conta naquele banco. Com a presença do *lock*, apenas uma operação de mudança de dados é executada por vez, em ordem de chegada, já que ao ser "adquirido" um *lock*, outra operação a ser realizada por outro thread tem que aguardar o *lock* ser "solto" para ele pegar e realizar a operação. Dessa maneira a concorrência interna de alteração de dados fica solucionada.
 
 
-### TransactionModel
+### [TransactionModel](https://github.com/rhianpablo11/distributed-banking-system-TEC502/blob/main/server/transactionModel.py)
 
 
 O transactionModel é uma classe, em que visa simplificar o armazenamento de dados sobre cada operação, e com isso consegue realizar um melhor controle sobre aquela conta. Tal controle permite facilitar o "roll back" das transações em que ocorrem erros, ou realizar a confirmação da transação.
@@ -313,10 +313,10 @@ Diante de todas essas verificações, é possível tornar o algoritmo "resistent
 
 
 
-### Operações
+### [Operações](https://github.com/rhianpablo11/distributed-banking-system-TEC502/blob/1b99a3a42b620c8b03590befc6dd05987fdd0ce4/server/middleware.py#L715)
 
 
-A realização das operações é divida em partes, iniciando no recebimento da operação a ser executada e finalizando no retorno da requisição. Dentre as etapas estão, receber a requisição e construir um dicionário contendo um os dados da requisição, contendo uma chave para ser preenchida com a resposta de retorno a ser retornada, e outra chave informando se está concluída ou não. Esses campos adicionais aos dados da operação são de importância para o controle sobre a requisição. A próxima etapa é colocar a operação na fila, em que para isso é feito o uso do “lock”, a fim de evitar 2 requisições pedindo para colocar dados na fila ao mesmo tempo, o que geraria conflitos. Tal “lock” também é utilizado ao realizar alterações no dicionário presente na fila. A penúltima etapa na realização da operação é realizá-la de fato, sendo para cada tipo uma lógica diferente. Os tipos disponíveis são: criar conta, enviar pix, depósito e enviar um pacote de pix. Por último, com a operação concluída, é feito o retorno para quem requisitou.
+A realização das operações é divida em partes, iniciando no recebimento da operação a ser executada e finalizando no retorno da requisição. Dentre as etapas estão, [receber a requisição](https://github.com/rhianpablo11/distributed-banking-system-TEC502/blob/1b99a3a42b620c8b03590befc6dd05987fdd0ce4/server/middleware.py#L144) e construir um dicionário contendo um os dados da requisição, contendo uma chave para ser preenchida com a resposta de retorno a ser retornada, e outra chave informando se está concluída ou não. Esses campos adicionais aos dados da operação são de importância para o controle sobre a requisição. A próxima etapa é colocar a operação na fila, em que para isso é feito o uso do *lock*, a fim de evitar 2 requisições pedindo para colocar dados na fila ao mesmo tempo, o que geraria conflitos. Tal *lock* também é utilizado ao realizar alterações no dicionário presente na fila. A penúltima etapa na realização da operação é realizá-la de fato, sendo para cada tipo uma lógica diferente. Os tipos disponíveis são: criar conta, enviar pix, depósito e enviar um pacote de pix. Por último, com a operação concluída, é feito o retorno para quem requisitou.
 
 
 #### Criação de conta
@@ -373,8 +373,16 @@ A realização de testes foram essenciais para mediar o desenvolvimento, e verif
 A solução desenvolvida, conforme um dos requisitos, funciona utilizando comunicação http implementando uma API Rest. Sendo assim, para realização dos testes foi utilizado o programa PostMan, para criar as requisições, realizar o envio e verificar a resposta obtida pelo servidor.
 
 
-Os primeiros testes iniciaram com as operações simples, envolvendo criação dos dados, como criação de conta, realização de login, requisição de dados básicos para apresentar ao realizar um pix. Estes testes podem ser vistos nas imagens X, X, X.
+Os primeiros testes iniciaram com as operações simples, envolvendo criação dos dados, como criação de conta, realização de login, requisição de dados básicos para apresentar ao realizar um pix. Estes testes podem ser vistos nas imagens 1, 2.
 
+  <p align="center">
+    <img width="" src="https://github.com/rhianpablo11/" />
+    Img 1. Requisição de criar uma conta e o retorno obtido
+  </p>
+<p align="center">
+    <img width="" src="https://github.com/rhianpablo11/" />
+    img 2. Requisição pedindo os dados pix da conta
+  </p>
 
 Testes envolvendo transações em ambiente controlado, sem a presença da concorrência entre os bancos e operações, ocorreram na sequência, para verificar as modificações nos saldos das contas, e as transações presentes na lista de cada conta, se estavam conforme esperado, sem presença de erros. Nessa etapa os testes de conectividade foram executados, visando testar a confiabilidade do sistema.
 
@@ -387,7 +395,9 @@ Por fim, foi testado todo o sistema em conjunto utilizando das operações simpl
 
 ## Conclusão
 
+Baseado no que foi apresentado, e o produto final obtido do desenvolvimento, observa-se que a conclusão do projeto foi um sucesso, ao atingir os requisitos que foram exigidos no problema. Dessa forma, a concorrencia entre os bancos foi tratada para evitar problemas e erros durante o uso do sistema, bem como a comunicação entre os bancos pra facilitar as transferencias nesse modelo bancario distribuído. Essas questões, operando com sistema de confiabilidade, tornando o sistema mais robusto e eficaz.
 
+Não obstante, melhorias podem ser implementadas no projeto a fim de garantir tanto um sistema mais completo, como mais seguro. Dentre as melhorias, pode-se citar a segurança na comunicação entre servidor-interface, resolvendo isto ao utilizar token de autenticação nessa comunicação, bem como dados circulando na rede de maneira criptografada. Além disso, pode-se ainda implementar maior controle da conta, no quesito de realizar alterações no perfil do usuário.
 
 
 

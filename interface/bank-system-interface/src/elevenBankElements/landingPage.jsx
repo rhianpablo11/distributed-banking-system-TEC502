@@ -10,18 +10,18 @@ function LandingPage(){
     const bank = elevenBankLogo
     const gifElevenBank = elevenBankGif
     const {nameBank} =useParams()
-    if(nameBank == "Formula"){
-        //document.documentElement.style.setProperty('--background-color', "#");
-        //document.documentElement.style.setProperty('--background-body-color', "#");
-        //document.documentElement.style.setProperty('--block-color', "#");
-        //document.documentElement.style.setProperty('--secondary-block-color', "#");
-        //document.documentElement.style.setProperty('--button-color', "#");
-        //document.documentElement.style.setProperty('--button-hover-color', "#");
-        //document.documentElement.style.setProperty('--input-color', "#");
-        //document.documentElement.style.setProperty('--input-secondary-color', "#");
-        //document.documentElement.style.setProperty('--letter-color', "#");
-        //document.documentElement.style.setProperty('--letter-placeholder-color', "#");
-        //document.documentElement.style.setProperty('--letter-hover-color', "#");
+    if(nameBank == "Eleven"){
+        //document.documentElement.style.setProperty('--background-color', "#000000");
+        //document.documentElement.style.setProperty('--background-body-color', "#000000");
+        //document.documentElement.style.setProperty('--block-color', "#171717");
+        //document.documentElement.style.setProperty('--secondary-block-color', "#444444");
+        //document.documentElement.style.setProperty('--button-color', "#252525");
+        //document.documentElement.style.setProperty('--button-hover-color', "#000000");
+        //document.documentElement.style.setProperty('--input-color', "#444444");
+        //document.documentElement.style.setProperty('--input-secondary-color', "#1f1e1e");
+        //document.documentElement.style.setProperty('--letter-color', "#EEEEEE");
+        //document.documentElement.style.setProperty('--letter-placeholder-color', "#a0a0a0");
+        //document.documentElement.style.setProperty('--letter-hover-color', "#444444");
     }
 
     return(
