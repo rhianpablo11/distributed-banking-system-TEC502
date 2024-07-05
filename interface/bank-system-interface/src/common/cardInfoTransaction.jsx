@@ -55,7 +55,7 @@ function CardInfoTransaction(props){
         
         selectTextTransaction()
         setValue(formatCurrency(parseFloat(props.transaction.value)))
-    },[])
+    },[props.transaction])
     
     return (
         <>

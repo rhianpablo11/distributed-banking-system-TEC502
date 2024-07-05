@@ -14,11 +14,11 @@ function CardDepositMoney(props){
                     </div>
     
     const buttonOptionSelected = {
-        'background': '#000000'
+        'background': 'var(--button-hover-color)'
     }
 
     const buttonOptionNotSelected = {
-        'background': '#444444'
+        'background': 'var(--button-color)'
     }
 
 

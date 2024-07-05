@@ -85,6 +85,8 @@ global disconnectionOcurred
 global transactionsToMake
 global transactionsToMakeID
 global canPasstokenID
+global acceptNewToken
+acceptNewToken = False
 transactionsToMakeID = 0
 transactionsToMake = {}
 disconnectionOcurred = False
@@ -108,6 +110,8 @@ def receiveToken():
     global canPasstokenID
     global initiateCouter
     global counter 
+    global acceptNewToken
+    acceptNewToken = False
     counter = 0
     initiateCouter = False
     infoReceived = request.json
@@ -115,7 +119,11 @@ def receiveToken():
     tokenIDNew = infoReceived["tokenIDList"]
     print("TOKEN QUE CHEGOU: ",tokenIDNew)
     print("TOKEN QUE TENHO:  ",tokenID)
-    if((tokenIDNew[int(selfID)-1] >= tokenID[int(selfID)-1])):
+    if(acceptNewToken):
+        tokenID = tokenIDNew 
+        tokenID[int(selfID)-1] +=1
+        hasToken = True
+    elif((tokenIDNew[int(selfID)-1] >= tokenID[int(selfID)-1])):
         tokenID = tokenIDNew 
         tokenID[int(selfID)-1] +=1
         hasToken = True
@@ -128,6 +136,15 @@ def receiveToken():
 @app.route('/verify-conection', methods=['GET'])
 def conectionTest():
     return "ok", 200
+
+@app.route('/new-token', methods=['POST'])
+def setNewToken():
+    global tokenID
+    global acceptNewToken
+    acceptNewToken = True
+    return "ok", 200
+
+
 
 
 @app.route("/search-account", methods=['POST'])
@@ -420,6 +437,7 @@ def passToken2():
         
         try:
             hasToken = False                
+            
             infoReceived = requests.post(url=url, json=dataSend, timeout=2)
             if(infoReceived.status_code == 200):
                 nodeResponse = True             #sair do while indicando que conseguiu mandar o token
@@ -467,9 +485,10 @@ def timeOutReceiveToken():
     global initiateCouter
     global hasToken
     global counter 
+    global tokenID
     counter = 0
     attempts = 0
-    timeToWait = 30 + (int(selfID)**2)**2
+    timeToWait = 30 + (int(selfID)**2)
     while True:
         if(initiateCouter):
             for a in range(timeToWait):
@@ -510,14 +529,19 @@ def timeOutReceiveToken():
                     attempts +=1
                     initiateCouter = True
                     if(attempts == 3): #melhorar isso aq para poder enviar para todos que o novo token vai ta na rede
+                        
                         hasToken = True
                         attempts = 0
                         counter = 0
                         initiateCouter = False
                 else:
+                    
                     hasToken = True
                     counter = 0
                     initiateCouter = False
+            else:
+                attempts = 0
+                counter = 0
         else:
             counter = 0
             attempts = 0
@@ -903,8 +927,11 @@ def operateTransactionOfList(idTransaction):
                         sendOK = False
             if(listConfirmation != len(packetTransactions)):
                 print('para para para')
+                print('TRANSACTIONS TO REVERT: ', transactionsMadeInfo)
                 #SEGUNDO FOR PARA ENVIAR QUE DEU ERRADO PARA A GALERA
                 for transaction in transactionsMadeInfo:
+                    print(transaction)
+                    print('AAAAAAAAAA')
                     url = listBanksConsortium[transaction['idBankSender']][0]+'/account/error-transaction'
                     dataSend = {
                         'cpfCNPJ': transaction['cpfCNPJSender'],
@@ -912,13 +939,17 @@ def operateTransactionOfList(idTransaction):
                         'authorization': hasToken
                     }
                     ok = False
+                    print('BBBBBB')
                     while not ok:
                         try:
+                            print('')
                             infoReceivedByRequest = requests.post(url, json = dataSend)
                             if(infoReceivedByRequest.status_code == 200):
                                 ok = True
+                                print('CCCCCC')
                         except:
                             sleep(1)
+                            print('DDDDDDDD')
                             ok = False
                     url = listBanksConsortium[transaction['idBankReceiver']][0]+'/account/error-transaction'
                     dataSend = {
@@ -926,15 +957,22 @@ def operateTransactionOfList(idTransaction):
                         'idTransaction': transaction['idTransactionReceiver'],
                         'authorization': hasToken
                     }
+                    print('EEEEEEE')
                     ok = False
                     while not ok:
                         try:
+                            print('FFFFFFFFF')
                             infoReceivedByRequest = requests.post(url, json = dataSend)
+                            print(infoReceivedByRequest)
                             if(infoReceivedByRequest.status_code == 200):
                                 ok = True
+                                print('GGGGGGG')
+
                         except:
                             sleep(1)
+                            print('HHHHHHH')
                             ok = False
+                print('IIIIIIII')
                 transactionsToMake[idTransaction]["response"] = ('one, or more, transaction(s) not ok', 400)
                 transactionsToMake[idTransaction]["executed"] = True  
             

@@ -1,18 +1,19 @@
 :root{
     --background-color: #000000;
-    --background-body-color: #000000;
-    --block-color: #171717;
-    --secondary-block-color: #444444;
-    --button-color: #252525;
-    --button-hover-color: #000000;
-    --input-color: #444444;
-    --input-secondary-color: #1f1e1e;
-    --letter-color: #EEEEEE;
-    --letter-placeholder-color: #a0a0a0;
-    --letter-hover-color:#444444;
+    --background-body-color: #041b19;
+    --block-color: #f2e9d4;
+    --secondary-block-color: #fbf9e7;
+    --button-color: #a9a394;
+    --button-hover-color: #33312b;
+    --input-color: #fbf9e7;
+    --input-secondary-color: #f5f2db;
+    --letter-color: #4e4e4e;
+    --letter-placeholder-color: #85635c;
+    --letter-hover-color:#a9a394;
+    --button-letter-color: #fbf9e7;
 }
-
-/*
+ 
+/* 
     PARTE DA LOGO 
 */
 .logoBankStyle {
@@ -30,7 +31,7 @@
     padding-left: 0px;
     font-weight: 200;
     font-size: 1.8rem;
-    color: var(--letter-color);
+    color: var(--letter-placeholder-color);
 }
 
 
@@ -134,6 +135,7 @@
     margin-top: 10px;
     margin-bottom: 5px;  
     font-size: 1.5rem;
+    color: var(--button-letter-color);
 }
 
 .buttonPreLogin:hover{
@@ -162,17 +164,18 @@
 .buttonAccount button{
     background: none ;
     border-radius: 10px;
-    border: 2px solid var(--letter-color);
+    border: 2px solid white;
     padding: 5px 10px;
     font-size: 1.3rem;
     margin: 10px 5px;
     width: 200px;
-    color: var(--letter-color);
+    color: white;
 }
 
 .buttonAccount button:hover{
-    background: var(--letter-color);
-    color: var(--letter-hover-color);
+    color:white;
+    background: rgba(255, 255, 255, 0.3);
+    
 }
 
 .buttonAccount button a:hover{
@@ -203,7 +206,7 @@
 
 
 .personIconNavBar{
-    background: var(--letter-color);
+    background: var(--button-color);
     border-radius: 50%;
     width: 45px;
     height: 45px;
@@ -217,7 +220,7 @@
 }
 
 .personIconNavBar:hover{
-    background: var(--letter-hover-color);
+    background: var(--button-hover-color);
 }
 
 .navBarLogoArea{
@@ -378,6 +381,7 @@
     margin: 15px 5px;
     border-radius: 10px;
     font-size: 1rem;
+    color: var(--button-letter-color);
 }
 
 .buttonDeposit button:hover{
@@ -401,6 +405,7 @@
 
 .buttonPayDeposit{
     background: var(--button-color);
+    color: var(--button-letter-color);
     padding: 7px 30px;
     border-style: none;
     margin: 0px;
@@ -559,7 +564,7 @@
 
 
 .infoTransactionBlockList:hover{
-    background: var(--background-color);
+    background: var(--background-body-color);
 }
 
 .iconAboutMoneyTransaction{
@@ -719,11 +724,13 @@
 
 .inputValuePix::placeholder{
     text-align: left;
+    color: var(--letter-placeholder-color);
 }
 
 .fastPixBlock button{
     margin-top: 10px;
     background: var(--button-color);
+    color: var(--button-letter-color);
     border-style: none;
     border-radius: 10px;
     padding: 7px 20px;
@@ -831,6 +838,7 @@
 
 .constructTrasaction button{
     background: var(--button-color);
+    color: var(--button-letter-color);
     border-radius: 10px;
     border-style: none;
     margin: 5px;
@@ -952,6 +960,7 @@
 
 .buttonRemoveTransaction button{
     background: var(--button-color);
+    color: var(--button-letter-color);
     width: 100%;
     border: none;
     border-radius: 15px;
@@ -1068,6 +1077,7 @@
 
 .buttonMakePacketTransaction{
     background: var(--button-color);
+    color: var(--button-letter-color);
     border-style: none;
     padding: 10px;
     margin-top: 10px;
@@ -1077,7 +1087,7 @@
 }
 
 .buttonMakePacketTransaction:hover{
-    background-color: #000000;
+    background-color: var(--button-hover-color);
 }
 
 

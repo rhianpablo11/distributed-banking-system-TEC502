@@ -4,7 +4,7 @@
 
 
 .landingPageComponent{
-    background: linear-gradient(130deg, rgba(19, 0, 16, 0.685) 9%, rgba(36,52,82,1) 45%, rgba(19, 0, 16, 0.685) 84%);
+    background: linear-gradient(130deg, rgba(19, 0, 16, 1) 9%, rgb(42, 61, 95) 45%, rgba(19, 0, 16, 1) 84%);
     background-size: cover;
     margin: 0px;
     padding: 0px;
@@ -16,42 +16,44 @@
 .logoBankArea{
     margin-top: 10px;
     margin-left: 20px;
-    color: #eeeeee;
-    
+    color: #eeeeee;    
+
 }
 
 .logoBankArea .logoBankStyle{
-    width:200px;
+
     margin-top: 0px;
     padding-top: 0px;
     color: #eeeeee;
+    
 }
 
 
 
 .navBarBackground{
     width: 98.8%;
+    max-width: 98.8%;
     display: inline-flex;
     background: rgba(255, 255, 255, 0.082);
     border-radius: 10px;
     margin: 8px 8px;
     margin-bottom: 0px;
     color: #eeeeee;
-    justify-content: center;
-}
-
-.navBarLandingPage{
-    display: inline-flex;
-    max-width: 1440px;
-    width: 100%;
     
 }
 
+.navBarLandingPage{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
 .buttonLadingPage{
-    margin-left: 63%;
-    width: 300px;
+    margin-right: 10px;
     display: inline-flex;
     color: #eeeeee;
+    
+   
 }
 
 .principalArea{

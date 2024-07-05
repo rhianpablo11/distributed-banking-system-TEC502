@@ -9,6 +9,11 @@
 
 body{
   background: var(--background-body-color);
+  background-repeat: no-repeat;
+  background-size: auto;
+  width: 100%;
+  height: 100vh;
+
 }
 
 a{
