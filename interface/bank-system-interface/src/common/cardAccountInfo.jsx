@@ -1,11 +1,11 @@
 import styles from "../style_modules/commonStyles.module.css"
 import propsTypes from 'prop-types'
-
+import { useParams } from "react-router-dom"
 
 
 function CardAccountInfo(props){
-    
-    const agency = localStorage.getItem('ipBank')
+    const {nameBank} =useParams()
+    const agency = localStorage.getItem(nameBank)
 
     return(
         <>

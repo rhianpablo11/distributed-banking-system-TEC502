@@ -339,13 +339,16 @@ def confirmationOperation():
 @app.route('/account/error-transaction', methods=['POST'])
 def errorOperation():
     dataReceived = request.json
+    print('KKKKKKK')
     if(dataReceived['authorization']):
         if(dataReceived['cpfCNPJ'] not in accounts):
             return 'account not found', 404
         else:
             accounts[dataReceived['cpfCNPJ']].errorTransaction(dataReceived['idTransaction'])
+            print('LLLLLLLLL')
             return "operation updated",200
     else:
+        print('OIOIOIOIOIOI')
         return 'not authorized', 401
 
 
@@ -437,7 +440,7 @@ def passToken2():
         
         try:
             hasToken = False                
-            
+            sleep(5)
             infoReceived = requests.post(url=url, json=dataSend, timeout=2)
             if(infoReceived.status_code == 200):
                 nodeResponse = True             #sair do while indicando que conseguiu mandar o token
@@ -529,16 +532,27 @@ def timeOutReceiveToken():
                     attempts +=1
                     initiateCouter = True
                     if(attempts == 3): #melhorar isso aq para poder enviar para todos que o novo token vai ta na rede
-                        
-                        hasToken = True
+                        for a in range(len(tokenID)):
+                            tokenID[a]+=100
                         attempts = 0
                         counter = 0
                         initiateCouter = False
+                        hasToken = True
+                        
                 else:
-                    
-                    hasToken = True
-                    counter = 0
-                    initiateCouter = False
+                    if (verifyActivity()):
+                        for a in range(len(tokenID)):
+                            tokenID[a]+=100
+                        counter = 0
+                        attempts = 0
+                        initiateCouter = False
+                        hasToken = True
+                        
+                    else:
+                        hasToken = False
+                        counter = 0
+                        attempts = 0
+                        initiateCouter = False
             else:
                 attempts = 0
                 counter = 0
@@ -1086,6 +1100,27 @@ def putOperationInList(dataReceived):
     transactionsToMakeID +=1
     addOperationLock.release()
     return transactionsToMakeIDWaiting
+
+
+def verifyActivity():
+    hostsResponse = 0
+    nextID = int(selfID)+1    
+    for a in range(4):
+        if(nextID>5):
+            nextID=1
+        try:
+            infoReceived = requests.get(url=listBanksConsortium[str(nextID)][0]+'/verify-conection', timeout=2)
+            hostsResponse +=1
+        except:
+            pass
+        nextID +=1
+    if(hostsResponse>0):
+        print("AINDA TEM ALGUEM ATIVO")
+        return 1 #indica que ele esta ativo
+    else:
+        print("nao TEM ALGUEM ATIVO")
+        return 0 #indica que ele esta inativo
+
 
 
 

@@ -155,8 +155,10 @@ class Account:
     def sendPix(self, url, data):
         self.operationLock.acquire()
         if(float(self.balance) < float(data["value"])): #verificar se tem saldo
+            self.operationLock.release()
             return ("Not money availible for this transaction", 0)
         elif((data["keyPix"] == self.keyPix) and (data['bankNameReceiver'])==self.bank): #verificar se a chave nao é a do mesmo usuario
+            self.operationLock.release()
             return ("error, key is same of client", 0)
         else: 
             balanceBackup = self.balance
@@ -241,6 +243,7 @@ class Account:
 
 
     def errorTransaction(self, idTransaction):
+
         self.operationLock.acquire()
         if(self.transactions[idTransaction].typeTransaction == 'receive Pix'):
             print('RETIRANDO')
