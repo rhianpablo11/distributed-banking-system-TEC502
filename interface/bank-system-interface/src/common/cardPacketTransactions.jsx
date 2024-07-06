@@ -235,14 +235,17 @@ function CardPacketTransactions(props){
                         </div>
                         
                     </div>
-                    <ul>
-                        {listTransactionsToMake.map((transactionPart, index) =>
-                            <li>
-                                <CardInfoTransactionForMakeInPacket transactionInfo={transactionPart} selfIndex={index}  removeTransaction = {deleteTransaction} />
-                            </li>
-                        )}
-                        
-                    </ul>
+                    <div className={styles.areaTransactionsList}>
+                        <ul>
+                            {listTransactionsToMake.map((transactionPart, index) =>
+                                <li>
+                                    <CardInfoTransactionForMakeInPacket transactionInfo={transactionPart} selfIndex={index}  removeTransaction = {deleteTransaction} />
+                                </li>
+                            )}
+                            
+                        </ul>
+                    </div>
+                    
                 </div>
                 
                 <button onClick={sendPacket} className={styles.buttonMakePacketTransaction}>Make Transaction</button>

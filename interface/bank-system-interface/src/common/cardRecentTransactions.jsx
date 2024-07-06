@@ -2,12 +2,16 @@ import { useEffect, useState } from "react"
 import styles from "../style_modules/commonStyles.module.css"
 import CardInfoTransaction from "./cardInfoTransaction"
 import propsTypes from 'prop-types'
+import CardTransactionInfoDetailed from "./cardTransactionInfoDetailed"
 
 function CardRecentTransactions(props) {
     const [transactions, setTransactions] = useState([])
     useEffect(()=>{
         setTransactions(props.transactions)
     },)
+
+    const [openModalTransaction, setOpenModalTransaction] = useState(false)
+    const [transactionToExpand,setTransactionToExpand] = useState()
     return(
         <>
             <div className={styles.recentsTransactionsBlock}>
@@ -17,12 +21,13 @@ function CardRecentTransactions(props) {
                         {transactions.map((transaction) =>
 
                             <li>
-                                <CardInfoTransaction transaction={transaction} />
+                                <CardInfoTransaction onClick={()=>{setOpenModalTransaction(true)}} transaction={transaction} />
                             </li>)}
                     </ul>
                 </div>
                 
             </div>
+            <CardTransactionInfoDetailed isOpen={openModalTransaction} />
         </>
     )
 }

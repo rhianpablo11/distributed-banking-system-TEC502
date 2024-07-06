@@ -22,7 +22,8 @@ class Transaction:
             "concluded": self.concluded,
             "typeTransaction": self.typeTransaction,
             "bankSource": self.bankSource,
-            "bankReceptor": self.bankReceptor
+            "bankReceptor": self.bankReceptor,
+            "idTransaction": self.idTransaction
         }
         return auxJson
         
