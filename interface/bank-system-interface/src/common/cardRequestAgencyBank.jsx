@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import styles from "../style_modules/commonStyles.module.css"
+import styles from "../style_modules/requestAgencyBank.module.css"
 import { useNavigate } from "react-router-dom"
 import Loading from "./loading"
 import ErrorOperation from "./errorOperation";

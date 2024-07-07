@@ -137,6 +137,8 @@ function CardPacketTransactions(props){
                 console.log('OI EU')
                 const auxTemp = await response.text()
                 setErrorMensage(auxTemp)
+                setListTransactionsToMake([])
+                setListTransactionsToMakeFormatedToSend([])
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
@@ -145,6 +147,8 @@ function CardPacketTransactions(props){
         } finally {
           // finalizar a apresentação do loading
           setLoading(false);
+          setListTransactionsToMake([])
+          setListTransactionsToMakeFormatedToSend([])
         }
     };
 

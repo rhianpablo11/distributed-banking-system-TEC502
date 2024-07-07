@@ -53,7 +53,7 @@ function CardTransactionInfoDetailed(props){
         setTransaction(props.transaction)
         selectTextTransaction()
         setValue(formatCurrency(parseFloat(props.transaction.value)))
-    }, [props.transaction])
+    }, )
     
     const [openModal,setOpenModal] = useState(false)
     useEffect(()=>{
@@ -124,7 +124,14 @@ function CardTransactionInfoDetailed(props){
                                         {transaction.idTransaction}
                                     </h2>
                                 </div>
-                                    
+                                <div style={{"display": "flex", "align-items": 'baseline'}}>
+                                    <h1>
+                                        Type:
+                                    </h1>
+                                    <h2 >
+                                        {typeTransaction}
+                                    </h2>
+                                </div>
                             </div>
                         </div>
                         <div className={styles.infosAboutPersonsEnvolved}>

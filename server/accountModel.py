@@ -162,6 +162,7 @@ class Account:
             return ("error, key is same of client", 0)
         else: 
             balanceBackup = self.balance
+            blockedBalanceBackup = self.blockedBalance
             try:
                 print("AAAAAAA")
                 infoReceivedByRequest = requests.patch(url, json = data)
@@ -203,6 +204,7 @@ class Account:
             except:
                 self.operationLock.release()
                 self.balance = balanceBackup
+                self.blockedBalance = blockedBalanceBackup
                 self.addTransaction(
                     Transaction(
                             nameSource=self.name1,

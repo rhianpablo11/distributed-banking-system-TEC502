@@ -172,6 +172,7 @@ function CardFastPix(props){
                 // finalizar a apresentação do loading
                 setLoading(false)
                 setKeyPixInserted("")
+                setClientReceiverFound(false)
             } else {
                 // Caso a resposta não esteja ok, lança apresentação de senha incorreta
                 setLoading(false)
@@ -191,6 +192,7 @@ function CardFastPix(props){
           // finalizar a apresentação do loading
           setLoading(false);
           setKeyPixInserted("")
+          setClientReceiverFound(false)
         }
     };
 
@@ -216,7 +218,7 @@ function CardFastPix(props){
                 <button onClick={searchInformationReceiverPix}>
                     Search
                 </button>
-                {clientReceiverFound ? dataAboutKeyPix : <></>}
+                {clientReceiverFound ? dataAboutKeyPix : null}
                 <Loading isOpen={loading} />
                 <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             </div>

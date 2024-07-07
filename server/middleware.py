@@ -312,13 +312,17 @@ def sendMoneyWithPix():
         else:
             #ESSA RESPOSTA NAO PODE SER SIMPLISMENTE ESSA, TEM QUE MANDAR UM JSON COM AS INFOS DAS TRANSAÇÕES E SEUS IDs
             response = accounts[dataReceived['cpfCNPJSender']].sendPix(dataReceived['url'], dataReceived)
-            dataSend = {
-                'idTransactionSender': response[2],
-                'idTransactionReceiver': response[3]
-            }
-            print('JSON ENVIADO: ', dataSend)
-            response = make_response(jsonify(dataSend))
-            return response, 200
+            print("TAMANHO DA RESPOSTA: ",len(response))
+            if(len(response)>2):
+                dataSend = {
+                    'idTransactionSender': response[2],
+                    'idTransactionReceiver': response[3]
+                }
+                print('JSON ENVIADO: ', dataSend)
+                response = make_response(jsonify(dataSend))
+                return response, 200
+            else:
+                return "error in send money", 400
     else:
         return 'not authorized', 401
 
