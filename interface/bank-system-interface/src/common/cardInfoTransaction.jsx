@@ -57,9 +57,23 @@ function CardInfoTransaction(props){
         setValue(formatCurrency(parseFloat(props.transaction.value)))
     },[props.transaction])
     
+
+    const [clicked, setClicked] = useState(true)
+    const selectTransaction = (e) =>{
+        if(clicked){
+            props.selectTransaction(props.transaction)
+            console.log('qoprqwpo')
+            props.openingModal(true)
+            setClicked(false)
+        } else{
+            setClicked(true)
+            props.openingModal(false)
+        }
+    }
+
     return (
         <>
-            <div className={styles.infoTransactionBlockList}>
+            <div onClick={selectTransaction} className={styles.infoTransactionBlockList}>
                 <div className={styles.iconAboutMoneyTransaction}>
                     {transactionError ? 
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">

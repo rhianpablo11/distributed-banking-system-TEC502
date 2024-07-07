@@ -440,7 +440,7 @@ def passToken2():
         
         try:
             hasToken = False                
-            sleep(5)
+            
             infoReceived = requests.post(url=url, json=dataSend, timeout=2)
             if(infoReceived.status_code == 200):
                 nodeResponse = True             #sair do while indicando que conseguiu mandar o token

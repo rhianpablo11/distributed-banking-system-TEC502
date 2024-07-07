@@ -32,7 +32,7 @@ function LogoBank(props){
             setStyleToRenderH1(internalStyleH1)
             setStyleToRenderH2(internalStyleH2)
         }
-    },)
+    },[])
     
     return(
         <>

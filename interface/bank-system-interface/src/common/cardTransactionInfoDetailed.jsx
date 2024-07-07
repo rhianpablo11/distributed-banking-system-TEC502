@@ -11,7 +11,7 @@ function CardTransactionInfoDetailed(props){
     const [transactionError, setTransactionError] = useState(false)
     //se for true é pq saiu, se for false é pq entrou
     const [moneyOutOrReceive, setMoneyOutOrReceive] = useState(false)
-   
+    const [transactionStatus, setTransactionStatus] = useState("")
     function selectTextTransaction(){
         if(transaction.typeTransaction == 'deposit'){
             setMoneyOutOrReceive(false)
@@ -32,7 +32,13 @@ function CardTransactionInfoDetailed(props){
         } else if(transaction.concluded == "error"){
             setTransactionError(true)
         }
-
+        console.log("DETAILED ",transaction.concluded )
+        if(transaction.concluded == true){
+            
+            setTransactionStatus("Concluded")
+        } else {
+            setTransactionStatus(transaction.concluded)
+        }
     }
 
     function formatCurrency(value) {
@@ -53,7 +59,7 @@ function CardTransactionInfoDetailed(props){
     useEffect(()=>{
         setOpenModal(props.isOpen)
     }, [props.isOpen])
-    console.log('klajfklaf')
+    
     if(openModal){
         return (
             <>
@@ -91,7 +97,7 @@ function CardTransactionInfoDetailed(props){
                                         Status:
                                     </h1>
                                     <h2>
-                                        {transaction.concluded}
+                                        {transactionStatus}
                                     </h2>
                                 </div>
                                 <div style={{"display": "flex", "align-items": 'baseline'}}>

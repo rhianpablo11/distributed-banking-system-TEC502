@@ -11,7 +11,14 @@ function CardRecentTransactions(props) {
     },)
 
     const [openModalTransaction, setOpenModalTransaction] = useState(false)
-    const [transactionToExpand,setTransactionToExpand] = useState()
+    const [transactionToExpand, setTransactionToExpand] = useState()
+    console.log(transactionToExpand)
+
+    function setTransactionSelected(t){
+        setTransactionToExpand(t)
+
+    }
+
     return(
         <>
             <div className={styles.recentsTransactionsBlock}>
@@ -21,13 +28,13 @@ function CardRecentTransactions(props) {
                         {transactions.map((transaction) =>
 
                             <li>
-                                <CardInfoTransaction onClick={()=>{setOpenModalTransaction(true)}} transaction={transaction} />
+                                <CardInfoTransaction selectTransaction={setTransactionSelected} openingModal={setOpenModalTransaction} transaction={transaction} />
                             </li>)}
                     </ul>
                 </div>
                 
             </div>
-            <CardTransactionInfoDetailed isOpen={openModalTransaction} />
+            <CardTransactionInfoDetailed isOpen={openModalTransaction} transaction={transactionToExpand} />
         </>
     )
 }
