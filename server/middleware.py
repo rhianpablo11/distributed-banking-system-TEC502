@@ -86,6 +86,9 @@ global transactionsToMake
 global transactionsToMakeID
 global canPasstokenID
 global acceptNewToken
+global accountNumbers
+accountNumbers = GenerateNumberAccountBank()
+
 acceptNewToken = False
 transactionsToMakeID = 0
 transactionsToMake = {}
@@ -261,7 +264,7 @@ def getInfosForMakePix():
             return response, 200
         else:
             print(infoReceived.status_code, infoReceived.text)
-            return "Error in requisition",400              
+            return "Account not found",400              
     else:
         return "Bank invalid", 404
 
@@ -1165,8 +1168,7 @@ class GenerateNumberAccountBank:
                     return accountNumber
 
 
-global accountNumbers
-accountNumbers = GenerateNumberAccountBank()
+
 
 
 
