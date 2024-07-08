@@ -1215,13 +1215,22 @@ animation-delay: -1.4285714286s;
 }
 
 
-.error{
+.error {
     width: 30%;
     height: 50%;
     fill: rgb(117, 1, 1);
     justify-self: start;
     margin-top: 20px;
     
+}
+
+.error svg{
+    width: 100%;
+    height: 100%;
+}
+
+.errorText {
+    height: 50%;
 }
 
 .errorText h1{

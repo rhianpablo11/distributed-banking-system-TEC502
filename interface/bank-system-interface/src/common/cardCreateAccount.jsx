@@ -444,12 +444,13 @@ function CardCreateAccount(props){
                         <button className={styles.buttonPreLogin} onClick={verifyFields}>
                             Create
                         </button>
-                        <Loading isOpen={loading} />
-                        <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
+                        
                     </div>        
                     <dialog>
                         <p>apresentar a info que nao tem todos os campos preenchidos</p>
                     </dialog>
+                    <Loading isOpen={loading} />
+                    <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
                 </>
             )
         } else if(isJoinetAccount == "false"){
@@ -490,13 +491,13 @@ function CardCreateAccount(props){
                         <button className={styles.buttonPreLogin} onClick={verifyFields}>
                             Create
                         </button>
-                        <Loading isOpen={loading} />
-                        <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
+                        
                     </div>        
                     <dialog>
                         <p>apresentar a info que nao tem todos os campos preenchidos</p>
                     </dialog>
-                    
+                    <Loading isOpen={loading} />
+                    <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
                 </>
             )
         }
@@ -529,13 +530,13 @@ function CardCreateAccount(props){
                     <button className={styles.buttonPreLogin} onClick={verifyFields}>
                         Create
                     </button>
-                    <Loading isOpen={loading} />
-                    <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
+                    
                 </div>        
                 <dialog>
                     <p>apresentar a info que nao tem todos os campos preenchidos</p>
                 </dialog>
-                
+                <Loading isOpen={loading} />
+                <ErrorOperation isOpen={isError} textShow={errorMensage} onClose={closeErrorModal} />
             </>
         )
     }
