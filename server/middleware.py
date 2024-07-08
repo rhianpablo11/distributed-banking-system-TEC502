@@ -86,8 +86,7 @@ global transactionsToMake
 global transactionsToMakeID
 global canPasstokenID
 global acceptNewToken
-global accountNumbers
-accountNumbers = GenerateNumberAccountBank()
+
 
 acceptNewToken = False
 transactionsToMakeID = 0
@@ -1168,7 +1167,8 @@ class GenerateNumberAccountBank:
                     return accountNumber
 
 
-
+global accountNumbers
+accountNumbers = GenerateNumberAccountBank()
 
 
 
