@@ -632,7 +632,7 @@ Ao obter a base do sistema construída e funcionando, tornou-se a vez de testar 
 
 Por fim, foi testado todo o sistema em conjunto utilizando das operações simples, mas com adição da concorrência, e adjunto várias operações sendo realizadas ao mesmo tempo. Consoante ao esperado no desenvolvimento, cada operação era realizada por vez em cada um dos bancos, sendo assim percebe-se o tratamento da concorrência. Testes de confiabilidade de desconexão também foram realizados, e conforme a implementação desenvolvida, houve funcionamento conforme esperado. Seja para cancelar operações, como para confirmação. 
 
-
+Vale ressaltar ainda a presença de um código python, [tests](), em que permite realizar um teste sintético de envio de múltiplas requisições ao mesmo tempo. Para isso ele gera algumas contas aleatórias, e formata o dado para ficar no formato que o servidor espera receber. As operações criadas por ele são postas numa lista para passar a cada uma das threads e ela chama a função de envio da requisição. Foram criadas operações de [criar conta](#criação-de-conta), [deposito](#deposito) e de [envio de pix](#enviar-pix)
 
 
 ## Conclusão
