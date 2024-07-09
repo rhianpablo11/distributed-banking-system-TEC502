@@ -248,17 +248,17 @@ print(json.dumps(pix_operations, indent=2))
 
 addressToSend = [0,0,0,0,0]
 
-# addressToSend[0] = input('DIGITE O 1º ENDEREÇO: ')
-# addressToSend[1] = input('DIGITE O 2º ENDEREÇO: ')
-# addressToSend[2] = input('DIGITE O 3º ENDEREÇO: ')
-# addressToSend[3] = input('DIGITE O 4º ENDEREÇO: ')
-# addressToSend[4] = input('DIGITE O 5º ENDEREÇO: ')
+addressToSend[0] = input('DIGITE O 1º ENDEREÇO: ')
+addressToSend[1] = input('DIGITE O 2º ENDEREÇO: ')
+addressToSend[2] = input('DIGITE O 3º ENDEREÇO: ')
+addressToSend[3] = input('DIGITE O 4º ENDEREÇO: ')
+addressToSend[4] = input('DIGITE O 5º ENDEREÇO: ')
 
-addressToSend[0] = 'localhost:8081'
-addressToSend[1] = 'localhost:8082'
-addressToSend[2] = 'localhost:8083'
-addressToSend[3] = 'localhost:8084'
-addressToSend[4] = 'localhost:8085'
+# addressToSend[0] = 'localhost:8081'
+# addressToSend[1] = 'localhost:8082'
+# addressToSend[2] = 'localhost:8083'
+# addressToSend[3] = 'localhost:8084'
+# addressToSend[4] = 'localhost:8085'
 
 
 
