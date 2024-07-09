@@ -45,27 +45,38 @@ A execução do projeto utiliza, conforme requisitado, o docker como ferramenta 
 ###  Procedimento para a primeira execução
 1. Realizar o clone do repositório para uma pasta local, executando o seguinte comando no terminal:
     ``` bash
-      git clone https://github.com/rhianpablo11/distributed-banking-system-TEC502.git
+    git clone https://github.com/rhianpablo11/distributed-banking-system-TEC502.git
     ```
-2. Acesse a pasta do projeto executando o comando abaixo:
-    ``` bash
-      cd .\distributed-banking-system-TEC502\
-    ```
-3. Execute o seguinte comando para construir as imagens, e a network e executar os containers:
+
+2. Execute o seguinte comando para construir as imagens, e a network e executar os containers:
     ```  bash
-      docker compose up --build
+    docker compose up --build
     ```
+3. Abra o navegador, e acesse a url [```localhost:3000```](localhost:3000) e digite o endereço de qual banco deseja acessar.
+   1. Para execução dos containers no mesmo computador os endereçamentos estão na tabela [endereços de cada banco em execução na mesma maquina](#endereços-de-cada-banco-em-execução-na-mesma-maquina):
+   
+<div align=center>
 
+#### Endereços de cada banco em execução na mesma maquina
 
+| Banco           | Endereço       |
+| :-------------- | :------------- |
+| Eleven Bank     | localhost:8081 |
+| Automobili Bank | localhost:8082 |
+| Secret Bank     | localhost:8083 |
+| Formula Bank    | localhost:8084 |
+| Titanium Bank   | localhost:8085 |
 
+</div>
 
 ### Procedimento para execuções subsequentes
 1. Acesse a pasta do projeto pelo terminal
 2. Execute o seguinte comando para executar os containers:
-```  bash
+    ```  bash
     docker compose up
-```
-
+    ```
+3. Abra o navegador, e acesse a url [```localhost:3000```](http://localhost:3000/) e digite o endereço de qual banco deseja acessar.
+   1. Para execução dos containers no mesmo computador os endereçamentos estão na tabela [endereços de cada banco em execução na mesma maquina](#endereços-de-cada-banco-em-execução-na-mesma-maquina):
 
 
 
@@ -84,9 +95,16 @@ A execução do projeto utiliza, conforme requisitado, o docker como ferramenta 
                 - ID=3
         ```
 4. Execute o seguinte comando para executar os containers:
-```  bash
+    ```  bash
     docker compose up "nome do banco a ser executado" --build
-```
+    ```
+5. No computador em que deseja executar a [interface](#interface) execute o comando:
+    ```  bash
+    docker compose up interface --build
+    ```
+6. Abra o navegador no computador que esta rodando o container, e acesse a url [```localhost:3000```](http://localhost:3000/)
+   1. O endereço para cada banco será o endereço IP do computador em que está sendo executado, adjunto a porta daquele banco. As portas podem ser vistas na tabela [Endereços de cada banco em execução na mesma maquina](#endereços-de-cada-banco-em-execução-na-mesma-maquina), considerando apenas o valor após os ":".
+
 
 
 ## Sumario
@@ -94,6 +112,7 @@ A execução do projeto utiliza, conforme requisitado, o docker como ferramenta 
   - [Download do repositório](#download-do-repositório)
   - [Como executar](#como-executar)
     - [Procedimento para a primeira execução](#procedimento-para-a-primeira-execução)
+      - [Endereços de cada banco em execução na mesma maquina](#endereços-de-cada-banco-em-execução-na-mesma-maquina)
     - [Procedimento para execuções subsequentes](#procedimento-para-execuções-subsequentes)
     - [Procedimento para execução em computadores diferentes](#procedimento-para-execução-em-computadores-diferentes)
   - [Sumario](#sumario)
@@ -149,15 +168,15 @@ Pensando em atender aos requisitos, algumas soluções foram necessárias para o
 ### Tópicos principais do documento
 
 
-| Assunto                                                     | Tópicos                 |
-| :---------------------------------------------------------- | :-----------------------|
-| Gerenciamento de contas, criação e realização de transações | [Operações](#operações) |
-| Transação entre contas e entre bancos | [Operações](#operações), [Enviar Pix](#enviar-pix), [Enviar pacote Pix ](#enviar-pacote-de-pix) |
-| Comunicação entre servidores | [Comunicação](#comunicação), [Comunicação Servidor-servidor](#comunicação-servidor-servidor) |
-| Sincronização no mesmo servidor | [Operações](#operações), [Comunicação](#comunicação) |
-| Algoritmo de concorrência distribuída | [Algoritmo Token Ring](#algoritmo-token-ring) |
-| Tratamento de confiabilidade | [Algoritmo Token Ring](#algoritmo-token-ring),[Operações](#operações), [Criar conta](#criação-de-conta), [Enviar Pix](#enviar-pix), [Enviar pacote Pix ](#enviar-pacote-de-pix)|
-| Transação concorrente | [Operações](#operações), [Algoritmo Token Ring](#algoritmo-token-ring) |
+| Assunto                                                     | Tópicos                                                                                                                                                                         |
+| :---------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Gerenciamento de contas, criação e realização de transações | [Operações](#operações)                                                                                                                                                         |
+| Transação entre contas e entre bancos                       | [Operações](#operações), [Enviar Pix](#enviar-pix), [Enviar pacote Pix ](#enviar-pacote-de-pix)                                                                                 |
+| Comunicação entre servidores                                | [Comunicação](#comunicação), [Comunicação Servidor-servidor](#comunicação-servidor-servidor)                                                                                    |
+| Sincronização no mesmo servidor                             | [Operações](#operações), [Comunicação](#comunicação)                                                                                                                            |
+| Algoritmo de concorrência distribuída                       | [Algoritmo Token Ring](#algoritmo-token-ring)                                                                                                                                   |
+| Tratamento de confiabilidade                                | [Algoritmo Token Ring](#algoritmo-token-ring),[Operações](#operações), [Criar conta](#criação-de-conta), [Enviar Pix](#enviar-pix), [Enviar pacote Pix ](#enviar-pacote-de-pix) |
+| Transação concorrente                                       | [Operações](#operações), [Algoritmo Token Ring](#algoritmo-token-ring)                                                                                                          |
 
 
 </div>
