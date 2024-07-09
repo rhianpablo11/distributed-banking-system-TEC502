@@ -3,7 +3,7 @@ version: '3.7'
 services:
   interface:
     build: 
-      context: ./interface/bank-system-interface
+      context: ../interface/bank-system-interface
     container_name: interface
     networks:
       system-network:
@@ -19,10 +19,10 @@ services:
     container_name: elevenbank
     environment:
       - HOST_1=192.168.0.11
-      - HOST_2=172.16.103.10
-      - HOST_3=172.16.103.11
-      - HOST_4=172.16.103.12
-      - HOST_5=172.16.103.13
+      - HOST_2=172.16.103.11
+      - HOST_3=172.16.103.12
+      - HOST_4=172.16.103.13
+      - HOST_5=172.16.103.14
       - ID=1
     stdin_open: true
     tty: true
@@ -37,11 +37,11 @@ services:
       context: ./
     container_name: automobilibank
     environment:
-      - HOST_1=172.16.103.14
+      - HOST_1=172.16.103.10
       - HOST_2=192.168.0.12
-      - HOST_3=172.16.103.11
-      - HOST_4=172.16.103.12
-      - HOST_5=172.16.103.13
+      - HOST_3=172.16.103.12
+      - HOST_4=172.16.103.13
+      - HOST_5=172.16.103.14
       - ID=2
     stdin_open: true
     tty: true
@@ -56,11 +56,11 @@ services:
       context: ./
     container_name: secretbank
     environment:
-      - HOST_1=172.16.103.14
-      - HOST_2=172.16.103.10
+      - HOST_1=172.16.103.10
+      - HOST_2=172.16.103.11
       - HOST_3=192.168.0.13
-      - HOST_4=172.16.103.12
-      - HOST_5=172.16.103.13
+      - HOST_4=172.16.103.13
+      - HOST_5=172.16.103.14
       - ID=3
     stdin_open: true
     tty: true
@@ -75,11 +75,11 @@ services:
       context: ./
     container_name: formulabank
     environment:
-      - HOST_1=172.16.103.14
-      - HOST_2=172.16.103.10
-      - HOST_3=172.16.103.11
+      - HOST_1=172.16.103.10
+      - HOST_2=172.16.103.11
+      - HOST_3=172.16.103.12
       - HOST_4=192.168.0.14
-      - HOST_5=172.16.103.13
+      - HOST_5=172.16.103.14
       - ID=4
     stdin_open: true
     tty: true
@@ -94,10 +94,10 @@ services:
       context: ./
     container_name: titaniumbank
     environment:
-      - HOST_1=172.16.103.14
-      - HOST_2=172.16.103.10
-      - HOST_3=172.16.103.11
-      - HOST_4=172.16.103.12
+      - HOST_1=172.16.103.10
+      - HOST_2=172.16.103.11
+      - HOST_3=172.16.103.12
+      - HOST_4=172.16.103.13
       - HOST_5=192.168.0.15
       - ID=5
     stdin_open: true
