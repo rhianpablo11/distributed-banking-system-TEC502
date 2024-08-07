@@ -19,15 +19,15 @@ class Transaction:
     def getJsonTransaction(self):
         
         auxJson = {
-            "source": self.nameSource,
-            "receptor":self.nameReceiver,
+            "name_source": self.nameSource,
+            "name_receptor":self.nameReceiver,
             "value": self.value,
-            "dateTransaction": self.dateTransaction,
+            "date_transaction": self.dateTransaction,
             "concluded": self.concluded,
-            "typeTransaction": self.typeTransaction,
-            "bankSource": self.bankSource,
-            "bankReceptor": self.bankReceptor,
-            "idTransaction": self.idTransaction
+            "type_transaction": self.typeTransaction,
+            "bank_source": self.bankSource,
+            "bank_receptor": self.bankReceptor,
+            "id_transaction": self.idTransaction
         }
         return auxJson
         

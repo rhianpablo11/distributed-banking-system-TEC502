@@ -1,21 +1,13 @@
-from datetime import datetime
-
-# Suponha que esta seja a data de criação da conta
-data_criacao_conta = datetime(2023, 8, 1)
-
-# Obtendo a data atual
-data_atual = datetime.now()
-
-# Calculando a diferença entre as datas
-diferenca = data_atual - data_criacao_conta
-
-# Obtendo o número de dias da diferença
-dias_passados = diferenca.days
-
-# Formatando as datas
-data_criacao_conta_formatada = data_criacao_conta.strftime("%d/%m/%Y")
-data_atual_formatada = data_atual.strftime("%d/%m/%Y")
-
-print(f"Data de criação da conta: {data_criacao_conta_formatada}")
-print(f"Data atual: {data_atual_formatada}")
-print(f"Dias passados desde a criação da conta: {dias_passados} dias")
+def mascarar_cpf(cpf):
+    # Verifica se o CPF está no formato correto
+    if len(cpf) == 14 and cpf[3] == '.' and cpf[7] == '.' and cpf[11] == '-':
+        # Substitui os três primeiros dígitos e os dois últimos por asteriscos
+        cpf_mascarado = '***.' + cpf[4:7] + '.' + cpf[8:11] + '-**'
+        return cpf_mascarado
+    else:
+        raise ValueError("CPF no formato incorreto. Use o formato XXX.XXX.XXX-XX")
+    
+# Exemplo de uso
+cpf = '111.111.111-14735341'
+cpf_mascarado = mascarar_cpf(cpf)
+print(cpf_mascarado)  # Saída: ***.111.111-**

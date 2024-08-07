@@ -24,3 +24,26 @@ def add_new_account():
     accounts[account_number] = new_account
     return new_account.get_json()
 
+
+def find_user_by_document(document_search):
+    if(document_search in users):
+        return users[document_search]
+    else:
+        return 'user not found'
+    
+
+def find_account_by_number_account(account_number):
+    if(account_number in accounts):
+        return accounts[account_number]
+    else:
+        return 'account not found'
+    
+
+def find_account_by_document_user(document_search) -> list:
+    accounts_found = []
+    for account in accounts:
+        for user in accounts[account].user_list:
+            if(user.document == document_search):
+                accounts_found.append(accounts[account])
+    return accounts_found
+

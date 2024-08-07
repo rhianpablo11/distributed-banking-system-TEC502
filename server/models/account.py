@@ -24,17 +24,18 @@ class Account:
              for transaction in self.transactions:
                    list_json_transactions.append(self.transactions[transaction].get_json())
         list_json_transactions.reverse()
-
-        aux_json = {
+        json_user = []
+        for user in self.user_list:
+            json_user.append(user.get_json())
+        return  {
             'balance': self.balance,
             'account_number': self.account_number,
             'blocked_balance': self.blocked_balance,
             'transactions': list_json_transactions,
-            'users': self.user_list
+            'users': json_user
         }
-        return aux_json
+        
     
-
     def get_json_transactions(self):
         list_json_transactions = []
         if(len(self.transactions) >0):
@@ -43,6 +44,18 @@ class Account:
         list_json_transactions.reverse()
         return {'transactions': list_json_transactions}
     
+
+    def get_json_basic_data(self):
+        document_masked = self.user_list[0].document
+        if len(document_masked) == 14 and document_masked[3] == '.' and document_masked[7] == '.' and document_masked[11] == '-':
+            document_masked = '***.' + document_masked[4:7] + '.' + document_masked[8:11] + '-**'
+        return  {
+            'name': self.user_list[0].name,
+            'document': document_masked,
+            'name_bank': self.name_bank,
+            'account_number': self.account_number
+        }
+
 
     def invest_money_cdi(self, value):
         self.operation_lock.acquire()
@@ -227,6 +240,29 @@ class Account:
         self.id_last_transaction += 1
         self.operation_lock.release()
         
+
+    def receive_transfer_money(self, value, name_source, document_source, account_number_source, bank_source, type_transaction):
+        self.operation_lock.acquire()
+        self.blocked_balance += value
+        new_transaction = transaction.Transaction(
+                name_source= name_source,
+                document_source= document_source,
+                account_number_source= account_number_source,
+                name_receiver= self.user_list[0].name,
+                document_receiver= self.user_list[0].document,
+                account_number_receiver= self.account_number,
+                value= value,
+                concluded= 'peding',
+                type_transaction= type_transaction,
+                id_transaction= self.id_last_transaction,
+                bank_receptor= self.name_bank,
+                bank_source= bank_source
+            )
+        self.transactions[self.id_last_transaction] = new_transaction
+        self.id_last_transaction += 1
+        self.operation_lock.release()
+        return 1, new_transaction['id_transaction']
+    
 
 
 

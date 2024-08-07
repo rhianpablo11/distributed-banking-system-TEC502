@@ -15,7 +15,6 @@ class User:
         self.banks_with_account = banks_with_account
     
     def get_json(self):
-        self.user_lock.acquire()
         auxJson = {
             'name': self.name,
             'document': self.document,
@@ -23,7 +22,6 @@ class User:
             'email': self.email,
             'is_company': self.is_company
         }
-        self.user_lock.release()
         return auxJson
     
 
