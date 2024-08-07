@@ -52,7 +52,7 @@ A execução do projeto utiliza, conforme requisitado, o docker como ferramenta 
     ```  bash
     docker compose up --build
     ```
-3. Abra o navegador, e acesse a url [```localhost:3000```](localhost:3000) e digite o endereço de qual banco deseja acessar.
+3. Abra o navegador, e acesse a url [```localhost:3000```](http://localhost:3000/) e digite o endereço de qual banco deseja acessar.
    1. Para execução dos containers no mesmo computador os endereçamentos estão na tabela [endereços de cada banco em execução na mesma maquina](#endereços-de-cada-banco-em-execução-na-mesma-maquina):
    
 <div align=center>
