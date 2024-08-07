@@ -1,16 +1,20 @@
+import datetime
+
 class Transaction:
-    def __init__(self, nameSource,cpfCPNJSource, nameReceiver, cpfCPNJReceiver, value, dateTransaction, concluded, typeTransaction, idTransaction, bankReceptor, bankSource):
-        self.nameSource = nameSource
-        self.cpfCPNJSource = cpfCPNJSource
-        self.nameReceiver = nameReceiver
-        self.cpfCPNJReceiver = cpfCPNJReceiver
+    def __init__(self, name_source, document_source, account_number_source, name_receiver, document_receiver, account_number_receiver, value,  concluded, type_transaction, id_transaction, bank_receptor, bank_source):
+        self.name_source = name_source
+        self.document_source = document_source
+        self.account_number_source = account_number_source
+        self.name_receiver = name_receiver
+        self.document_receiver = document_receiver
+        self.account_number_receiver = account_number_receiver
         self.value = value
-        self.dateTransaction = dateTransaction
+        self.date_transaction = datetime.datetime.now()
         self.concluded = concluded
-        self.typeTransaction = typeTransaction
-        self.idTransaction = idTransaction
-        self.bankReceptor = bankReceptor
-        self.bankSource = bankSource
+        self.type_transaction = type_transaction
+        self.id_transaction = id_transaction
+        self.bank_receptor = bank_receptor
+        self.bank_source = bank_source
 
     def getJsonTransaction(self):
         

@@ -12,6 +12,7 @@ class User:
         self.is_company = is_company
         self.user_lock = threading.Lock()
         self.date_created_user = datetime.datetime.now()
+        self.banks_with_account
     
     def get_json(self):
         self.user_lock.acquire()

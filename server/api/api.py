@@ -28,24 +28,15 @@ def getNameBank():
 
 @app.route('/account/transaction/pix/infos', methods=['POST'])
 def getInfosForMakePix():
-    data =  request.json
-    if(data["bankID"] == "1" or data["bankID"] == "2" or data["bankID"] == "3" or data["bankID"] == "4" or data["bankID"] == "5"):
-        url = listBanksConsortium[data["bankID"]][0]+"/account/pix"
-        keyPix = {
-            "keyPix": str(data["keyPix"])
-        }
-        infoReceived = requests.post(url,json=keyPix)
-        if (infoReceived.status_code == 200):
-            print(infoReceived.json())
-            response = make_response(infoReceived.json())
-            return response, 200
-        else:
-            print(infoReceived.status_code, infoReceived.text)
-            return "Account not found",400              
-    else:
-        return "Bank invalid", 404
+    pass
     
+@app.route('/account/user/update-profile/change/telephone', methods=['PATCH'])
 
+
+@app.route('/account/user/update-profile/change/email', methods=['PATCH'])
+
+
+@app.route('/account/user/update-profile/change/password', methods=['PATCH'])
 
 
 
