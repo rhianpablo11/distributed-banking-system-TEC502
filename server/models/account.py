@@ -43,7 +43,7 @@ class Account:
         list_json_transactions.reverse()
         return {'transactions': list_json_transactions}
     
-    
+
     def invest_money_cdi(self, value):
         self.operation_lock.acquire()
         if(self.balance < value):
@@ -205,6 +205,27 @@ class Account:
             self.id_last_transaction += 1
         self.operation_lock.release()
     
+
+    def receive_deposit(self, value):
+        self.operation_lock.acquire()
+        self.balance = float(self.balance) + value
+        new_transaction = transaction.Transaction(
+                name_source= self.user_list[0].name,
+                document_source= self.user_list[0].document,
+                account_number_source= self.account_number,
+                name_receiver= self.user_list[0].name,
+                document_receiver= self.user_list[0].document,
+                account_number_receiver= self.account_number,
+                value= value,
+                concluded= True,
+                type_transaction= 'deposit',
+                id_transaction= self.id_last_transaction,
+                bank_receptor= self.name_bank,
+                bank_source= self.name_bank
+            )
+        self.transactions[self.id_last_transaction] = new_transaction
+        self.id_last_transaction += 1
+        self.operation_lock.release()
         
 
 

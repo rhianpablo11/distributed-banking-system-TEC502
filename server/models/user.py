@@ -3,16 +3,16 @@ import datetime
 from hashlib import sha512
 
 class User:
-    def __init__(self, name, document, telephone, email, password, is_company):
+    def __init__(self, name, document, telephone, email, password, is_company, banks_with_account):
         self.name = name
         self.document = document
         self.telephone = telephone
         self.email = email
-        self.password = password
+        self.password = cryptography_password(password)
         self.is_company = is_company
         self.user_lock = threading.Lock()
         self.date_created_user = datetime.datetime.now()
-        self.banks_with_account
+        self.banks_with_account = banks_with_account
     
     def get_json(self):
         self.user_lock.acquire()
@@ -71,8 +71,24 @@ class User:
         days_user_in_bank = diference.days
         return days_user_in_bank
     
+
+    def add_new_bank_to_list(self, name_bank, account_number_in_the_bank):
+        self.user_lock.acquire()
+        self.banks_with_account[name_bank] = account_number_in_the_bank
+        if(name_bank in self.banks_with_account):
+            if(account_number_in_the_bank not in self.banks_with_account[name_bank]):
+                self.banks_with_account[name_bank] = [account_number_in_the_bank]
+            else:
+                self.banks_with_account[name_bank].append(account_number_in_the_bank)
+        else:
+            self.banks_with_account[name_bank] = [account_number_in_the_bank]
+        self.user_lock.release()
+        
+
+
     
 def cryptography_password(password):
     encrypted_password = sha512(password.encode()).digest()
     return encrypted_password        
         
+    
