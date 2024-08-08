@@ -29,14 +29,14 @@ def find_user_by_document(document_search):
     if(document_search in users):
         return users[document_search]
     else:
-        return 'user not found'
+        return None
     
 
 def find_account_by_number_account(account_number):
     if(account_number in accounts):
         return accounts[account_number]
     else:
-        return 'account not found'
+        return None
     
 
 def find_account_by_document_user(document_search) -> list:
@@ -47,3 +47,23 @@ def find_account_by_document_user(document_search) -> list:
                 accounts_found.append(accounts[account])
     return accounts_found
 
+
+def find_account_by_key_pix(key_pix_search):
+    for account in accounts:
+        if(accounts[account].key_pix == key_pix_search):
+            return accounts[account]
+    return None
+
+
+def save_account_after_changes(account_to_save):
+    if (account_to_save.account_number in accounts):
+        accounts[account_to_save.account_number] = account_to_save
+        return 1
+    return None
+
+
+def save_user_after_changes(user_to_save):
+    if(user_to_save.document in users):
+        users[user_to_save.document] = user_to_save
+        return 1
+    return None
