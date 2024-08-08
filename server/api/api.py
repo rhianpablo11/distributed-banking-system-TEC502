@@ -4,7 +4,7 @@ from storage import accounts_storage, network_storage
 
 app = Flask(__name__)
 CORS(app)
-app.run("0.0.0.0", 10000, debug=False, threaded=True)
+
 
 @app.route("/account/search/<int:account_number>", methods=['POST'])
 def search_account(account_number):
