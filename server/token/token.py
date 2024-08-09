@@ -1,3 +1,5 @@
+from storage import network_storage
+
 global has_token
 global counter_token
 counter_token = []
