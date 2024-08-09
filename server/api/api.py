@@ -38,7 +38,16 @@ def get_basic_info_account(type_transfer):
         return 'account not found', 404
     
 
-@app.route('/account/user/<:document_user>/update-profile/change/telephone', methods=['PATCH'])
+@app.route('/user/infos', methods=['POST'])
+def get_info_user():
+    data_received_with_requisition = request.json
+    data_of_search = accounts_storage.find_user_by_document(data_received_with_requisition['document'])
+    if(data_of_search != None):
+        return make_response(jsonify(data_of_search.get_json())), 200
+    return 'user not found', 404
+
+
+@app.route('/user/<:document_user>/update-profile/change/telephone', methods=['PATCH'])
 def change_telephone_user(document_user):
     data_received_with_requisition = request.json
     user_to_update = accounts_storage.find_user_by_document(document_user)
@@ -54,7 +63,7 @@ def change_telephone_user(document_user):
             return 'telephone is same the registered', 409
     
 
-@app.route('/account/user/<:document_user>/update-profile/change/email', methods=['PATCH'])
+@app.route('/user/<:document_user>/update-profile/change/email', methods=['PATCH'])
 def change_email_user(document_user):
     data_received_with_requisition = request.json
     user_to_update = accounts_storage.find_user_by_document(document_user)
@@ -70,7 +79,7 @@ def change_email_user(document_user):
             return 'email is same the registered', 409
 
 
-@app.route('/account/user/<:document_user>/update-profile/change/password', methods=['PATCH'])
+@app.route('/user/<:document_user>/update-profile/change/password', methods=['PATCH'])
 def change_password_user(document_user):
     data_received_with_requisition = request.json
     user_to_update = accounts_storage.find_user_by_document(document_user)

@@ -13,15 +13,8 @@ def set_has_token(token):
     has_token = token
 
 
-def pass_token():
+def pass_token_to_other_host():
     global hasToken
-    global hadToken
-    global operationOccurring
-    global initiateCouter
-    global nextNode
-    global tokenTimeOutSend
-    global tokenID
-    global canPasstokenID
     nodeResponse = False
     nextNode = int(selfID) + 1
     while not nodeResponse:
