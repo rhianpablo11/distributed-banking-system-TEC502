@@ -104,14 +104,86 @@ def receive_money(method_receive):
         return_the_operation = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number']).receive_deposit(
             data_received_with_requisition['value']
         )
-    return make_response(jsonify({'id_transaction': return_the_operation[1]}))
+    return make_response(jsonify({'id_transaction': return_the_operation[1]})), 200
 
 
-@app.route('/account/invest/<:type_investiment>/<float:value>', methods=['POST'])
-def invest_money(type_investiment, value):
-    pass
+@app.route('/account/trasfer/<:type_transfer>/<int:account_number>', methods=['POST'])
+def transfer_money(type_transfer, account_number):
+    data_received_with_requisition = request.json
+    account_source_infos = accounts_storage.find_account_by_number_account(account_number)
+    operation_to_put_in_dict = {
+        'type_operation': 'transfer',
+        'index_operation': -1,
+        'executed': False,
+        'response': -1,
+        'code_response': -1,
+        'data_to_operate': {
+            'value': data_received_with_requisition['value'],
+            'name_source': account_source_infos.user_list[0].name,
+            'document_source': account_source_infos.user_list[0].document,
+            'account_number_source': account_number,
+            'bank_source': account_source_infos.name_bank,
+            'type_transaction': type_transfer
+        }
+    }
+    operation_key = network_storage.add_operation(operation_to_put_in_dict)
+    if(network_storage.verify_operation_state(operation_key) == True):
+        operation_conclusion = network_storage.find_operation_by_key(operation_key)
+        if(operation_conclusion != None):
+            return operation_conclusion['response'], operation_conclusion['code_response']
+        else:
+            return 'error in operation', 500
+    else:
+        return 'error in operation', 500
 
 
-@app.route('/account/<:type_investiment>/<float:value>', methods=['POST'])
-def withdraw_money(type_investiment, value):
-    pass
+@app.route('/account/invest/<:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
+def invest_money(type_investiment, value, account_number):
+    operation_to_put_in_dict = {
+            'type_operation': 'investiment',
+            'index_operation': -1,
+            'executed': False,
+            'response': -1,
+            'code_response': -1,
+            'data_to_operate': {
+                'value': value,
+                'account_number': account_number,
+                'type_investiment': type_investiment
+            }
+        }
+    operation_key = network_storage.add_operation(operation_to_put_in_dict)
+    if(network_storage.verify_operation_state(operation_key) == True):
+        operation_conclusion = network_storage.find_operation_by_key(operation_key)
+        if(operation_conclusion != None):
+            return operation_conclusion['response'], operation_conclusion['code_response']
+        else:
+            return 'error in operation', 500
+    else:
+        return 'error in operation', 500
+
+
+@app.route('/account/withdraw/<:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
+def withdraw_money(type_investiment, value, account_number):
+    operation_to_put_in_dict = {
+            'type_operation': 'withdraw_investiment',
+            'index_operation': -1,
+            'executed': False,
+            'response': -1,
+            'code_response': -1,
+            'data_to_operate': {
+                'value': value,
+                'account_number': account_number,
+                'type_investiment': type_investiment
+            }
+        }
+    operation_key = network_storage.add_operation(operation_to_put_in_dict)
+    if(network_storage.verify_operation_state(operation_key) == True):
+        operation_conclusion = network_storage.find_operation_by_key(operation_key)
+        if(operation_conclusion != None):
+            return operation_conclusion['response'], operation_conclusion['code_response']
+        else:
+            return 'error in operation', 500
+    else:
+        return 'error in operation', 500
+
+

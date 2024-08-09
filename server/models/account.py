@@ -1,5 +1,6 @@
 import random
 import threading
+import requests
 from models import transaction
 
 
@@ -264,6 +265,99 @@ class Account:
         self.operation_lock.release()
         return 1, new_transaction['id_transaction']
     
+
+    def transfer_money_ted(self, url, value, name_receiver, document_receiver, account_number_receiver, bank_receiver):
+        self.operation_lock.acquire()
+        if(value > self.balance):
+            self.operation_lock.release()
+            return 0, 'not money available to this transaction'
+        elif(account_number_receiver == self.account_number and bank_receiver == self.name_bank):
+            self.operation_lock.release()
+            return 0, 'not possible transfer money to your account in this bank'
+        else:
+            try:
+                data_to_send = {
+                    'value': value,
+                    'name_source': self.user_list[0].name,
+                    'document_source': self.user_list[0].document,
+                    'account_number_source': self.account_number,
+                    'bank_source': self.name_bank
+                }
+
+                self.balance -= value
+                self.blocked_balance += value
+
+                new_transaction = transaction.Transaction(
+                        name_source= self,
+                        document_source= self.user_list[0].document,
+                        account_number_source= self.account_number,
+                        name_receiver= name_receiver,
+                        document_receiver= document_receiver,
+                        account_number_receiver= account_number_receiver,
+                        value= value,
+                        concluded= 'peding',
+                        type_transaction= 'send_ted',
+                        id_transaction= self.id_last_transaction,
+                        bank_receptor= bank_receiver,
+                        bank_source= self.name_bank
+                    )
+                self.transactions[self.id_last_transaction] = new_transaction
+                self.id_last_transaction += 1
+
+                data_received_by_request = requests.post(url = url, json = data_to_send)
+                if(data_received_by_request.status_code == 200):
+                    data_received_json = data_received_by_request.json()
+                    self.operation_lock.release()
+                    return 1, 'money transfer with success', {
+                        'id_transaction_sender': new_transaction.id_transaction,
+                        'id_transaction_receiver': data_received_json['id_transaction']}
+                else:
+                    self.blocked_balance -= value
+                    self.balance += value
+                    self.transactions[self.id_last_transaction].concluded = 'error'
+                    self.operation_lock.release()
+                    return 0, 'error in transfer money'
+            except:
+                self.blocked_balance -= value
+                self.balance += value
+                self.transactions[self.id_last_transaction].concluded = 'error'
+                self.operation_lock.release()
+                return 0, 'error in transfer money'
+            
+    
+    def confirmate_transaction(self, id_transaction):
+        self.operation_lock.acquire()
+        try:
+            self.transactions[id_transaction].concluded = True
+            if(self.transactions[id_transaction].type_transaction == 'send_ted' or self.transactions[id_transaction].type_transaction == "send_pix"):
+                self.blocked_balance -= self.transactions[id_transaction].value
+                self.operation_lock.release()
+            else:
+                self.balance += self.transactions[id_transaction].value
+                self.blocked_balance -= self.transactions[id_transaction].value
+                self.operation_lock.release()
+            return 1
+        except:
+            self.operation_lock.release()
+            return 0
+
+
+    def cancel_transaction(self, id_transaction):
+        self.operation_lock.acquire()
+        try:
+            self.transactions[id_transaction].concluded = True
+            if(self.transactions[id_transaction].type_transaction == 'send_ted' or self.transactions[id_transaction].type_transaction == "send_pix"):
+                self.balance += self.transactions[id_transaction].value
+                self.blocked_balance -= self.transactions[id_transaction].value
+                self.operation_lock.release()
+            else:
+                self.blocked_balance -= self.transactions[id_transaction].value
+                self.operation_lock.release()
+            return 1
+        except:
+            self.operation_lock.release()
+            return 0
+        
 
 
 
