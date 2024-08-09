@@ -3,6 +3,7 @@ import threading
 global address_banks
 global self_id
 global operations_to_make
+global last_id_operation
 operations_lock = threading.Lock()
 
 address_banks = {
@@ -13,7 +14,8 @@ address_banks = {
     '4': [-1, 'titanium']
 }
 self_id = -1
-operations_to_make = [] #trocar para dicionario, problema descrito abaixo
+last_id_operation = 0
+operations_to_make = {} #trocar para dicionario, problema descrito abaixo
 #se deixar como lista nao vai conseguir deletar, pq o indice de cada operação vai ser alterado
 #e se deixar como lista, essa vai crescer e ficar muito grande, gerando problemas
 #colocar como dicionario, pq a relação chave e valor nao é alterado, e pode remover sem ter esses prob
@@ -44,30 +46,34 @@ def get_operation_to_make():
     operations_lock.acquire()
     if(len(operations_to_make)>0):
         operations_lock.release()
-        return(operations_to_make[0])
+        return(next(iter(operations_to_make)))
     operations_lock.release()
     return None
+
+
+def get_last_id_operation():
+    return last_id_operation
 
 
 def add_operation(operation_to_add):
     global operations_to_make
     operations_lock.acquire()
-    operation_to_add['index_operation'] = len(operations_to_make)
-    operations_to_make.append(operation_to_add)
+    operation_to_add['index_operation'] = get_last_id_operation() + 1
+    operations_to_make[operation_to_add['index_operation']] = operation_to_add
     operations_lock.release()
-    return operation_to_add['index_operation']
+    return operation_to_add['index_operation'] #retorno da chave em que esta a operação
 
 
 def remove_operation(operation_to_delete):
     global operations_to_make
     operations_lock.acquire()
-    if(len(operations_to_make)>=operation_to_delete['index_operation']):
+    if(operation_to_delete in operations_to_make):
         del operations_to_make[operation_to_delete['index_operation']]
     operations_lock.release()
 
 
 def verify_operation_state(index_operation_to_verify):
-    if(len(operations_to_make)>=index_operation_to_verify):
+    if(index_operation_to_verify in operations_to_make):
         while(operations_to_make[index_operation_to_verify]['executed'] == False):
             pass
         return True
@@ -75,7 +81,7 @@ def verify_operation_state(index_operation_to_verify):
 
 
 def find_operation_by_key(key_operation_to_search):
-    if(len(operations_to_make)>= key_operation_to_search):
+    if(key_operation_to_search in operations_to_make):
         return {
             'response': operations_to_make[key_operation_to_search]['response'],
             'code_response': operations_to_make[key_operation_to_search]['code_response']
