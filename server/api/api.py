@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask import *
 from storage import accounts_storage, network_storage
 from models import user
+from token_control import token
 
 app = Flask(__name__)
 CORS(app)
@@ -14,6 +15,20 @@ def get_name_bank():
         return make_response(jsonify({'name_bank': name_bank})), 200
     return 'error internal', 500
 
+
+@app.route('/token', methods=['POST'])
+def receive_token():
+    data_received_with_requisition = request.json
+    self_couter = token.get_my_value_of_counter()
+    self_id_int = int(network_storage.get_id())
+    if(data_received_with_requisition['counter_all_banks'][self_id_int] >= self_couter):
+        token.set_new_counter_token_all_banks(data_received_with_requisition['counter_all_banks'])
+        token.set_has_token(True)
+        token.add_self_counter()
+        return 'token recepted, and everything ok', 200
+    else:
+        return 'were you disconnected', 409
+    
 
 @app.route("/account/search/<int:account_number>", methods=['POST'])
 def search_account(account_number):
