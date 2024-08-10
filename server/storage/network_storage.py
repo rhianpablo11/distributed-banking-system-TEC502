@@ -15,11 +15,7 @@ address_banks = {
 }
 self_id = -1
 last_id_operation = 0
-operations_to_make = {} #trocar para dicionario, problema descrito abaixo
-#se deixar como lista nao vai conseguir deletar, pq o indice de cada operação vai ser alterado
-#e se deixar como lista, essa vai crescer e ficar muito grande, gerando problemas
-#colocar como dicionario, pq a relação chave e valor nao é alterado, e pode remover sem ter esses prob
-#ver como fazer isso
+operations_to_make = {}
 
 
 def get_id():
@@ -30,6 +26,19 @@ def get_name_bank():
     if(self_id != -1):
         return address_banks[self_id][1]
     return None
+
+
+def find_address_bank_by_id(id_bank):
+    if(int(id_bank) > 4 or int(id_bank) < 0):
+        return address_banks[id_bank][0]
+    else:
+        return None
+
+def find_name_bank_by_id(id_bank):
+    if(int(id_bank) > 4 or int(id_bank) < 0):
+        return address_banks[id_bank][1]
+    else:
+        return None
 
 
 def set_address_bank(id_bank, address):
@@ -57,9 +66,11 @@ def get_last_id_operation():
 
 def add_operation(operation_to_add):
     global operations_to_make
+    global last_id_operation
     operations_lock.acquire()
     operation_to_add['index_operation'] = get_last_id_operation() + 1
     operations_to_make[operation_to_add['index_operation']] = operation_to_add
+    last_id_operation += 1
     operations_lock.release()
     return operation_to_add['index_operation'] #retorno da chave em que esta a operação
 

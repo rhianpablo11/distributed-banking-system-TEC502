@@ -1,9 +1,18 @@
+import requests
 from flask_cors import CORS
 from flask import *
 from storage import accounts_storage, network_storage
+from models import user
 
 app = Flask(__name__)
 CORS(app)
+
+@app.route('/bank', methods=['GET'])
+def get_name_bank():
+    name_bank = network_storage.get_name_bank()
+    if(name_bank != None):
+        return make_response(jsonify({'name_bank': name_bank})), 200
+    return 'error internal', 500
 
 
 @app.route("/account/search/<int:account_number>", methods=['POST'])
@@ -14,29 +23,67 @@ def search_account(account_number):
     return make_response(jsonify(accounts_storage.find_account_by_number_account(account_number).get_json_basic_data())), 200
 
 
-@app.route('/bank', methods=['GET'])
-def get_name_bank():
-    name_bank = network_storage.get_name_bank()
-    if(name_bank != None):
-        return make_response(jsonify({'name_bank': name_bank})), 200
-    return 'error internal', 500
-
+@app.route('/account/login', methods=['POST'])
+def login_account():
+    data_received_with_requisition = request.json
+    account_found = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number'])
+    if(account_found == None):
+        return 'account not found', 404
+    if(len(account_found.user_list)>1):
+        if(account_found.user_list[0].password == user.cryptography_password(data_received_with_requisition['password'])):
+            return make_response(jsonify(account_found.get_json_user_logged(0))), 200
+        elif(account_found.user_list[1].password == user.cryptography_password(data_received_with_requisition['password'])):
+            return make_response(jsonify(account_found.get_json_user_logged(1))), 200
+        else:
+            return 'password incorrect', 406
+    if(account_found.user_list[0].password == user.cryptography_password(data_received_with_requisition['password'])):
+        return make_response(jsonify(account_found.get_json_user_logged(0))), 200
+    return 'password incorrect', 406
+    
 
 @app.route('/account/transaction/info/<string:type_transfer>', methods=['POST'])
 def get_basic_info_account(type_transfer):
     data_received_with_requisition = request.json
     data_to_send = None
     if(type_transfer != 'ted' or type_transfer != 'pix'):
-        return 'type transfer not recognized', 406
+        return 'type transfer not recognized', 400
     elif(type_transfer == 'ted'):
         data_to_send = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number']).get_json_basic_data()
     elif(type_transfer == 'pix'):
         data_to_send = accounts_storage.find_account_by_key_pix(data_received_with_requisition['key_pix']).get_json_basic_data()
     if(data_to_send != None):
-        return make_response(jsonify(data_to_send)), 200
+        return make_response(jsonify(data_to_send.get_json_basic_data())), 200
     else:
         return 'account not found', 404
     
+
+@app.route('/account/request-info-account/<string:type_transfer>', methods=['POST'])
+def request_basic_info_other_account(type_transfer):
+    data_received_with_requisition = request.json
+    address_bank_found = network_storage.find_address_bank_by_id(data_received_with_requisition['id_bank'])
+    if(address_bank_found == None):
+        return 'id bank not recognized', 400
+    elif(type_transfer == 'ted' or type_transfer == 'pix'):
+        return 'type transaction not reconized', 400
+    else:
+        url_to_communicated = f'{address_bank_found}/account/transaction/info/{data_received_with_requisition['type_transfer']}'
+        if(type_transfer == 'ted'):
+            data_to_send = {
+                'account_number': data_received_with_requisition['account_number']
+            }
+        elif(type_transfer == 'pix'):
+            data_to_send = {
+                'key_pix': data_received_with_requisition['key_pix']
+            }
+        data_received_by_request = requests.post(url=url_to_communicated, json=data_to_send)
+        if(data_received_by_request.status_code == 200):
+            data_received_by_request_json = data_received_by_request.json
+            return make_response(jsonify(data_received_by_request_json)), 200
+        elif(data_received_by_request.status_code == 404):
+            return 'account researched not found', 404
+        else:
+            return 'error in request', 400
+
 
 @app.route('/user/infos', methods=['POST'])
 def get_info_user():

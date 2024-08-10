@@ -33,6 +33,8 @@ class Account:
             'account_number': self.account_number,
             'blocked_balance': self.blocked_balance,
             'transactions': list_json_transactions,
+            'cdi_balance': self.cdi_balance,
+            'saving_balance': self.saving_balance,
             'users': json_user
         }
         
@@ -55,6 +57,30 @@ class Account:
             'document': document_masked,
             'name_bank': self.name_bank,
             'account_number': self.account_number
+        }
+
+
+    def get_json_user_logged(self, index_user):
+        list_json_transactions = []
+        if(len(self.transactions) >0):
+             for transaction in self.transactions:
+                   list_json_transactions.append(self.transactions[transaction].get_json())
+        list_json_transactions.reverse()
+
+        return {
+            'balance': self.balance,
+            'account_number': self.account_number,
+            'blocked_balance': self.blocked_balance,
+            'transactions': list_json_transactions,
+            'cdi_balance': self.cdi_balance,
+            'saving_balance': self.saving_balance,
+            'name': self.user_list[index_user].name,
+            'document': self.user_list[index_user].document,
+            'telephone': self.user_list[index_user].telephone,
+            'email': self.user_list[index_user].email,
+            'is_company': self.user_list[index_user].is_company,
+            'client_since': self.user_list[index_user].date_created_user,
+            'banks_with_account': self.user_list[index_user].banks_with_account
         }
 
 
