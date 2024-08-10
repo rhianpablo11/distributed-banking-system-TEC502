@@ -55,7 +55,7 @@ def get_operation_to_make():
     operations_lock.acquire()
     if(len(operations_to_make)>0):
         operations_lock.release()
-        return(next(iter(operations_to_make)))
+        return operations_to_make[(next(iter(operations_to_make)))]
     operations_lock.release()
     return None
 
@@ -98,3 +98,15 @@ def find_operation_by_key(key_operation_to_search):
             'code_response': operations_to_make[key_operation_to_search]['code_response']
         }
     return None
+
+
+def update_operation(operation_to_update):
+    global operations_to_make
+    operations_lock.acquire()
+    if(operation_to_update['index_operation'] in operations_to_make):
+        operations_to_make[operation_to_update['index_operation'] ] = operation_to_update
+        operations_lock.release()
+        return 'operation updated'
+    operations_lock.release()
+    return None
+    

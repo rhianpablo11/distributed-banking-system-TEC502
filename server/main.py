@@ -1,4 +1,4 @@
-from api import api
+from api import api_bank
 from storage import network_storage
 from bank import bank
 import threading
@@ -12,5 +12,5 @@ network_storage.set_address_bank('3', os.getenv('bank_3'))
 network_storage.set_address_bank('4', os.getenv('bank_4'))
 
 
-api.app.run("0.0.0.0", 10000, debug=False, threaded=True)
+api_bank.app.run("0.0.0.0", 10000, debug=False, threaded=True)
 threading.Thread(target=bank.make_operation_after_receiver_token, daemon=True).start()

@@ -8,6 +8,7 @@ from token_control import token
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route('/bank', methods=['GET'])
 def get_name_bank():
     name_bank = network_storage.get_name_bank()
@@ -258,3 +259,7 @@ def withdraw_money(type_investiment, value, account_number):
         return 'error in operation', 500
 
 
+def make_dict_to_json_response(dict_to_convert):
+    if(type(dict_to_convert) == dict):
+        return make_response(jsonify(dict_to_convert))
+    return None

@@ -48,3 +48,4 @@ meu_dicionario = {'a': 1, 'b': 2, 'c': 3}
 del meu_dicionario['b']
 
 print(f"Dicionário após a remoção: {meu_dicionario}")
+print(type(meu_dicionario)== dict)

@@ -18,11 +18,13 @@ def add_new_user(name, document, telephone, email, password, is_company):
     return users[document].get_json()
 
 
-def add_new_account():
-    account_number = accounts_number.createAccountNumber()
-    new_account = account.Account()
-    accounts[account_number] = new_account
+def add_new_account(new_account):
+    accounts[new_account.account_number] = new_account
     return new_account.get_json()
+
+
+def generate_new_account_number():
+    account_number = accounts_number.createAccountNumber()
 
 
 def find_user_by_document(document_search):
