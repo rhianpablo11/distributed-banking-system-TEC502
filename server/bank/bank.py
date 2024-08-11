@@ -76,8 +76,14 @@ def operation_withdraw_investiment(operation_data):
 
 
 def operation_deposit_money(operation_data):
-    pass
-
+    account_to_operate = accounts_storage.find_account_by_number_account(operation_data['account_number'])
+    if(account_to_operate == None):
+        return 'account not found', 404
+    else:
+        account_to_operate.receive_deposit(operation_data['value'])
+        accounts_storage.update_account_after_changes(account_to_operate)
+        return 'money add with success', 200
+    
 
 def operation_transfer_money(operation_data):
     pass

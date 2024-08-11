@@ -57,14 +57,14 @@ def find_account_by_key_pix(key_pix_search):
     return None
 
 
-def save_account_after_changes(account_to_save):
+def update_account_after_changes(account_to_save):
     if (account_to_save.account_number in accounts):
         accounts[account_to_save.account_number] = account_to_save
         return 1
     return None
 
 
-def save_user_after_changes(user_to_save):
+def update_user_after_changes(user_to_save):
     if(user_to_save.document in users):
         users[user_to_save.document] = user_to_save
         return 1

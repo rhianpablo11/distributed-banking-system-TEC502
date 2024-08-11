@@ -118,7 +118,7 @@ def change_telephone_user(document_user):
         return 'user not found', 404
     else:
         if(user_to_update.change_telephone(data_received_with_requisition['new_telephone'])):
-            if(accounts_storage.save_user_after_changes(user_to_update)):
+            if(accounts_storage.update_user_after_changes(user_to_update)):
                 return 'update make with success', 200
             else:
                 return 'user not found, or error internal', 400
@@ -134,7 +134,7 @@ def change_email_user(document_user):
         return 'user not found', 404
     else:
         if(user_to_update.change_email(data_received_with_requisition['new_email'])):
-            if(accounts_storage.save_user_after_changes(user_to_update)):
+            if(accounts_storage.update_user_after_changes(user_to_update)):
                 return 'update make with success', 200
             else:
                 return 'user not found, or error internal', 400
@@ -151,7 +151,7 @@ def change_password_user(document_user):
     else:
         return_the_operation = user_to_update.change_password(data_received_with_requisition['new_password'])
         if(return_the_operation[0]):
-            if(accounts_storage.save_user_after_changes(user_to_update)):
+            if(accounts_storage.update_user_after_changes(user_to_update)):
                 return 'update make with success', 200
             else:
                 return 'user not found, or error internal', 400
@@ -172,11 +172,31 @@ def receive_money(method_receive):
             data_received_with_requisition['bank_source'],
             method_receive
         )
+
+        return make_response(jsonify({'id_transaction': return_the_operation[1]})), 200
     elif(method_receive == 'deposit'):
-        return_the_operation = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number']).receive_deposit(
-            data_received_with_requisition['value']
-        )
-    return make_response(jsonify({'id_transaction': return_the_operation[1]})), 200
+        operation_to_put_in_dict = {
+            'type_operation': 'deposit',
+            'index_operation': -1,
+            'executed': False,
+            'code_response': -1,
+            'response': -1,
+            'data_to_operate': {
+                'value': data_received_with_requisition['value'],
+                'account_number': data_received_with_requisition['account_number']
+            }
+        }
+        operation_key = network_storage.add_operation(operation_to_put_in_dict)
+        if(network_storage.verify_operation_state(operation_key) == True):
+            return_the_operation = network_storage.find_operation_by_key(operation_key)
+            if(return_the_operation != None):
+                return return_the_operation['response'], return_the_operation['code_response']
+            else:
+                return 'error in operation', 500
+        else:
+            return 'error in operation', 500
+    else:
+        return 'operation not recognized', 400
 
 
 @app.route('/account/trasfer/<:type_transfer>/<int:account_number>', methods=['POST'])
@@ -257,6 +277,7 @@ def withdraw_money(type_investiment, value, account_number):
             return 'error in operation', 500
     else:
         return 'error in operation', 500
+
 
 
 def make_dict_to_json_response(dict_to_convert):
