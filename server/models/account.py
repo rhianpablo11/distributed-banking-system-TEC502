@@ -2,11 +2,12 @@ import random
 import threading
 import requests
 from models import transaction
+from storage import accounts_storage
 
 
 class Account:
     def __init__(self, user_list, account_number, bank_name):
-        self.user_list = user_list
+        self.user_list = user_list #lista com o num de documento 
         self.balance = 0
         self.blocked_balance = 0
         self.cdi_balance = 0 #investimento com maior rendimento
@@ -27,7 +28,7 @@ class Account:
         list_json_transactions.reverse()
         json_user = []
         for user in self.user_list:
-            json_user.append(user.get_json())
+            json_user.append(accounts_storage.find_user_by_document(user).get_json())
         return  {
             'balance': self.balance,
             'account_number': self.account_number,
@@ -49,11 +50,11 @@ class Account:
     
 
     def get_json_basic_data(self):
-        document_masked = self.user_list[0].document
+        document_masked = accounts_storage.find_user_by_document(self.user_list[0]).document
         if len(document_masked) == 14 and document_masked[3] == '.' and document_masked[7] == '.' and document_masked[11] == '-':
             document_masked = '***.' + document_masked[4:7] + '.' + document_masked[8:11] + '-**'
         return  {
-            'name': self.user_list[0].name,
+            'name': accounts_storage.find_user_by_document(self.user_list[0]).name,
             'document': document_masked,
             'name_bank': self.name_bank,
             'account_number': self.account_number
@@ -66,7 +67,7 @@ class Account:
              for transaction in self.transactions:
                    list_json_transactions.append(self.transactions[transaction].get_json())
         list_json_transactions.reverse()
-
+        user_logged = accounts_storage.find_user_by_document(self.user_list[index_user])
         return {
             'balance': self.balance,
             'account_number': self.account_number,
@@ -74,13 +75,13 @@ class Account:
             'transactions': list_json_transactions,
             'cdi_balance': self.cdi_balance,
             'saving_balance': self.saving_balance,
-            'name': self.user_list[index_user].name,
-            'document': self.user_list[index_user].document,
-            'telephone': self.user_list[index_user].telephone,
-            'email': self.user_list[index_user].email,
-            'is_company': self.user_list[index_user].is_company,
-            'client_since': self.user_list[index_user].date_created_user,
-            'banks_with_account': self.user_list[index_user].banks_with_account
+            'name': user_logged.name,
+            'document': user_logged.document,
+            'telephone': user_logged.telephone,
+            'email': user_logged.email,
+            'is_company': user_logged.is_company,
+            'client_since': user_logged.date_created_user,
+            'banks_with_account': user_logged.banks_with_account
         }
 
 
@@ -92,12 +93,13 @@ class Account:
         else:
             self.balance -= value
             self.cdi_balance += value
+            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
             new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= value,
                 concluded= True,
@@ -120,12 +122,13 @@ class Account:
         else:
             self.cdi_balance -= value
             self.balance += value
+            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
             new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= value,
                 concluded= True,
@@ -145,12 +148,13 @@ class Account:
         self.operation_lock.acquire()
         if(self.cdi_balance > 0 ):
             money_earned_with_investiment = self.cdi_balance * 0.01
+            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
             new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= money_earned_with_investiment,
                 concluded= True,
@@ -173,12 +177,13 @@ class Account:
         else:
             self.balance -= value
             self.saving_balance += value
+            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
             new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= value,
                 concluded= True,
@@ -201,12 +206,13 @@ class Account:
         else:
             self.saving_balance -= value
             self.balance += value
+            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
             new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= value,
                 concluded= True,
@@ -226,12 +232,13 @@ class Account:
         self.operation_lock.acquire()
         if(self.saving_balance > 0 ):
             money_earned_with_investiment = self.saving_balance * 0.005
+            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
             new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= money_earned_with_investiment,
                 concluded= True,
@@ -249,12 +256,13 @@ class Account:
     def receive_deposit(self, value):
         self.operation_lock.acquire()
         self.balance = float(self.balance) + value
+        user_infos = accounts_storage.find_user_by_document(self.user_list[0])
         new_transaction = transaction.Transaction(
-                name_source= self.user_list[0].name,
-                document_source= self.user_list[0].document,
+                name_source= user_infos.name,
+                document_source= user_infos.document,
                 account_number_source= self.account_number,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= value,
                 concluded= True,
@@ -272,12 +280,13 @@ class Account:
     def receive_transfer_money(self, value, name_source, document_source, account_number_source, bank_source, type_transaction):
         self.operation_lock.acquire()
         self.blocked_balance += value
+        user_infos = accounts_storage.find_user_by_document(self.user_list[0])
         new_transaction = transaction.Transaction(
                 name_source= name_source,
                 document_source= document_source,
                 account_number_source= account_number_source,
-                name_receiver= self.user_list[0].name,
-                document_receiver= self.user_list[0].document,
+                name_receiver= user_infos.name,
+                document_receiver= user_infos.document,
                 account_number_receiver= self.account_number,
                 value= value,
                 concluded= 'peding',
@@ -302,10 +311,11 @@ class Account:
             return 0, 'not possible transfer money to your account in this bank'
         else:
             try:
+                user_infos = accounts_storage.find_user_by_document(self.user_list[0])
                 data_to_send = {
                     'value': value,
-                    'name_source': self.user_list[0].name,
-                    'document_source': self.user_list[0].document,
+                    'name_source': user_infos.name,
+                    'document_source': user_infos.document,
                     'account_number_source': self.account_number,
                     'bank_source': self.name_bank
                 }
@@ -314,8 +324,8 @@ class Account:
                 self.blocked_balance += value
 
                 new_transaction = transaction.Transaction(
-                        name_source= self,
-                        document_source= self.user_list[0].document,
+                        name_source= user_infos.name,
+                        document_source= user_infos.document,
                         account_number_source= self.account_number,
                         name_receiver= name_receiver,
                         document_receiver= document_receiver,

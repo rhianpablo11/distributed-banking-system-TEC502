@@ -46,13 +46,13 @@ def login_account():
     if(account_found == None):
         return 'account not found', 404
     if(len(account_found.user_list)>1):
-        if(account_found.user_list[0].password == user.cryptography_password(data_received_with_requisition['password'])):
+        if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
             return make_response(jsonify(account_found.get_json_user_logged(0))), 200
-        elif(account_found.user_list[1].password == user.cryptography_password(data_received_with_requisition['password'])):
+        elif(accounts_storage.find_user_by_document(account_found.user_list[1]).password == user.cryptography_password(data_received_with_requisition['password'])):
             return make_response(jsonify(account_found.get_json_user_logged(1))), 200
         else:
             return 'password incorrect', 406
-    if(account_found.user_list[0].password == user.cryptography_password(data_received_with_requisition['password'])):
+    if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
         return make_response(jsonify(account_found.get_json_user_logged(0))), 200
     return 'password incorrect', 406
     
@@ -203,6 +203,7 @@ def receive_money(method_receive):
 def transfer_money(type_transfer, account_number):
     data_received_with_requisition = request.json
     account_source_infos = accounts_storage.find_account_by_number_account(account_number)
+    user_infos = accounts_storage.find_user_by_document(account_source_infos.user_list[0])
     operation_to_put_in_dict = {
         'type_operation': 'transfer',
         'index_operation': -1,
@@ -211,8 +212,8 @@ def transfer_money(type_transfer, account_number):
         'code_response': -1,
         'data_to_operate': {
             'value': data_received_with_requisition['value'],
-            'name_source': account_source_infos.user_list[0].name,
-            'document_source': account_source_infos.user_list[0].document,
+            'name_source': user_infos.name,
+            'document_source': user_infos.document,
             'account_number_source': account_number,
             'bank_source': account_source_infos.name_bank,
             'type_transaction': type_transfer
@@ -278,6 +279,41 @@ def withdraw_money(type_investiment, value, account_number):
     else:
         return 'error in operation', 500
 
+
+@app.route('/account/create', methods=['POST'])
+def create_new_account():
+    data_received_with_requisition = request.json
+    operation_to_put_in_dict = {
+        'type_operation': 'create',
+        'index_operation': -1,
+        'executed': False,
+        'response': -1,
+        'code_response': -1,
+        'data_to_operate': {
+            'name_user_0': data_received_with_requisition['name_user_0'],
+            'document_user_0': data_received_with_requisition['document_user_0'],
+            'telephone_user_0': data_received_with_requisition['telephone_user_0'],
+            'email_user_0': data_received_with_requisition['email_user_0'],
+            'password_user_0': data_received_with_requisition['password_user_0'],
+            'is_company': data_received_with_requisition['is_company'],
+            'is_joint_account': data_received_with_requisition['is_joint_account'],
+            'name_user_1': data_received_with_requisition['name_user_1'],
+            'document_user_1': data_received_with_requisition['document_user_1'],
+            'telephone_user_1': data_received_with_requisition['telephone_user_1'],
+            'email_user_1': data_received_with_requisition['email_user_1'],
+            'password_user_1': data_received_with_requisition['password_user_1'],
+        }
+    }
+
+    operation_key = network_storage.add_operation(operation_to_put_in_dict)
+    if(network_storage.verify_operation_state(operation_key) == True):
+        return_the_operation = network_storage.find_operation_by_key(operation_key)
+        if(return_the_operation != None):
+            return return_the_operation['response'], return_the_operation['code_response']
+        else:
+            return 'error in operation', 500
+    else:
+        return 'error in operation', 500
 
 
 def make_dict_to_json_response(dict_to_convert):
