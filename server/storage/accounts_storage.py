@@ -69,3 +69,10 @@ def update_user_after_changes(user_to_save):
         users[user_to_save.document] = user_to_save
         return 1
     return None
+
+
+def add_account_number_to_user(document_user, account_number_to_add, name_bank):
+    if(document_user in users):
+        users[document_user].add_new_bank_to_list(name_bank, account_number_to_add)
+        return 1
+    return None

@@ -146,5 +146,7 @@ def operation_packet_transfer(operation_data):
     pass
 
 
-def search_user_in_other_banks(document_user):
-    pass
+def search_user_in_other_banks(document_user, new_account_number):
+    url_base = f'/user/search/{document_user}/{new_account_number}/{network_storage.get_name_bank()}'
+    
+    return []

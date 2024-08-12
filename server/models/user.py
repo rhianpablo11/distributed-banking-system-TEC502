@@ -12,7 +12,7 @@ class User:
         self.is_company = is_company
         self.user_lock = threading.Lock()
         self.date_created_user = datetime.datetime.now()
-        self.banks_with_account = banks_with_account
+        self.banks_with_account = banks_with_account #dict with {name_bank: account_number}
     
     def get_json(self):
         auxJson = {
@@ -72,11 +72,8 @@ class User:
 
     def add_new_bank_to_list(self, name_bank, account_number_in_the_bank):
         self.user_lock.acquire()
-        self.banks_with_account[name_bank] = account_number_in_the_bank
         if(name_bank in self.banks_with_account):
             if(account_number_in_the_bank not in self.banks_with_account[name_bank]):
-                self.banks_with_account[name_bank] = [account_number_in_the_bank]
-            else:
                 self.banks_with_account[name_bank].append(account_number_in_the_bank)
         else:
             self.banks_with_account[name_bank] = [account_number_in_the_bank]

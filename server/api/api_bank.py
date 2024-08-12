@@ -39,6 +39,16 @@ def search_account(account_number):
     return make_response(jsonify(accounts_storage.find_account_by_number_account(account_number).get_json_basic_data())), 200
 
 
+@app.route('/user/search/<string:document_user_to_search>/<int:account_number_to_add>/<string:name_bank>', methods=['POST'])
+def search_user(document_user_to_search, account_number_to_add, name_bank):
+    user_found = accounts_storage.find_user_by_document(document_user_to_search)
+    if(user_found == None):
+        return 'user not found', 404
+    else:
+        accounts_storage.add_account_number_to_user(document_user_to_search, name_bank, account_number_to_add)
+        return make_dict_to_json_response(accounts_storage.find_user_by_document(document_user_to_search).get_json()), 200
+
+
 @app.route('/account/login', methods=['POST'])
 def login_account():
     data_received_with_requisition = request.json
