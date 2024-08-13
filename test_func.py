@@ -18,6 +18,10 @@ dicionario = {
     'porsche': 'panamera'
 }
 
+for chave in dicionario:
+    print("chave do for", chave)
+
+
 print(dicionario)
 print(dicionario['valor'])
 print(len(dicionario))

@@ -10,12 +10,12 @@ def get_if_has_token():
     return has_token
 
 
-def set_has_token(token):
+def set_has_token(token: bool):
     global has_token
     has_token = token
 
 
-def get_counter_token_all_banks():
+def get_counter_token_all_banks() -> list:
     return counter_token_all_banks
 
 
@@ -24,7 +24,7 @@ def add_self_counter():
     counter_token_all_banks[int(network_storage.get_id())] += 1
 
 
-def get_my_value_of_counter():
+def get_my_value_of_counter() -> int:
     return counter_token_all_banks[int(network_storage.get_id())]
 
 

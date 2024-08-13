@@ -13,9 +13,9 @@ def get_users():
     return users
 
 
-def add_new_user(name, document, telephone, email, password, is_company):
-    users[document] = user.User(name, document, telephone, email, password, is_company)
-    return users[document].get_json()
+def add_new_user(new_user):
+    users[new_user.document] = new_user
+    return users[new_user.document].get_json()
 
 
 def add_new_account(new_account):
@@ -27,14 +27,14 @@ def generate_new_account_number():
     account_number = accounts_number.createAccountNumber()
 
 
-def find_user_by_document(document_search):
+def find_user_by_document(document_search) -> user.User:
     if(document_search in users):
         return users[document_search]
     else:
         return None
     
 
-def find_account_by_number_account(account_number):
+def find_account_by_number_account(account_number) -> account.Account:
     if(account_number in accounts):
         return accounts[account_number]
     else:
@@ -50,7 +50,17 @@ def find_account_by_document_user(document_search) -> list:
     return accounts_found
 
 
-def find_account_by_key_pix(key_pix_search):
+def get_accounts_number_of_this_user(document_search) -> list:
+    accounts_number_found = []
+    for account in accounts:
+        for user in account.user_list:
+            if(user == document_search):
+                accounts_number_found.append(account.account_number)
+    return accounts_number_found
+            
+
+
+def find_account_by_key_pix(key_pix_search) -> account.Account:
     for account in accounts:
         if(accounts[account].key_pix == key_pix_search):
             return accounts[account]

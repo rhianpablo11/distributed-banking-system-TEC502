@@ -46,7 +46,10 @@ def search_user(document_user_to_search, account_number_to_add, name_bank):
         return 'user not found', 404
     else:
         accounts_storage.add_account_number_to_user(document_user_to_search, name_bank, account_number_to_add)
-        return make_dict_to_json_response(accounts_storage.find_user_by_document(document_user_to_search).get_json()), 200
+        return make_dict_to_json_response({
+            'bank_name': network_storage.get_name_bank(),
+            'accounts_number_of_this_user': accounts_storage.get_accounts_number_of_this_user(document_user_to_search)
+        }), 200
 
 
 @app.route('/account/login', methods=['POST'])
@@ -120,7 +123,7 @@ def get_info_user():
     return 'user not found', 404
 
 
-@app.route('/user/<:document_user>/update-profile/change/telephone', methods=['PATCH'])
+@app.route('/user/<string:document_user>/update-profile/change/telephone', methods=['PATCH'])
 def change_telephone_user(document_user):
     data_received_with_requisition = request.json
     user_to_update = accounts_storage.find_user_by_document(document_user)
@@ -136,7 +139,7 @@ def change_telephone_user(document_user):
             return 'telephone is same the registered', 409
     
 
-@app.route('/user/<:document_user>/update-profile/change/email', methods=['PATCH'])
+@app.route('/user/<string:document_user>/update-profile/change/email', methods=['PATCH'])
 def change_email_user(document_user):
     data_received_with_requisition = request.json
     user_to_update = accounts_storage.find_user_by_document(document_user)
@@ -152,7 +155,7 @@ def change_email_user(document_user):
             return 'email is same the registered', 409
 
 
-@app.route('/user/<:document_user>/update-profile/change/password', methods=['PATCH'])
+@app.route('/user/<string:document_user>/update-profile/change/password', methods=['PATCH'])
 def change_password_user(document_user):
     data_received_with_requisition = request.json
     user_to_update = accounts_storage.find_user_by_document(document_user)
@@ -169,7 +172,7 @@ def change_password_user(document_user):
             return return_the_operation[1], 409
         
 
-@app.route('/account/receive-money/<:method_receive>', methods=['POST'])
+@app.route('/account/receive-money/<string:method_receive>', methods=['POST'])
 def receive_money(method_receive):
     data_received_with_requisition = request.json
     return_the_operation = None
@@ -209,7 +212,7 @@ def receive_money(method_receive):
         return 'operation not recognized', 400
 
 
-@app.route('/account/trasfer/<:type_transfer>/<int:account_number>', methods=['POST'])
+@app.route('/account/trasfer/<string:type_transfer>/<int:account_number>', methods=['POST'])
 def transfer_money(type_transfer, account_number):
     data_received_with_requisition = request.json
     account_source_infos = accounts_storage.find_account_by_number_account(account_number)
@@ -240,7 +243,7 @@ def transfer_money(type_transfer, account_number):
         return 'error in operation', 500
 
 
-@app.route('/account/invest/<:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
+@app.route('/account/invest/<string:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
 def invest_money(type_investiment, value, account_number):
     operation_to_put_in_dict = {
             'type_operation': 'investiment',
@@ -265,7 +268,7 @@ def invest_money(type_investiment, value, account_number):
         return 'error in operation', 500
 
 
-@app.route('/account/withdraw/<:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
+@app.route('/account/withdraw/<string:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
 def withdraw_money(type_investiment, value, account_number):
     operation_to_put_in_dict = {
             'type_operation': 'withdraw_investiment',

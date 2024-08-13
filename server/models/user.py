@@ -14,16 +14,24 @@ class User:
         self.date_created_user = datetime.datetime.now()
         self.banks_with_account = banks_with_account #dict with {name_bank: account_number}
     
+
     def get_json(self):
         auxJson = {
             'name': self.name,
             'document': self.document,
             'telephone': self.telephone,
             'email': self.email,
-            'is_company': self.is_company
+            'is_company': self.is_company,
+            'banks_with_account': self.banks_with_account
         }
         return auxJson
     
+
+    def get_banks_with_account(self):
+        return {
+            'banks_with_account': self.banks_with_account
+        }
+
 
     def change_email(self, new_email):
         self.user_lock.acquire()
