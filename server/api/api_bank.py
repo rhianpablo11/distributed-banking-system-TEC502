@@ -357,6 +357,7 @@ def create_new_account():
 
 
 def make_dict_to_json_response(dict_to_convert):
+    print(dict_to_convert)
     if(type(dict_to_convert) == dict):
         return make_response(jsonify(dict_to_convert))
     return None

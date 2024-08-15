@@ -11,9 +11,10 @@ def make_operation_after_receiver_token():
             operation = network_storage.get_operation_to_make()
             if(operation != None):
                 operate_operation_received(operation)
-                token.pass_token_to_other_host()
+                #token.pass_token_to_other_host()
             else:
-                token.pass_token_to_other_host()
+                #token.pass_token_to_other_host()
+                pass
 
 
 def operate_operation_received(operation_to_make):
@@ -132,9 +133,10 @@ def operation_create_account(operation_data):
     accounts_storage.add_new_account(new_account)
 
     #caso em que conseguiu criar a conta
-    response_to_return = api_bank.make_dict_to_json_response(new_account.get_json())
-    if(response_to_return != None):
-        return response_to_return, 200
+    with api_bank.app.app_context():
+        response_to_return = api_bank.make_dict_to_json_response(new_account.get_json())
+        if(response_to_return != None):
+            return response_to_return, 200
 
 
 def operation_invest_money(operation_data):

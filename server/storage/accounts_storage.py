@@ -1,7 +1,7 @@
 from models import account, user
 
 accounts = {}
-accounts_number = account.GenerateNumberAccountBank
+accounts_number = account.GenerateNumberAccountBank()
 users = {}
 
 
