@@ -35,6 +35,9 @@ def operate_operation_received(operation_to_make):
     elif(operation_to_make['type_operation'] == 'packet_transfer'):
         operation_return = operation_packet_transfer(operation_to_make['data_to_operate'])
 
+    elif(operation_to_make['type_operation'] == 'complete_bank_list'):
+        operation_return = operation_complete_bank_list_user(operation_to_make['data_to_operate'])
+
     else:
         operation_return = ['operation type not recognized', 406]
 
@@ -187,10 +190,45 @@ def operation_deposit_money(operation_data):
     
 
 def operation_transfer_money(operation_data):
-    pass
+    account_to_operate = accounts_storage.find_account_by_number_account(operation_data['account_number_source'])
+    if(operation_data['type_transaction'] != 'ted' and operation_data['type_transaction'] != 'pix'):
+        return 'operation not recognized', 400
+    
+    elif(operation_data['type_transaction'] == 'ted'):
+        return_of_operation = account_to_operate.transfer_money_ted(
+            value = operation_data['value'],
+            name_receiver = operation_data['name_receiver'],
+            account_number_receiver = operation_data['account_number_receiver'],
+            bank_receiver = operation_data['bank_receiver'],
+            document_receiver = operation_data['document_receiver'])
+        
+    elif(operation_data['type_transaction'] == 'pix'):
+        return_of_operation = account_to_operate.transfer_money_pix(
+            value = operation_data['value'],
+            name_receiver = operation_data['name_receiver'],
+            account_number_receiver = operation_data['account_number_receiver'],
+            bank_receiver = operation_data['bank_receiver'],
+            document_receiver = operation_data['document_receiver'])
+        
+    if( not return_of_operation[0]):
+        accounts_storage.update_account_after_changes(account_to_operate)
+        return return_of_operation[1], 400
+
+    accounts_storage.update_account_after_changes(account_to_operate)
+    send_finalize_the_operation(id_operation_self = return_of_operation[2]['id_transaction_sender'],
+                                id_operation_external = return_of_operation[2]['id_transaction_receiver'],
+                                bank_external = operation_data['bank_receiver'],
+                                account_identification_self = account_to_operate.account_number,
+                                account_identification_external = operation_data['account_number_receiver'],
+                                is_concluded=True)
+    accounts_storage.update_account_after_changes(account_to_operate)
 
 
 def operation_packet_transfer(operation_data):
+    pass
+
+
+def operation_complete_bank_list_user(operation_data):
     pass
 
 
@@ -218,3 +256,29 @@ def search_user_in_other_banks(document_user, new_account_number):
             next_bank_to_communicate = str(int(next_bank_to_communicate) + 1)
             
     return banks_with_account
+
+
+def send_finalize_the_operation(id_operation_self, id_operation_external, bank_external, is_concluded, account_identification_self, account_identification_external) -> bool:
+    account_internal_to_confirmate = accounts_storage.find_account_by_number_account(account_identification_self)
+    if(is_concluded):
+        while(not account_internal_to_confirmate.confirmate_transaction(id_operation_self)):
+            pass
+        accounts_storage.update_account_after_changes(account_internal_to_confirmate)
+        url_to_send = f'{network_storage.find_address_bank_by_name(bank_external)}/account/confirmation-operation/{id_operation_external}/{account_identification_external}'
+
+    else:
+        while not account_internal_to_confirmate.cancel_transaction(id_operation_self):
+            pass
+        accounts_storage.update_account_after_changes(account_internal_to_confirmate)
+        url_to_send = f'{network_storage.find_address_bank_by_name(bank_external)}/account/cancel-operation{id_operation_external}/{account_identification_external}'
+
+
+    bank_external_replied = False
+    while not bank_external_replied:
+        try:
+            data_received_by_request = requests.post(url= url_to_send)
+            if(data_received_by_request.status_code == 200):
+                bank_external_replied = True
+                return 1
+        except:
+            bank_external_replied = False

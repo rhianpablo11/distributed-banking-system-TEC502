@@ -39,6 +39,13 @@ def find_name_bank_by_id(id_bank):
         return address_banks[id_bank][1]
     else:
         return None
+    
+
+def find_address_bank_by_name(name_bank):
+    for bank_info in address_banks:
+        if(address_banks[bank_info][1] == name_bank):
+            return address_banks[bank_info][0]
+    return None
 
 
 def set_address_bank(id_bank, address):

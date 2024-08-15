@@ -225,11 +225,12 @@ def transfer_money(type_transfer, account_number):
         'code_response': -1,
         'data_to_operate': {
             'value': data_received_with_requisition['value'],
-            'name_source': user_infos.name,
-            'document_source': user_infos.document,
-            'account_number_source': account_number,
-            'bank_source': account_source_infos.name_bank,
-            'type_transaction': type_transfer
+            'bank_receiver': data_received_with_requisition['name_bank'],
+            'name_receiver': data_received_with_requisition['name'],
+            'account_number_receiver': account_number,
+            'document_receiver':  data_received_with_requisition['document_receiver'],
+            'type_transaction': type_transfer,
+            'key_pix':  data_received_with_requisition['key_pix']
         }
     }
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
@@ -241,6 +242,32 @@ def transfer_money(type_transfer, account_number):
             return 'error in operation', 500
     else:
         return 'error in operation', 500
+
+
+@app.route('/account/confirmation-operation/<int:id_transaction_to_confirm>/<int:account_number>', methods=['POST'])
+def confirmate_transaction_of_account_client(id_transaction_to_confirm, account_number):
+    account_to_operate = accounts_storage.find_account_by_number_account(account_number)
+    if(account_to_operate == None):
+        return 'account not found', 404
+    
+    if(account_to_operate.confirmate_transaction(id_transaction_to_confirm)):
+        accounts_storage.update_account_after_changes(account_to_operate)
+        return 'operation confirmated with success', 200
+    else:
+        return 'error in confirmate operation', 400
+
+
+@app.route('/account/cancel-operation/<int:id_transaction_to_cancel>/<int:account_number>', methods=['POST'])
+def cancel_transaction_of_account_client(id_transaction_to_cancel, account_number):
+    account_to_operate = accounts_storage.find_account_by_number_account(account_number)
+    if(account_to_operate == None):
+        return 'account not found', 404
+    
+    if(account_to_operate.cancel_transaction(id_transaction_to_cancel)):
+        accounts_storage.update_account_after_changes(account_to_operate)
+        return 'operation canceled with success', 200
+    else:
+        return 'error in confirmate operation', 400
 
 
 @app.route('/account/invest/<string:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])

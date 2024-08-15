@@ -2,7 +2,7 @@ import random
 import threading
 import requests
 from models import transaction
-from storage import accounts_storage
+from storage import accounts_storage, network_storage
 
 
 class Account:
@@ -301,7 +301,7 @@ class Account:
         return 1, new_transaction['id_transaction']
     
 
-    def transfer_money_ted(self, url, value, name_receiver, document_receiver, account_number_receiver, bank_receiver):
+    def transfer_money_ted(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver):
         self.operation_lock.acquire()
         if(value > self.balance):
             self.operation_lock.release()
@@ -340,7 +340,13 @@ class Account:
                 self.transactions[self.id_last_transaction] = new_transaction
                 self.id_last_transaction += 1
 
-                data_received_by_request = requests.post(url = url, json = data_to_send)
+                address_bank_to_send = network_storage.find_address_bank_by_name(bank_receiver)
+                if(address_bank_to_send == None):
+                    return 0, 'bank to send not recognized'
+                
+                url_to_send = f'{address_bank_to_send}/account/receive-money/ted'
+    
+                data_received_by_request = requests.post(url = url_to_send, json = data_to_send)
                 if(data_received_by_request.status_code == 200):
                     data_received_json = data_received_by_request.json()
                     self.operation_lock.release()
@@ -361,6 +367,75 @@ class Account:
                 return 0, 'error in transfer money'
             
     
+    def transfer_money_pix(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver, key_pix):
+        self.operation_lock.acquire()
+        if(value > self.balance):
+            self.operation_lock.release()
+            return 0, 'not money available to this transacation'
+        elif(key_pix == self.key_pix):
+            self.operation_lock.release()
+            return 0, 'not possible trasfer money to your account in this bank'
+        else:
+            try:
+                user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+                data_to_send = {
+                    'value': value,
+                    'name_sourcer': user_infos.name,
+                    'document_source': user_infos.document,
+                    'account_number_source': self.account_number,
+                    'bank_source': self.name_bank
+                }
+
+                self.balance -= value
+                self.blocked_balance += value
+
+                new_transaction = transaction.Transaction(
+                        name_source= user_infos.name,
+                        document_source= user_infos.document,
+                        account_number_source= self.account_number,
+                        name_receiver= name_receiver,
+                        document_receiver= document_receiver,
+                        account_number_receiver= account_number_receiver,
+                        value= value,
+                        concluded= 'peding',
+                        type_transaction= 'send_pix',
+                        id_transaction= self.id_last_transaction,
+                        bank_receptor= bank_receiver,
+                        bank_source= self.name_bank
+                    )
+                self.transactions[self.id_last_transaction] = new_transaction
+                self.id_last_transaction += 1
+
+                address_bank_to_send = network_storage.find_address_bank_by_name(bank_receiver)
+                if(address_bank_to_send == None):
+                    return 0, 'bank to send not recognized'
+                
+                url_to_send = f'{address_bank_to_send}/account/receive-money/pix'
+
+                data_received_by_request = requests.post(url=url_to_send, json=data_to_send)
+                if(data_received_by_request.status_code == 200):
+                    data_received_json = data_received_by_request.json()
+                    self.operation_lock.release()
+                    return 1, 'money transfer with success', {
+                        'id_transaction_sender': new_transaction.id_transaction,
+                        'id_transaction_receiver': data_received_json['id_transaction']}
+
+                else:
+                    self.blocked_balance -= value
+                    self.balance += value
+                    self.transactions[self.id_last_transaction].concluded = 'error'
+                    self.operation_lock.release()
+                    return 0, 'error in transfer money'
+                
+            except:
+                self.blocked_balance -= value
+                self.balance += value
+                self.transactions[self.id_last_transaction].concluded = 'error'
+                self.operation_lock.release()
+                return 0, 'error in transfer money'
+
+
+
     def confirmate_transaction(self, id_transaction):
         self.operation_lock.acquire()
         try:
