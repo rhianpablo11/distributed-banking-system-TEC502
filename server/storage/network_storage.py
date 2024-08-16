@@ -38,7 +38,6 @@ def find_name_bank_by_id(id_bank):
     if(int(id_bank) > 4 or int(id_bank) < 0):
         return None
     else:
-        
         return address_banks[id_bank][1]
     
 
@@ -59,11 +58,20 @@ def set_self_id(id_to_set):
     self_id = id_to_set
 
 
+def get_operations():
+    return operations_to_make
+
+
 def get_operation_to_make():
     operations_lock.acquire()
     if(len(operations_to_make)>0):
-        operations_lock.release()
-        return operations_to_make[(next(iter(operations_to_make)))]
+        print("network storage analiser ",operations_to_make[(next(iter(operations_to_make)))])
+        if(operations_to_make[(next(iter(operations_to_make)))]['executed'] == False):
+            operations_lock.release()
+            return operations_to_make[(next(iter(operations_to_make)))]
+        else: 
+            operations_lock.release()
+            return None
     operations_lock.release()
     return None
 
@@ -83,11 +91,11 @@ def add_operation(operation_to_add):
     return operation_to_add['index_operation'] #retorno da chave em que esta a operação
 
 
-def remove_operation(operation_to_delete):
+def remove_operation(operation_key_to_delete):
     global operations_to_make
     operations_lock.acquire()
-    if(operation_to_delete in operations_to_make):
-        del operations_to_make[operation_to_delete['index_operation']]
+    if(operation_key_to_delete in operations_to_make):
+        del operations_to_make[operation_key_to_delete]
     operations_lock.release()
 
 
@@ -106,6 +114,13 @@ def find_operation_by_key(key_operation_to_search):
             'code_response': operations_to_make[key_operation_to_search]['code_response']
         }
     return None
+
+
+def find_operation_full_by_key(key_operation_to_search):
+    if(key_operation_to_search in operations_to_make):
+        return operations_to_make[key_operation_to_search]
+    else:
+        return None
 
 
 def update_operation(operation_to_update):

@@ -348,6 +348,7 @@ def create_new_account():
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
     if(network_storage.verify_operation_state(operation_key) == True):
         return_the_operation = network_storage.find_operation_by_key(operation_key)
+        network_storage.remove_operation(operation_key)
         if(return_the_operation != None):
             return return_the_operation['response'], return_the_operation['code_response']
         else:

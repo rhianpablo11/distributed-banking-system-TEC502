@@ -4,7 +4,8 @@ from token_control import token
 from storage import network_storage, accounts_storage
 from models import account, user
 from api import api_bank
-
+global counter
+counter  = 0 
 def make_operation_after_receiver_token():
     while True:
         if(token.get_if_has_token()):
@@ -51,6 +52,7 @@ def operate_operation_received(operation_to_make):
         return 0
 
 
+
 def operation_create_account(operation_data):
     #retorno vai ter:
     # 1.Conseguiu criar:
@@ -60,9 +62,8 @@ def operation_create_account(operation_data):
 
     user_list_to_account = []
     account_number_genereted = accounts_storage.generate_new_account_number()
-
+    print('entrada')
     user_0 = accounts_storage.find_user_by_document(operation_data['document_user_0'])
-
     #nao encontrou o usuario nesse banco e tem que criar um novo
     if(user_0 == None):
         new_user_0 = user.User(
@@ -74,9 +75,9 @@ def operation_create_account(operation_data):
                 password= operation_data['password_user_0'],
                 banks_with_account= search_user_in_other_banks(operation_data['document_user_0'], account_number_genereted)
             )
+        new_user_0.add_new_bank_to_list(network_storage.get_name_bank(), account_number_genereted)
         accounts_storage.add_new_user(new_user_0)
         user_list_to_account.append(new_user_0.document)
-
     elif(user_0 != None): #achou o user
         #pegar a lista de numeros de conta que o usuario possui naquele banco
         accounts_number_found = user_0.banks_with_account[network_storage.get_name_bank()] 
@@ -103,9 +104,10 @@ def operation_create_account(operation_data):
         user_list_to_account.append(user_0.document)
         user_0.add_new_bank_to_list(name_bank=network_storage.get_name_bank(), account_number_in_the_bank=account_number_genereted)
         accounts_storage.update_user_after_changes(user_0)
-
+    print(f'entrada 1.5 {operation_data['is_joint_account']}')
     if(operation_data['is_joint_account']):
         user_1 = accounts_storage.find_user_by_document(operation_data['document_user_1'])
+        print(f'entrada 2 {user_1}')
         if(user_1 == None):
             new_user_1 = user.User(
                 name= operation_data['name_user_1'],
@@ -117,15 +119,16 @@ def operation_create_account(operation_data):
                 banks_with_account= search_user_in_other_banks(operation_data['document_user_1'], account_number_genereted)
             )
             user_list_to_account.append(new_user_1.document)
+            new_user_1.add_new_bank_to_list(network_storage.get_name_bank(), account_number_genereted)
             accounts_storage.add_new_user(new_user_1)
         else:
             user_list_to_account.append(user_1)
             user_1.add_new_bank_to_list(name_bank=network_storage.get_name_bank(), account_number_in_the_bank=account_number_genereted)
             accounts_storage.update_user_after_changes(user_1)
-
+    print(f'entrada 3 ')
     new_account = account.Account(
         user_list= user_list_to_account,
-        account_number= accounts_storage.generate_new_account_number(),
+        account_number= account_number_genereted,
         bank_name= network_storage.get_name_bank(),
     )
 

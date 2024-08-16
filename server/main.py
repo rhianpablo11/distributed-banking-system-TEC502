@@ -38,7 +38,10 @@ while 1:
     print('==LIST USERS==')
     for account in accounts_storage.get_accounts():
         print(accounts_storage.find_account_by_number_account(account).get_json())
-    time.sleep(5)
+    print('==LIST OPERATIONS==')
+    for operation in network_storage.get_operations():
+        print(network_storage.find_operation_full_by_key(operation))
+    time.sleep(3)
 
 
 

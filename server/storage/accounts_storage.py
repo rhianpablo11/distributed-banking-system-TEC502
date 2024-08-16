@@ -25,6 +25,7 @@ def add_new_account(new_account):
 
 def generate_new_account_number():
     account_number = accounts_number.createAccountNumber()
+    return account_number
 
 
 def find_user_by_document(document_search) -> user.User:
