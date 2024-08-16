@@ -298,7 +298,7 @@ class Account:
         self.transactions[self.id_last_transaction] = new_transaction
         self.id_last_transaction += 1
         self.operation_lock.release()
-        return 1, new_transaction['id_transaction']
+        return 1, new_transaction.id_transaction
     
 
     def transfer_money_ted(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver):
@@ -317,7 +317,8 @@ class Account:
                     'name_source': user_infos.name,
                     'document_source': user_infos.document,
                     'account_number_source': self.account_number,
-                    'bank_source': self.name_bank
+                    'bank_source': self.name_bank,
+                    'account_number': account_number_receiver
                 }
 
                 self.balance -= value
@@ -383,7 +384,8 @@ class Account:
                     'name_sourcer': user_infos.name,
                     'document_source': user_infos.document,
                     'account_number_source': self.account_number,
-                    'bank_source': self.name_bank
+                    'bank_source': self.name_bank,
+                    'account_number': account_number_receiver
                 }
 
                 self.balance -= value

@@ -22,10 +22,10 @@ def operate_operation_received(operation_to_make):
     if(operation_to_make['type_operation'] == 'create'):
         operation_return = operation_create_account(operation_to_make['data_to_operate'])
         
-    elif(operation_to_make['type_operation'] == 'invest'):
+    elif(operation_to_make['type_operation'] == 'investiment'):
         operation_return = operation_invest_money(operation_to_make['data_to_operate'])
     
-    elif(operation_to_make['type_operation'] == 'withdraw'):
+    elif(operation_to_make['type_operation'] == 'withdraw_investiment'):
         operation_return = operation_withdraw_investiment(operation_to_make['data_to_operate'])
     
     elif(operation_to_make['type_operation'] == 'deposit'):
@@ -62,7 +62,6 @@ def operation_create_account(operation_data):
 
     user_list_to_account = []
     account_number_genereted = accounts_storage.generate_new_account_number()
-    print('entrada')
     user_0 = accounts_storage.find_user_by_document(operation_data['document_user_0'])
     #nao encontrou o usuario nesse banco e tem que criar um novo
     if(user_0 == None):
@@ -107,7 +106,6 @@ def operation_create_account(operation_data):
     print(f'entrada 1.5 {operation_data['is_joint_account']}')
     if(operation_data['is_joint_account']):
         user_1 = accounts_storage.find_user_by_document(operation_data['document_user_1'])
-        print(f'entrada 2 {user_1}')
         if(user_1 == None):
             new_user_1 = user.User(
                 name= operation_data['name_user_1'],
@@ -125,7 +123,6 @@ def operation_create_account(operation_data):
             user_list_to_account.append(user_1)
             user_1.add_new_bank_to_list(name_bank=network_storage.get_name_bank(), account_number_in_the_bank=account_number_genereted)
             accounts_storage.update_user_after_changes(user_1)
-    print(f'entrada 3 ')
     new_account = account.Account(
         user_list= user_list_to_account,
         account_number= account_number_genereted,
@@ -143,7 +140,7 @@ def operation_create_account(operation_data):
 
 
 def operation_invest_money(operation_data):
-    account_to_operate = accounts_storage.find_account_by_number_account['account_number']
+    account_to_operate = accounts_storage.find_account_by_number_account(operation_data['account_number'])
     if(account_to_operate == None):
         return 'account not found', 404
     else:
@@ -164,7 +161,7 @@ def operation_invest_money(operation_data):
         
             
 def operation_withdraw_investiment(operation_data):
-    account_to_operate = accounts_storage.find_account_by_number_account['account_number']
+    account_to_operate = accounts_storage.find_account_by_number_account(operation_data['account_number'])
     if(account_to_operate == None):
         return 'account not found', 404
     else:
@@ -227,7 +224,7 @@ def operation_transfer_money(operation_data):
                                 account_identification_external = operation_data['account_number_receiver'],
                                 is_concluded=True)
     accounts_storage.update_account_after_changes(account_to_operate)
-
+    return 'money transfer with success', 200
 
 def operation_packet_transfer(operation_data):
     pass

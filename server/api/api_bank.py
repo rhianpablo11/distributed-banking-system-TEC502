@@ -74,12 +74,12 @@ def login_account():
 def get_basic_info_account(type_transfer):
     data_received_with_requisition = request.json
     data_to_send = None
-    if(type_transfer != 'ted' or type_transfer != 'pix'):
+    if(type_transfer != 'ted' and type_transfer != 'pix'):
         return 'type transfer not recognized', 400
     elif(type_transfer == 'ted'):
-        data_to_send = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number']).get_json_basic_data()
+        data_to_send = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number'])
     elif(type_transfer == 'pix'):
-        data_to_send = accounts_storage.find_account_by_key_pix(data_received_with_requisition['key_pix']).get_json_basic_data()
+        data_to_send = accounts_storage.find_account_by_key_pix(data_received_with_requisition['key_pix'])
     if(data_to_send != None):
         return make_response(jsonify(data_to_send.get_json_basic_data())), 200
     else:
@@ -177,7 +177,8 @@ def receive_money(method_receive):
     data_received_with_requisition = request.json
     return_the_operation = None
     if(method_receive == 'ted' or method_receive == 'pix'):
-        return_the_operation = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number']).receive_transfer_money(
+        account_found = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number'])
+        return_the_operation = account_found.receive_transfer_money(
             data_received_with_requisition['value'],
             data_received_with_requisition['name_source'],
             data_received_with_requisition['document_source'],
@@ -213,7 +214,7 @@ def receive_money(method_receive):
         return 'operation not recognized', 400
 
 
-@app.route('/account/trasfer/<string:type_transfer>/<int:account_number>', methods=['POST'])
+@app.route('/account/transfer/<string:type_transfer>/<int:account_number>', methods=['POST'])
 def transfer_money(type_transfer, account_number):
     data_received_with_requisition = request.json
     account_source_infos = accounts_storage.find_account_by_number_account(account_number)
@@ -228,10 +229,11 @@ def transfer_money(type_transfer, account_number):
             'value': data_received_with_requisition['value'],
             'bank_receiver': data_received_with_requisition['name_bank'],
             'name_receiver': data_received_with_requisition['name'],
-            'account_number_receiver': account_number,
+            'account_number_receiver': data_received_with_requisition['account_number'],
             'document_receiver':  data_received_with_requisition['document_receiver'],
             'type_transaction': type_transfer,
-            'key_pix':  data_received_with_requisition['key_pix']
+            'key_pix':  data_received_with_requisition['key_pix'],
+            'account_number_source': account_number
         }
     }
     operation_key = network_storage.add_operation(operation_to_put_in_dict)

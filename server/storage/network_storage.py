@@ -7,11 +7,11 @@ global last_id_operation
 operations_lock = threading.Lock()
 
 address_banks = {
-    '0': [-1, 'eleven'],
-    '1': [-1, 'automobili'],
-    '2': [-1, 'formula'],
-    '3': [-1, 'secret'],
-    '4': [-1, 'titanium']
+    '0': [-1, 'Eleven'],
+    '1': [-1, 'Automobili'],
+    '2': [-1, 'Formula'],
+    '3': [-1, 'Secret'],
+    '4': [-1, 'Titanium']
 }
 self_id = -1
 last_id_operation = 0

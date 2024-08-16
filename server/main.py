@@ -17,7 +17,7 @@ if(os.getenv('id_bank') != None and os.getenv('bank_0') != None and os.getenv('b
 
 else:
     network_storage.set_self_id('0')
-    network_storage.set_address_bank('0', 'localhost')
+    network_storage.set_address_bank('0', 'http://localhost:10000')
 
 def clear_terminal():
     if os.name == 'posix':
