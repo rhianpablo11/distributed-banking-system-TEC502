@@ -1,11 +1,13 @@
 import threading
 import requests
+import time
+from datetime import datetime, timedelta
 from token_control import token
 from storage import network_storage, accounts_storage
 from models import account, user
 from api import api_bank
-global counter
-counter  = 0 
+
+
 def make_operation_after_receiver_token():
     while True:
         if(token.get_if_has_token()):
@@ -39,6 +41,9 @@ def operate_operation_received(operation_to_make):
 
     elif(operation_to_make['type_operation'] == 'complete_bank_list'):
         operation_return = operation_complete_bank_list_user(operation_to_make['data_to_operate'])
+
+    elif(operation_to_make['type_operation'] == "make_investiment"):
+        operation_return = operation_pay_investiments_for_accounts()
 
     else:
         operation_return = ['operation type not recognized', 406]
@@ -234,6 +239,24 @@ def operation_complete_bank_list_user(operation_data):
     pass
 
 
+def operation_pay_investiments_for_accounts():
+    list_of_accounts_to_operate = accounts_storage.get_accounts_with_investiment()
+    if(len(list_of_accounts_to_operate) <= 0):
+        return None, 500
+    else:
+        for account in list_of_accounts_to_operate:
+            account_found = accounts_storage.find_account_by_number_account(account)
+            if(account_found == None):
+                pass
+            else:
+                if(account_found.cdi_balance > 0):
+                    account_found.income_cdi()
+                if(account_found.saving_balance > 0):
+                    account_found.income_saving()
+            accounts_storage.update_account_after_changes(account_found)
+    return 'investiments distributed with success', 200
+
+
 def search_user_in_other_banks(document_user, new_account_number):
     banks_not_replied = []
     banks_with_account = {}
@@ -284,3 +307,25 @@ def send_finalize_the_operation(id_operation_self, id_operation_external, bank_e
                 return 1
         except:
             bank_external_replied = False
+
+
+def verify_hour_to_put_operation_investiment_in_dict():
+    while True:
+        time_now = datetime.now()
+        operation_for_add = {
+            'type_operation': 'make_investiment',
+            'index_operation': -1,
+            'executed': False,
+            'code_response': -1,
+            'data_to_operate': None
+        }
+
+        # Verifica se a hora atual é 01:00:00 para poder adicionar a operação de realizar os investimentos
+        if time_now.hour == 1 and time_now.minute == 0:
+            key_of_operation_added = network_storage.add_operation(operation_to_add=operation_for_add)
+            time_wait_for_next_investiment_operation = time_now + timedelta(hours=23, minutes=58)
+            time_wait_in_seconds = (datetime(time_wait_for_next_investiment_operation.year, time_wait_for_next_investiment_operation.month, time_wait_for_next_investiment_operation.day, 1, 0, 0) - time_now).total_seconds()
+            time.sleep(time_wait_in_seconds)
+            network_storage.remove_operation(key_of_operation_added)
+        else:
+            time.sleep(1)

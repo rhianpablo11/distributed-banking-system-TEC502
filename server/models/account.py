@@ -18,6 +18,13 @@ class Account:
         self.transactions = {}
         self.id_last_transaction = 0
         self.operation_lock = threading.Lock()
+        self.logged_into_account = False
+
+
+    def set_logged_into_account(self, is_logged):
+        self.operation_lock.acquire()
+        self.logged_into_account = is_logged
+        self.operation_lock.release()
 
 
     def get_json(self):

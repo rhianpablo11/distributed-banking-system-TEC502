@@ -27,10 +27,10 @@ def clear_terminal():
     else:
         print("Limpeza de terminal não suportada neste sistema.")
 
-
-
 threading.Thread(target=api_bank.app.run, args=('0.0.0.0', 10000, False), daemon=True).start()
 threading.Thread(target=bank.make_operation_after_receiver_token, daemon=True).start()
+threading.Thread(target=bank.verify_hour_to_put_operation_investiment_in_dict, daemon=True).start()
+
 if(network_storage.get_id() == '0'):
     token.set_has_token(True)
 

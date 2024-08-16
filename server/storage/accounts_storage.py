@@ -87,3 +87,12 @@ def add_account_number_to_user(document_user, account_number_to_add, name_bank):
         users[document_user].add_new_bank_to_list(name_bank, account_number_to_add)
         return 1
     return None
+
+
+def get_accounts_with_investiment() -> list:
+    accounts_copy = accounts.copy()
+    list_of_account_number_to_return = []
+    for account in accounts_copy:
+        if(accounts_copy[account].cdi_balance > 0 or accounts_copy[account].saving_balance > 0):
+            list_of_account_number_to_return.append(account)
+    return list_of_account_number_to_return

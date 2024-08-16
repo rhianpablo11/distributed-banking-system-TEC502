@@ -60,15 +60,32 @@ def login_account():
         return 'account not found', 404
     if(len(account_found.user_list)>1):
         if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
+            account_found.set_logged_into_account(True)
+            accounts_storage.update_account_after_changes(account_found)
             return make_response(jsonify(account_found.get_json_user_logged(0))), 200
         elif(accounts_storage.find_user_by_document(account_found.user_list[1]).password == user.cryptography_password(data_received_with_requisition['password'])):
+            account_found.set_logged_into_account(True)
+            accounts_storage.update_account_after_changes(account_found)
             return make_response(jsonify(account_found.get_json_user_logged(1))), 200
         else:
             return 'password incorrect', 406
     if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
+        account_found.set_logged_into_account(True)
+        accounts_storage.update_account_after_changes(account_found)
         return make_response(jsonify(account_found.get_json_user_logged(0))), 200
     return 'password incorrect', 406
     
+
+@app.route('/account/logout/<int:account_number>', methods=['POST'])
+def logout_account(account_number):
+    account_found = accounts_storage.find_account_by_number_account(account_number)
+    if(account_found == None):
+        return 'account not found', 404
+    else:
+        account_found.set_logged_into_account(False)
+        accounts_storage.update_account_after_changes(account_found)
+        return 'logout with success', 200
+
 
 @app.route('/account/transaction/info/<string:type_transfer>', methods=['POST'])
 def get_basic_info_account(type_transfer):
