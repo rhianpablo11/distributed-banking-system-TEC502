@@ -202,6 +202,7 @@ def receive_money(method_receive):
         operation_key = network_storage.add_operation(operation_to_put_in_dict)
         if(network_storage.verify_operation_state(operation_key) == True):
             return_the_operation = network_storage.find_operation_by_key(operation_key)
+            network_storage.remove_operation(operation_key)
             if(return_the_operation != None):
                 return return_the_operation['response'], return_the_operation['code_response']
             else:
@@ -236,6 +237,7 @@ def transfer_money(type_transfer, account_number):
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
     if(network_storage.verify_operation_state(operation_key) == True):
         operation_conclusion = network_storage.find_operation_by_key(operation_key)
+        network_storage.remove_operation(operation_key)
         if(operation_conclusion != None):
             return operation_conclusion['response'], operation_conclusion['code_response']
         else:
@@ -287,6 +289,7 @@ def invest_money(type_investiment, value, account_number):
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
     if(network_storage.verify_operation_state(operation_key) == True):
         operation_conclusion = network_storage.find_operation_by_key(operation_key)
+        network_storage.remove_operation(operation_key)
         if(operation_conclusion != None):
             return operation_conclusion['response'], operation_conclusion['code_response']
         else:
@@ -312,6 +315,7 @@ def withdraw_money(type_investiment, value, account_number):
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
     if(network_storage.verify_operation_state(operation_key) == True):
         operation_conclusion = network_storage.find_operation_by_key(operation_key)
+        network_storage.remove_operation(operation_key)
         if(operation_conclusion != None):
             return operation_conclusion['response'], operation_conclusion['code_response']
         else:

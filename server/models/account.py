@@ -274,7 +274,7 @@ class Account:
         self.transactions[self.id_last_transaction] = new_transaction
         self.id_last_transaction += 1
         self.operation_lock.release()
-        return 1, new_transaction['id_transaction']
+        return 1, new_transaction.id_transaction
         
 
     def receive_transfer_money(self, value, name_source, document_source, account_number_source, bank_source, type_transaction):
