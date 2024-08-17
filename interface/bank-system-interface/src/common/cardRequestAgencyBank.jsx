@@ -23,7 +23,7 @@ function CardRequestAgencyBank(){
     };
 
 
-
+    
     function goBank(bankName){
         return navigate("/"+bankName)
     }
