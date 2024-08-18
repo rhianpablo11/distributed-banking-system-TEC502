@@ -4,18 +4,21 @@ function Specific_balance_info(props){
 
     return(
         <>
-        
+            <div>
+                <h4>{props.typeBalance}</h4>
+                <h2>{props.value}</h2>
+            </div>
         </>
     )
 }
 
 Specific_balance_info.propsTypes = {
-    type_balance: propsTypes.string,
+    typeBalance: propsTypes.string,
     value: propsTypes.number
 }
 
 Specific_balance_info.defaultProps = {
-    type_balance: null,
+    typeBalance: null,
     value: null
 }
 

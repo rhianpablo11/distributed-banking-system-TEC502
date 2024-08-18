@@ -8,7 +8,7 @@ import Loading from "./loading";
 import ErrorOperation from "./errorOperation";
 
 function CardPacketTransactions(props){
-    const {nameBank, accountNumber} =useParams()
+    const {nameBank, accountNumber} = useParams()
     const [valueTransaction, setValueTransaction] = useState()
     const [listTransactionsToMake, setListTransactionsToMake] = useState([])
     const [listTransactionsToMakeFormatedToSend, setListTransactionsToMakeFormatedToSend] = useState([])
