@@ -12,11 +12,16 @@ import ElevenBankBackgroundLogin from "./elevenBankElements/elevenBankBackground
 import BackgroundTransactions from "./common/backgroundTransactions.jsx"
 import CardRequestAgencyBank from "./common/cardRequestAgencyBank.jsx"
 import RequestWhichBank from "./pages/request_bank/requestWhichBank.jsx"
+import Dashboard from "./pages/dashboard_account/dashboard.jsx"
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <CardRequestAgencyBank />
+  },
+  {
+    path: '/dashboard-temp',
+    element: <Dashboard />
   },
   {
     path: '/request-name-bank',
