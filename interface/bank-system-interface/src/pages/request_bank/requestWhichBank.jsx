@@ -6,7 +6,7 @@ import Error from "../../components/error"
 
 
 
-function Request_which_bank(){
+function RequestWhichBank(){
     const navigate = useNavigate()
     const [address_banks, set_address_banks] = useState([])
     const [name_banks, set_name_banks] = useState([])
@@ -88,4 +88,4 @@ function Request_which_bank(){
         </>)
 }
 
-export default Request_which_bank
+export default RequestWhichBank

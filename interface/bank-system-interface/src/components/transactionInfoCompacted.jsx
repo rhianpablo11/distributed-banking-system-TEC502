@@ -1,6 +1,6 @@
 import propsTypes from 'prop-types'
 
-function Transaction_info_compacted(props){
+function TransactionInfoCompacted(props){
 
     return(
         <>
@@ -9,7 +9,7 @@ function Transaction_info_compacted(props){
     )
 }
 
-Transaction_info_compacted.propsTypes ={
+TransactionInfoCompacted.propsTypes ={
     value: propsTypes.number,
     date_transaction: propsTypes.object,
     concluded: propsTypes.string,
@@ -17,7 +17,7 @@ Transaction_info_compacted.propsTypes ={
     type_transaction: propsTypes.string
 }
 
-Transaction_info_compacted.defaultProps = {
+TransactionInfoCompacted.defaultProps = {
     value: null,
     date_transaction: null,
     concluded: null,
@@ -26,4 +26,4 @@ Transaction_info_compacted.defaultProps = {
 }
 
 
-export default Transaction_info_compacted
+export default TransactionInfoCompacted

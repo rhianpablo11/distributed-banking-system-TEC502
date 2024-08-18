@@ -1,6 +1,6 @@
 import propsTypes from 'prop-types'
 
-function Account_infos(props){
+function AccountInfos(props){
     
     return (
         <>
@@ -14,14 +14,14 @@ function Account_infos(props){
     )
 }
 
-Account_infos.propsTypes = {
+AccountInfos.propsTypes = {
     account_number: propsTypes.number
 }
 
 
-Account_infos.defaultProps = {
+AccountInfos.defaultProps = {
     account_number: null
 }
 
 
-export default Account_infos
+export default AccountInfos

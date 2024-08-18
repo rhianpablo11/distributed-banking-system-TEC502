@@ -11,7 +11,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import ElevenBankBackgroundLogin from "./elevenBankElements/elevenBankBackgroundLogin.jsx"
 import BackgroundTransactions from "./common/backgroundTransactions.jsx"
 import CardRequestAgencyBank from "./common/cardRequestAgencyBank.jsx"
-import Request_which_bank from "./pages/request_bank/request_which_bank.jsx"
+import RequestWhichBank from "./pages/request_bank/requestWhichBank.jsx"
 
 const router = createBrowserRouter([
   {
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/request-name-bank',
-    element: <Request_which_bank />
+    element: <RequestWhichBank />
   },
   {
     path: "/:nameBank",

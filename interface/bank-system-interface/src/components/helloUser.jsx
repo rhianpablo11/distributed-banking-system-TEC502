@@ -1,7 +1,7 @@
 import propsTypes from 'prop-types'
 
 
-function Hello_user(props){
+function HelloUser(props){
 
     return(
         <>
@@ -15,13 +15,13 @@ function Hello_user(props){
 }
 
 
-Hello_user.prototype = {
+HelloUser.prototype = {
     name: propsTypes.string
 }
 
-Hello_user.defaultProps = {
+HelloUser.defaultProps = {
     name: null
 }
 
 
-export default Hello_user
+export default HelloUser

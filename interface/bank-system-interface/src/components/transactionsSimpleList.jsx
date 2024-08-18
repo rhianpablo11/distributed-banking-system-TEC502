@@ -1,8 +1,8 @@
 import propsTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import Transaction_info_compacted from './transaction_info_compacted'
+import TransactionInfoCompacted from './transactionInfoCompacted'
 
-function Transaction_simple_list(props){
+function TransactionSimpleList(props){
     const [transactions, setTransactions] = useState([])
 
     useEffect(()=>{
@@ -18,7 +18,7 @@ function Transaction_simple_list(props){
                     <ul>
                         {transactions.map((transaction, index) => (
                             <li key={index}>
-                                <Transaction_info_compacted value={transaction.value} date_transaction={transaction.date_transaction} concluded={transaction.concluded} name_source={transaction.name_source} type_transaction={transaction.type_transaction} />
+                                <TransactionInfoCompacted value={transaction.value} date_transaction={transaction.date_transaction} concluded={transaction.concluded} name_source={transaction.name_source} type_transaction={transaction.type_transaction} />
                             </li>
                         ))}
                     </ul>
@@ -28,12 +28,12 @@ function Transaction_simple_list(props){
     )
 }
 
-Transaction_simple_list.propsTypes = {
+TransactionSimpleList.propsTypes = {
     transactionsList: propsTypes.array
 }
 
-Transaction_simple_list.defaultProps = {
+TransactionSimpleList.defaultProps = {
     transactionsList: null
 }
 
-export default Transaction_simple_list
+export default TransactionSimpleList

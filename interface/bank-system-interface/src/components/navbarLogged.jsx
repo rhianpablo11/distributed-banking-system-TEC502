@@ -1,7 +1,7 @@
 import LogoBank from "./logoBank"
 
 
-function Navbar_logged(){
+function NavbarLogged(){
 
     return (
         <>
@@ -12,4 +12,4 @@ function Navbar_logged(){
     )
 }
 
-export default Navbar_logged
+export default NavbarLogged

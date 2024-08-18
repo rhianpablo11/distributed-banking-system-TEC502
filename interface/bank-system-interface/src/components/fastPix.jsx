@@ -1,6 +1,6 @@
 import propsTypes from 'prop-types'
 
-function Fast_pix(props){
+function FastPix(props){
     
     return (
         <>
@@ -9,12 +9,12 @@ function Fast_pix(props){
     )
 }
 
-Fast_pix.propsTypes = {
+FastPix.propsTypes = {
     account_number: propsTypes.number
 }
 
-Fast_pix.defaultProps = {
+FastPix.defaultProps = {
     account_number: null
 }
 
-export default Fast_pix
+export default FastPix

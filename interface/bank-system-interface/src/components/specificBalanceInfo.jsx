@@ -1,6 +1,6 @@
 import propsTypes from 'prop-types'
 
-function Specific_balance_info(props){
+function SpecificBalanceInfo(props){
 
     return(
         <>
@@ -12,14 +12,14 @@ function Specific_balance_info(props){
     )
 }
 
-Specific_balance_info.propsTypes = {
+SpecificBalanceInfo.propsTypes = {
     typeBalance: propsTypes.string,
     value: propsTypes.number
 }
 
-Specific_balance_info.defaultProps = {
+SpecificBalanceInfo.defaultProps = {
     typeBalance: null,
     value: null
 }
 
-export default Specific_balance_info
+export default SpecificBalanceInfo
