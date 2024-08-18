@@ -28,7 +28,8 @@ function Request_which_bank(){
         } else{
             set_is_loading(true)
             try{
-                const response = await fetch(address_selected, {
+                const urlToConnect = address_selected+'/bank'
+                const response = await fetch(urlToConnect, {
                     method: 'GET'
                 })
                 console.log(response)

@@ -4,7 +4,12 @@ function Account_infos(props){
     
     return (
         <>
-
+            <div>
+                <h1>Account Number</h1>
+                <div>
+                    <h2>{props.account_number}</h2>
+                </div>
+            </div>
         </>
     )
 }

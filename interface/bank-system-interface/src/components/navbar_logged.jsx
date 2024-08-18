@@ -1,10 +1,13 @@
+import LogoBank from "./logoBank"
 
 
 function Navbar_logged(){
 
     return (
         <>
-
+            <div>
+                <LogoBank />
+            </div>
         </>
     )
 }

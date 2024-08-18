@@ -9,11 +9,11 @@ function Deposit(props){
 }
 
 Deposit.propsTypes = {
-
+    account_number: propsTypes.number
 }
 
 Deposit.defaultProps = {
-
+    account_number: null
 }
 
 export default Deposit

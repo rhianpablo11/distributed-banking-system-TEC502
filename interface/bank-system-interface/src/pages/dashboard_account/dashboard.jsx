@@ -8,12 +8,14 @@ import Transaction_simple_list from "../../components/transactions_simple_list"
 import { useParams } from "react-router-dom"
 import Navbar_logged from "../../components/navbar_logged"
 import { get_address_bank_selected } from "../../utils/constants"
+import CurrentTime from "../../components/currentTime"
 
 function Dashboard(){
     const {nameBank} = useParams()
     const [userData, setUserData] = useState()
     const [isServerErrorOcorred, setIsServerErrorOcorred] = useState(false)
 
+    
     useEffect(()=>{
         const requestInfoAccount = async () => {
             try{
@@ -56,8 +58,9 @@ function Dashboard(){
                     <Transaction_simple_list trasactionsList={userData.transactions} />
                 </div>
                 <div>
-                    <Deposit />
-                    <Fast_pix />
+                    <CurrentTime />
+                    <Deposit account_number={userData.account_number} />
+                    <Fast_pix account_number={userData.account_number} />
                 </div>
             </div>
         </>

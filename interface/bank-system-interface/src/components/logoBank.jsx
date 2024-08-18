@@ -1,6 +1,6 @@
 import propsTypes from 'prop-types'
 
-function Logo_bank(props){
+function LogoBank(props){
 
     return (
         <>
@@ -8,12 +8,12 @@ function Logo_bank(props){
     )
 }
 
-Logo_bank.propsTypes = {
+LogoBank.propsTypes = {
     name_bank: propsTypes.string
 }
 
-Logo_bank.defaultProps = {
+LogoBank.defaultProps = {
     name_bank: null
 }
 
-export default Logo_bank
+export default LogoBank
