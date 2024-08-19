@@ -8,5 +8,5 @@ export function get_address_bank_selected (){
 }
 
 export function get_url_to_require_account_data (){
-    return address_bank_selected+'/account'
+    return address_bank_selected+'/account/logged'
 }

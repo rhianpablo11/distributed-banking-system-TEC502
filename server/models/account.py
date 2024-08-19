@@ -19,6 +19,8 @@ class Account:
         self.id_last_transaction = 0
         self.operation_lock = threading.Lock()
         self.logged_into_account = False
+        self.two_factor_authentication_key = None
+        self.is_two_factor_authentication_key = False
 
 
     def set_logged_into_account(self, is_logged):

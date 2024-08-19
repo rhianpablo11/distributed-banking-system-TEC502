@@ -45,7 +45,7 @@ function Dashboard(){
                 })
 
                 if(response.ok){
-                    setIsServerErrorOcorred(true)
+                    setIsServerErrorOcorred(false)
                     const dataReceivedJson = await response.json()
                     setUserData(dataReceivedJson)
                 } else{
