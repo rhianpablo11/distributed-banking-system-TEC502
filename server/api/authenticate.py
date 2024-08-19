@@ -25,6 +25,8 @@ def jwt_token_required(func):
             account_number_logged = decoded_token_jwt['account_number']
             document_user_logged = decoded_token_jwt['document_user_logged']
             return func(account_number_logged, document_user_logged, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return 'token expired', 403
         except Exception as e:
             print(e)
             return 'token invalid', 403

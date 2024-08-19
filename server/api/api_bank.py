@@ -62,6 +62,7 @@ def login_account():
     account_found = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number'])
     if(account_found == None):
         return 'account not found', 404
+    
     if(len(account_found.user_list)>1):
         for document_user_in_account in account_found.user_list:
             user_of_interation = accounts_storage.find_user_by_document(document_user_in_account)
@@ -71,7 +72,7 @@ def login_account():
                 payload = {
                         'account_number': account_found.account_number,
                         'document_user_logged': document_user_in_account,
-                        'expiration': str(datetime.datetime.utcnow() + datetime.timedelta(minutes=1))
+                        'exp': datetime.datetime.now() + datetime.timedelta(seconds=5)
                 }
 
                 token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
@@ -83,13 +84,14 @@ def login_account():
                 return make_response(jsonify(data_to_return)), 200
         else:
             return 'password incorrect', 406
+        
     if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
         account_found.set_logged_into_account(True)
         accounts_storage.update_account_after_changes(account_found)
         payload = {
             'account_number': account_found.account_number,
             'document_user_logged': account_found.user_list[0],
-            'expiration': str(datetime.datetime.utcnow() + datetime.timedelta(minutes=1))
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
         }
 
         token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
@@ -105,7 +107,19 @@ def get_account_full_info_for_user_logged(account_number_logged, document_user_l
     if(account_found == None):
         return 'account not found', 404
     
-    return make_response(jsonify(account_found.get_json_user_logged(account_found.user_list.index(document_user_logged))))
+    payload = {
+            'account_number': account_found.account_number,
+            'document_user_logged': account_found.user_list[0],
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+        }
+
+    token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
+
+    data_to_send = {
+        'account_info': account_found.get_json_user_logged(account_found.user_list.index(document_user_logged)),
+        'token_jwt': token_jwt
+    }
+    return make_response(jsonify(data_to_send))
 
 
 
