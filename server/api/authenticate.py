@@ -26,5 +26,6 @@ def jwt_token_required(func):
             document_user_logged = decoded_token_jwt['document_user_logged']
             return func(account_number_logged, document_user_logged, *args, **kwargs)
         except Exception as e:
+            print(e)
             return 'token invalid', 403
     return wrapper
