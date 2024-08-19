@@ -1,7 +1,9 @@
-lista =[ 1,2,3,4,5]
+lista =[ 1,2,3353,4,5]
 print(lista[4])
 print(len(lista))
 print(lista[len(lista)-1])
+print("novo negocio q eu to procurando",lista.index(3353))
+
 
 class Academico:
     def __init__(self) -> None:
@@ -53,3 +55,5 @@ del meu_dicionario['b']
 
 print(f"Dicionário após a remoção: {meu_dicionario}")
 print(type(meu_dicionario)== dict)
+
+
