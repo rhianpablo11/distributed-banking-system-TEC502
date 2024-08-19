@@ -12,37 +12,13 @@ from api import authenticate
 app = Flask(__name__)
 CORS(app)
 
-chave_secreta_provisoria = 'mont blank'
-
-def token_required(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        token_jwt = request.args.get('token')
-        if(not token_jwt):
-            return 'puts'
-        else:
-            try:
-                payload = jwt.decode(token, chave_secreta_provisoria)
-            except:
-                return 'token invalid'
-    return decorated
-
-
-
 
 @app.route('/bank', methods=['GET'])
-@token_required
 def get_name_bank():
     name_bank = network_storage.get_name_bank()
     if(name_bank != None):
         return make_response(jsonify({'name_bank': name_bank})), 200
     return 'error internal', 500
-
-#rota provisoria trocar depois
-@app.route('/account/logged/require-info')
-@authenticate.jwt_token_required
-def get_account_full_info(account_number_logged, user_logged):
-    return make_response(jsonify(accounts_storage.find_account_by_number_account(account_number_logged).get_json()))
 
 
 @app.route('/token', methods=['POST'])
@@ -87,38 +63,56 @@ def login_account():
     if(account_found == None):
         return 'account not found', 404
     if(len(account_found.user_list)>1):
-        if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
-            account_found.set_logged_into_account(True)
-            accounts_storage.update_account_after_changes(account_found)
-            return make_response(jsonify(account_found.get_json_user_logged(0))), 200
-        elif(accounts_storage.find_user_by_document(account_found.user_list[1]).password == user.cryptography_password(data_received_with_requisition['password'])):
-            account_found.set_logged_into_account(True)
-            accounts_storage.update_account_after_changes(account_found)
+        for user in account_found.user_list:
+            user_of_interation = accounts_storage.find_user_by_document(user)
+            if(user_of_interation != None and user_of_interation.password == user.cryptography_password(data_received_with_requisition['password'])):
+                account_found.set_logged_into_account(True)
+                accounts_storage.update_account_after_changes(account_found)
+                payload = {
+                        'account_number': account_found.account_number,
+                        'document_user_logged': user,
+                        'expiration': str(datetime.datetime.utcnow() + datetime.timedelta(minutes=1))
+                }
 
-            
-            return make_response(jsonify(account_found.get_json_user_logged(1))), 200
+                token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
+
+                data_to_return = {
+                    'account_info':account_found.get_json_user_logged(account_found.user_list.index(user)),
+                    'token_jwt': token_jwt
+                }
+                return make_response(jsonify(data_to_return)), 200
         else:
             return 'password incorrect', 406
     if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
         account_found.set_logged_into_account(True)
         accounts_storage.update_account_after_changes(account_found)
-        
         payload = {
             'account_number': account_found.account_number,
             'document_user_logged': account_found.user_list[0],
             'expiration': str(datetime.datetime.utcnow() + datetime.timedelta(minutes=1))
         }
-        print("parte Externa", keys_storage.get_jwt_secret_key())
+
         token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
 
-    
         return make_response(jsonify({'account_info': account_found.get_json_user_logged(0), 'token': token_jwt})), 200
     return 'password incorrect', 406
     
 
-@app.route('/account/logout/<int:account_number>', methods=['POST'])
-def logout_account(account_number):
-    account_found = accounts_storage.find_account_by_number_account(account_number)
+@app.route('/account/logged')
+@authenticate.jwt_token_required
+def get_account_full_info_for_user_logged(account_number_logged, document_user_logged):
+    account_found = accounts_storage.find_account_by_number_account(account_number_logged)
+    if(account_found == None):
+        return 'account not found', 404
+    
+    return make_response(jsonify(account_found.get_json_user_logged(account_found.user_list.index(document_user_logged))))
+
+
+
+@app.route('/account/logout', methods=['POST'])
+@authenticate.jwt_token_required
+def logout_account(account_number_logged, document_user_logged):
+    account_found = accounts_storage.find_account_by_number_account(account_number_logged)
     if(account_found == None):
         return 'account not found', 404
     else:
@@ -144,7 +138,8 @@ def get_basic_info_account(type_transfer):
     
 
 @app.route('/account/request-info-account/<string:type_transfer>', methods=['POST'])
-def request_basic_info_other_account(type_transfer):
+@authenticate.jwt_token_required
+def request_basic_info_other_account(type_transfer, account_number_logged, document_user_logged):
     data_received_with_requisition = request.json
     address_bank_found = network_storage.find_address_bank_by_id(data_received_with_requisition['id_bank'])
     if(address_bank_found == None):
@@ -172,18 +167,19 @@ def request_basic_info_other_account(type_transfer):
 
 
 @app.route('/user/infos', methods=['POST'])
-def get_info_user():
-    data_received_with_requisition = request.json
-    data_of_search = accounts_storage.find_user_by_document(data_received_with_requisition['document'])
+@authenticate.jwt_token_required
+def get_info_user(account_number_logged, document_user_logged):
+    data_of_search = accounts_storage.find_user_by_document(document_user_logged)
     if(data_of_search != None):
         return make_response(jsonify(data_of_search.get_json())), 200
     return 'user not found', 404
 
 
-@app.route('/user/<string:document_user>/update-profile/change/telephone', methods=['PATCH'])
-def change_telephone_user(document_user):
+@app.route('/user/update-profile/change/telephone', methods=['PATCH'])
+@authenticate.jwt_token_required
+def change_telephone_user(account_number_logged, document_user_logged):
     data_received_with_requisition = request.json
-    user_to_update = accounts_storage.find_user_by_document(document_user)
+    user_to_update = accounts_storage.find_user_by_document(document_user_logged)
     if(user_to_update == None):
         return 'user not found', 404
     else:
@@ -197,9 +193,10 @@ def change_telephone_user(document_user):
     
 
 @app.route('/user/<string:document_user>/update-profile/change/email', methods=['PATCH'])
-def change_email_user(document_user):
+@authenticate.jwt_token_required
+def change_email_user(account_number_logged, document_user_logged):
     data_received_with_requisition = request.json
-    user_to_update = accounts_storage.find_user_by_document(document_user)
+    user_to_update = accounts_storage.find_user_by_document(document_user_logged)
     if(user_to_update == None):
         return 'user not found', 404
     else:
@@ -213,9 +210,10 @@ def change_email_user(document_user):
 
 
 @app.route('/user/<string:document_user>/update-profile/change/password', methods=['PATCH'])
-def change_password_user(document_user):
+@authenticate.jwt_token_required
+def change_password_user(account_number_logged, document_user_logged):
     data_received_with_requisition = request.json
-    user_to_update = accounts_storage.find_user_by_document(document_user)
+    user_to_update = accounts_storage.find_user_by_document(document_user_logged)
     if(user_to_update == None):
         return 'user not found', 404
     else:
@@ -228,7 +226,7 @@ def change_password_user(document_user):
         else:
             return return_the_operation[1], 409
         
-
+#verificar isso, pq o receber deposito ta aq dentro
 @app.route('/account/receive-money/<string:method_receive>', methods=['POST'])
 def receive_money(method_receive):
     data_received_with_requisition = request.json
@@ -270,11 +268,12 @@ def receive_money(method_receive):
     else:
         return 'operation not recognized', 400
 
-
-@app.route('/account/transfer/<string:type_transfer>/<int:account_number>', methods=['POST'])
-def transfer_money(type_transfer, account_number):
+#melhorar isso dentro do modelo da conta
+@app.route('/account/transfer/<string:type_transfer>/', methods=['POST'])
+@authenticate.jwt_token_required
+def transfer_money(type_transfer, account_number_logged, document_user_logged):
     data_received_with_requisition = request.json
-    account_source_infos = accounts_storage.find_account_by_number_account(account_number)
+    account_source_infos = accounts_storage.find_account_by_number_account(account_number_logged)
     user_infos = accounts_storage.find_user_by_document(account_source_infos.user_list[0])
     operation_to_put_in_dict = {
         'type_operation': 'transfer',
@@ -290,7 +289,7 @@ def transfer_money(type_transfer, account_number):
             'document_receiver':  data_received_with_requisition['document_receiver'],
             'type_transaction': type_transfer,
             'key_pix':  data_received_with_requisition['key_pix'],
-            'account_number_source': account_number
+            'account_number_source': account_number_logged
         }
     }
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
@@ -331,8 +330,9 @@ def cancel_transaction_of_account_client(id_transaction_to_cancel, account_numbe
         return 'error in confirmate operation', 400
 
 
-@app.route('/account/invest/<string:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
-def invest_money(type_investiment, value, account_number):
+@app.route('/account/invest/<string:type_investiment>/<float:value>', methods=['POST'])
+@authenticate.jwt_token_required
+def invest_money(type_investiment, value,  account_number_logged, document_user_logged):
     operation_to_put_in_dict = {
             'type_operation': 'investiment',
             'index_operation': -1,
@@ -341,7 +341,7 @@ def invest_money(type_investiment, value, account_number):
             'code_response': -1,
             'data_to_operate': {
                 'value': value,
-                'account_number': account_number,
+                'account_number': account_number_logged,
                 'type_investiment': type_investiment
             }
         }
@@ -358,7 +358,8 @@ def invest_money(type_investiment, value, account_number):
 
 
 @app.route('/account/withdraw/<string:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
-def withdraw_money(type_investiment, value, account_number):
+@authenticate.jwt_token_required
+def withdraw_money(type_investiment, value, account_number_logged, document_user_logged):
     operation_to_put_in_dict = {
             'type_operation': 'withdraw_investiment',
             'index_operation': -1,
@@ -367,7 +368,7 @@ def withdraw_money(type_investiment, value, account_number):
             'code_response': -1,
             'data_to_operate': {
                 'value': value,
-                'account_number': account_number,
+                'account_number': account_number_logged,
                 'type_investiment': type_investiment
             }
         }
