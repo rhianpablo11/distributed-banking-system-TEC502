@@ -156,13 +156,14 @@ def request_basic_info_other_account(account_number_logged, document_user_logged
             data_to_send = {
                 'key_pix': data_received_with_requisition['key_pix']
             }
-        data_received_by_request = requests.post(url=url_to_communicated, json=data_to_send)
-        if(data_received_by_request.status_code == 200):
-            data_received_by_request_json = data_received_by_request.json
-            return make_response(jsonify(data_received_by_request_json)), 200
-        elif(data_received_by_request.status_code == 404):
-            return 'account researched not found', 404
-        else:
+        try:
+            data_received_by_request = requests.post(url=url_to_communicated, json=data_to_send)
+            if(data_received_by_request.status_code == 200):
+                data_received_by_request_json = data_received_by_request.json
+                return make_response(jsonify(data_received_by_request_json)), 200
+            elif(data_received_by_request.status_code == 404):
+                return 'account researched not found', 404
+        except:
             return 'error in request', 400
 
 
@@ -241,32 +242,38 @@ def receive_money(method_receive):
             data_received_with_requisition['bank_source'],
             method_receive
         )
+        return make_response(jsonify({'id_transaction': return_the_operation[1]})), 200  
+    else:
+        return 'operation not recognized', 400
 
-        return make_response(jsonify({'id_transaction': return_the_operation[1]})), 200
-    elif(method_receive == 'deposit'):
-        operation_to_put_in_dict = {
+
+@app.route('/account/deposit/<float:value>', methods=['POST'])
+@authenticate.jwt_token_required
+def receive_deposit(account_number_logged, document_user_logged, value):
+    operation_to_put_in_dict = {
             'type_operation': 'deposit',
             'index_operation': -1,
             'executed': False,
             'code_response': -1,
             'response': -1,
             'data_to_operate': {
-                'value': data_received_with_requisition['value'],
-                'account_number': data_received_with_requisition['account_number']
+                'value': value,
+                'account_number': account_number_logged,
+                'document_user_logged': document_user_logged
             }
         }
-        operation_key = network_storage.add_operation(operation_to_put_in_dict)
-        if(network_storage.verify_operation_state(operation_key) == True):
-            return_the_operation = network_storage.find_operation_by_key(operation_key)
-            network_storage.remove_operation(operation_key)
-            if(return_the_operation != None):
-                return return_the_operation['response'], return_the_operation['code_response']
-            else:
-                return 'error in operation', 500
+    
+    operation_key = network_storage.add_operation(operation_to_put_in_dict)
+    if(network_storage.verify_operation_state(operation_key) == True):
+        return_the_operation = network_storage.find_operation_by_key(operation_key)
+        network_storage.remove_operation(operation_key)
+        if(return_the_operation != None):
+            return return_the_operation['response'], return_the_operation['code_response']
         else:
             return 'error in operation', 500
     else:
-        return 'operation not recognized', 400
+        return 'error in operation', 500
+
 
 #melhorar isso dentro do modelo da conta
 @app.route('/account/transfer/<string:type_transfer>/', methods=['POST'])
@@ -289,7 +296,8 @@ def transfer_money(account_number_logged, document_user_logged, type_transfer):
             'document_receiver':  data_received_with_requisition['document_receiver'],
             'type_transaction': type_transfer,
             'key_pix':  data_received_with_requisition['key_pix'],
-            'account_number_source': account_number_logged
+            'account_number_source': account_number_logged,
+            'document_user_logged': document_user_logged
         }
     }
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
@@ -342,7 +350,8 @@ def invest_money(account_number_logged, document_user_logged, type_investiment, 
             'data_to_operate': {
                 'value': value,
                 'account_number': account_number_logged,
-                'type_investiment': type_investiment
+                'type_investiment': type_investiment,
+                'document_user_logged': document_user_logged
             }
         }
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
@@ -369,7 +378,8 @@ def withdraw_money(account_number_logged, document_user_logged, type_investiment
             'data_to_operate': {
                 'value': value,
                 'account_number': account_number_logged,
-                'type_investiment': type_investiment
+                'type_investiment': type_investiment,
+                'document_user_logged': document_user_logged
             }
         }
     operation_key = network_storage.add_operation(operation_to_put_in_dict)
