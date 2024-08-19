@@ -92,7 +92,7 @@ class Account:
         }
 
 
-    def invest_money_cdi(self, value):
+    def invest_money_cdi(self, value, document_user_logged):
         self.operation_lock.acquire()
         if(self.balance < value):
             self.operation_lock.release()
@@ -100,7 +100,7 @@ class Account:
         else:
             self.balance -= value
             self.cdi_balance += value
-            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+            user_infos = accounts_storage.find_user_by_document(document_user_logged)
             new_transaction = transaction.Transaction(
                 name_source= user_infos.name,
                 document_source= user_infos.document,
@@ -121,7 +121,7 @@ class Account:
             return 1, 'money invested with success'
 
 
-    def withdraw_money_cdi(self, value):
+    def withdraw_money_cdi(self, value, document_user_logged):
         self.operation_lock.acquire()
         if(self.cdi_balance < value):
             self.operation_lock.release()
@@ -129,7 +129,7 @@ class Account:
         else:
             self.cdi_balance -= value
             self.balance += value
-            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+            user_infos = accounts_storage.find_user_by_document(document_user_logged)
             new_transaction = transaction.Transaction(
                 name_source= user_infos.name,
                 document_source= user_infos.document,
@@ -176,7 +176,7 @@ class Account:
         self.operation_lock.release()
 
 
-    def invest_money_saving(self, value):
+    def invest_money_saving(self, value, document_user_logged):
         self.operation_lock.acquire()
         if(self.balance < value):
             self.operation_lock.release()
@@ -184,7 +184,7 @@ class Account:
         else:
             self.balance -= value
             self.saving_balance += value
-            user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+            user_infos = accounts_storage.find_user_by_document(document_user_logged)
             new_transaction = transaction.Transaction(
                 name_source= user_infos.name,
                 document_source= user_infos.document,
@@ -205,7 +205,7 @@ class Account:
             return 1, 'money invested with success'
 
 
-    def withdraw_money_saving(self, value):
+    def withdraw_money_saving(self, value, document_user_logged):
         self.operation_lock.acquire()
         if(self.saving_balance < value):
             self.operation_lock.release()
@@ -260,10 +260,10 @@ class Account:
         self.operation_lock.release()
     
 
-    def receive_deposit(self, value):
+    def receive_deposit(self, value, document_user_logged):
         self.operation_lock.acquire()
         self.balance = float(self.balance) + value
-        user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+        user_infos = accounts_storage.find_user_by_document(document_user_logged)
         new_transaction = transaction.Transaction(
                 name_source= user_infos.name,
                 document_source= user_infos.document,
@@ -308,7 +308,7 @@ class Account:
         return 1, new_transaction.id_transaction
     
 
-    def transfer_money_ted(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver):
+    def transfer_money_ted(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver, document_user_logged):
         self.operation_lock.acquire()
         if(value > self.balance):
             self.operation_lock.release()
@@ -318,7 +318,7 @@ class Account:
             return 0, 'not possible transfer money to your account in this bank'
         else:
             try:
-                user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+                user_infos = accounts_storage.find_user_by_document(document_user_logged)
                 data_to_send = {
                     'value': value,
                     'name_source': user_infos.name,
@@ -375,7 +375,7 @@ class Account:
                 return 0, 'error in transfer money'
             
     
-    def transfer_money_pix(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver, key_pix):
+    def transfer_money_pix(self,  value, name_receiver, document_receiver, account_number_receiver, bank_receiver, key_pix, document_user_logged):
         self.operation_lock.acquire()
         if(value > self.balance):
             self.operation_lock.release()
@@ -385,7 +385,7 @@ class Account:
             return 0, 'not possible trasfer money to your account in this bank'
         else:
             try:
-                user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+                user_infos = accounts_storage.find_user_by_document(document_user_logged)
                 data_to_send = {
                     'value': value,
                     'name_sourcer': user_infos.name,

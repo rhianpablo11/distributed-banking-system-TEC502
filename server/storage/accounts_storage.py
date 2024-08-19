@@ -96,3 +96,17 @@ def get_accounts_with_investiment() -> list:
         if(accounts_copy[account].cdi_balance > 0 or accounts_copy[account].saving_balance > 0):
             list_of_account_number_to_return.append(account)
     return list_of_account_number_to_return
+
+
+def verify_user_in_account(document_user_to_search, account_to_verify) -> bool:
+    accounts_copy = accounts.copy()
+    if(account_to_verify not in accounts_copy):
+        return False
+    
+    user_found_in_account = False
+    for document_user_in_account in accounts_copy[account_to_verify].user_list:
+        if(document_user_to_search == document_user_in_account):
+            user_found_in_account = True
+            break
+
+    return user_found_in_account

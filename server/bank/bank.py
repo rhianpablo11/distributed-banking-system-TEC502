@@ -150,13 +150,13 @@ def operation_invest_money(operation_data):
         return 'account not found', 404
     else:
         if(operation_data['type_investiment'] == 'cdi'):
-            if(account_to_operate.invest_money_cdi(operation_data['value'])):
+            if(account_to_operate.invest_money_cdi(operation_data['value'], operation_data['document_user_logged'])):
                 accounts_storage.update_account_after_changes(account_to_operate)
                 return 'money invested with sucess', 200
             else:
                 return 'not money available for investiment', 400
         elif(operation_data['type_investiment'] == 'saving'):
-            if(account_to_operate.invest_money_saving(operation_data['value'])):
+            if(account_to_operate.invest_money_saving(operation_data['value'], operation_data['document_user_logged'])):
                 accounts_storage.update_account_after_changes(account_to_operate)
                 return 'money invested with sucess', 200
             else:
@@ -171,13 +171,13 @@ def operation_withdraw_investiment(operation_data):
         return 'account not found', 404
     else:
         if(operation_data['type_investiment'] == 'cdi'):
-            if(account_to_operate.withdraw_money_cdi(operation_data['value'])):
+            if(account_to_operate.withdraw_money_cdi(operation_data['value'], operation_data['document_user_logged'] )):
                 accounts_storage.update_account_after_changes(account_to_operate)
                 return 'withdraw money with sucess', 200
             else:
                 return 'this value is more than available in investiment selected', 400
         elif(operation_data['type_investiment'] == 'saving'):
-            if(account_to_operate.withdraw_money_saving(operation_data['value'])):
+            if(account_to_operate.withdraw_money_saving(operation_data['value'], operation_data['document_user_logged'])):
                 accounts_storage.update_account_after_changes(account_to_operate)
                 return 'withdraw money with sucess', 200
             else:
@@ -191,7 +191,7 @@ def operation_deposit_money(operation_data):
     if(account_to_operate == None):
         return 'account not found', 404
     else:
-        account_to_operate.receive_deposit(operation_data['value'])
+        account_to_operate.receive_deposit(operation_data['value'], operation_data['document_user_logged'])
         accounts_storage.update_account_after_changes(account_to_operate)
         return 'money add with success', 200
     
@@ -207,7 +207,8 @@ def operation_transfer_money(operation_data):
             name_receiver = operation_data['name_receiver'],
             account_number_receiver = operation_data['account_number_receiver'],
             bank_receiver = operation_data['bank_receiver'],
-            document_receiver = operation_data['document_receiver'])
+            document_receiver = operation_data['document_receiver'],
+            document_user_logged = operation_data['document_user_logged'])
         
     elif(operation_data['type_transaction'] == 'pix'):
         return_of_operation = account_to_operate.transfer_money_pix(
@@ -215,7 +216,8 @@ def operation_transfer_money(operation_data):
             name_receiver = operation_data['name_receiver'],
             account_number_receiver = operation_data['account_number_receiver'],
             bank_receiver = operation_data['bank_receiver'],
-            document_receiver = operation_data['document_receiver'])
+            document_receiver = operation_data['document_receiver'],
+            document_user_logged = operation_data['document_user_logged'])
         
     if( not return_of_operation[0]):
         accounts_storage.update_account_after_changes(account_to_operate)
@@ -230,6 +232,7 @@ def operation_transfer_money(operation_data):
                                 is_concluded=True)
     accounts_storage.update_account_after_changes(account_to_operate)
     return 'money transfer with success', 200
+
 
 def operation_packet_transfer(operation_data):
     pass

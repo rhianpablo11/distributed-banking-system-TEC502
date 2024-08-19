@@ -250,6 +250,14 @@ def receive_money(method_receive):
 @app.route('/account/deposit/<float:value>', methods=['POST'])
 @authenticate.jwt_token_required
 def receive_deposit(account_number_logged, document_user_logged, value):
+    account_found = accounts_storage.find_account_by_number_account(account_number_logged)
+    if(account_found == None):
+        return 'account not found', 404
+
+    if(not accounts_storage.verify_user_in_account(document_user_to_search=document_user_logged,
+                                               account_to_verify=account_number_logged)):
+        return 'user not match in account', 404
+
     operation_to_put_in_dict = {
             'type_operation': 'deposit',
             'index_operation': -1,
@@ -281,7 +289,14 @@ def receive_deposit(account_number_logged, document_user_logged, value):
 def transfer_money(account_number_logged, document_user_logged, type_transfer):
     data_received_with_requisition = request.json
     account_source_infos = accounts_storage.find_account_by_number_account(account_number_logged)
-    user_infos = accounts_storage.find_user_by_document(account_source_infos.user_list[0])
+    if(account_source_infos == None):
+        return 'account not found', 404
+    
+    if(not accounts_storage.verify_user_in_account(document_user_to_search=document_user_logged,
+                                               account_to_verify=account_number_logged)):
+        return 'user not match in account', 404
+    
+
     operation_to_put_in_dict = {
         'type_operation': 'transfer',
         'index_operation': -1,
@@ -341,6 +356,14 @@ def cancel_transaction_of_account_client(id_transaction_to_cancel, account_numbe
 @app.route('/account/invest/<string:type_investiment>/<float:value>', methods=['POST'])
 @authenticate.jwt_token_required
 def invest_money(account_number_logged, document_user_logged, type_investiment, value):
+    account_source_infos = accounts_storage.find_account_by_number_account(account_number_logged)
+    if(account_source_infos == None):
+        return 'account not found', 404
+    
+    if(not accounts_storage.verify_user_in_account(document_user_to_search=document_user_logged,
+                                               account_to_verify=account_number_logged)):
+        return 'user not match in account', 404
+
     operation_to_put_in_dict = {
             'type_operation': 'investiment',
             'index_operation': -1,
@@ -369,6 +392,14 @@ def invest_money(account_number_logged, document_user_logged, type_investiment, 
 @app.route('/account/withdraw/<string:type_investiment>/<float:value>/<int:account_number>', methods=['POST'])
 @authenticate.jwt_token_required
 def withdraw_money(account_number_logged, document_user_logged, type_investiment, value ):
+    account_source_infos = accounts_storage.find_account_by_number_account(account_number_logged)
+    if(account_source_infos == None):
+        return 'account not found', 404
+    
+    if(not accounts_storage.verify_user_in_account(document_user_to_search=document_user_logged,
+                                               account_to_verify=account_number_logged)):
+        return 'user not match in account', 404
+
     operation_to_put_in_dict = {
             'type_operation': 'withdraw_investiment',
             'index_operation': -1,
