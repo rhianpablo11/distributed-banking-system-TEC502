@@ -1,20 +1,48 @@
 import requests
+import datetime
+import jwt
 from flask_cors import CORS
 from flask import *
-from storage import accounts_storage, network_storage
+from storage import accounts_storage, network_storage, keys_storage
 from models import user
 from token_control import token
+from functools import wraps
+from api import authenticate
 
 app = Flask(__name__)
 CORS(app)
 
+chave_secreta_provisoria = 'mont blank'
+
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token_jwt = request.args.get('token')
+        if(not token_jwt):
+            return 'puts'
+        else:
+            try:
+                payload = jwt.decode(token, chave_secreta_provisoria)
+            except:
+                return 'token invalid'
+    return decorated
+
+
+
 
 @app.route('/bank', methods=['GET'])
+@token_required
 def get_name_bank():
     name_bank = network_storage.get_name_bank()
     if(name_bank != None):
         return make_response(jsonify({'name_bank': name_bank})), 200
     return 'error internal', 500
+
+#rota provisoria trocar depois
+@app.route('/account/logged/require-info')
+@authenticate.jwt_token_required
+def get_account_full_info(account_number_logged, user_logged):
+    return make_response(jsonify(accounts_storage.find_account_by_number_account(account_number_logged).get_json()))
 
 
 @app.route('/token', methods=['POST'])
@@ -66,13 +94,25 @@ def login_account():
         elif(accounts_storage.find_user_by_document(account_found.user_list[1]).password == user.cryptography_password(data_received_with_requisition['password'])):
             account_found.set_logged_into_account(True)
             accounts_storage.update_account_after_changes(account_found)
+
+            
             return make_response(jsonify(account_found.get_json_user_logged(1))), 200
         else:
             return 'password incorrect', 406
     if(accounts_storage.find_user_by_document(account_found.user_list[0]).password == user.cryptography_password(data_received_with_requisition['password'])):
         account_found.set_logged_into_account(True)
         accounts_storage.update_account_after_changes(account_found)
-        return make_response(jsonify(account_found.get_json_user_logged(0))), 200
+        
+        payload = {
+            'account_number': account_found.account_number,
+            'document_user_logged': account_found.user_list[0],
+            'expiration': str(datetime.datetime.utcnow() + datetime.timedelta(minutes=1))
+        }
+        print("parte Externa", keys_storage.get_jwt_secret_key())
+        token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
+
+    
+        return make_response(jsonify({'account_info': account_found.get_json_user_logged(0), 'token': token_jwt})), 200
     return 'password incorrect', 406
     
 
