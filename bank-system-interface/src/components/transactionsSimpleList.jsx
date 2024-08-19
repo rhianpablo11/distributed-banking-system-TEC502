@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react'
 import TransactionInfoCompacted from './transactionInfoCompacted'
 
 function TransactionSimpleList(props){
-    const [transactions, setTransactions] = useState([])
+    const [transactions, setTransactions] = useState([{
+        'value': null,
+        'date_transaction': null,
+        'concluded': null, 
+        'name_source': null,
+        'type_transaction': null
+    }])
 
     useEffect(()=>{
         setTransactions(props.transactionsList)

@@ -4,16 +4,20 @@ function LogoBank(props){
 
     return (
         <>
+            <div>
+                <h1>{props.nameBank}</h1>
+                <h3>bank</h3>
+            </div>
         </>
     )
 }
 
 LogoBank.propsTypes = {
-    name_bank: propsTypes.string
+    nameBank: propsTypes.string
 }
 
 LogoBank.defaultProps = {
-    name_bank: null
+    nameBank: null
 }
 
 export default LogoBank

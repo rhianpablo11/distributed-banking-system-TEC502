@@ -12,7 +12,28 @@ import CurrentTime from "../../components/currentTime"
 
 function Dashboard(){
     const {nameBank} = useParams()
-    const [userData, setUserData] = useState()
+    const [userData, setUserData] = useState({
+        'balance': null,
+        'account_number': null,
+        'blocked_balance': null,
+        'transactions': [{
+            'value': null,
+            'date_transaction': null,
+            'concluded': null, 
+            'name_source': null,
+            'type_transaction': null
+        }],
+        'cdi_balance': null,
+        'saving_balance': null,
+        'name': null,
+        'document': null,
+        'telephone': null,
+        'email': null,
+        'is_company': null,
+        'client_since': null,
+        'banks_with_account': null
+
+    })
     const [isServerErrorOcorred, setIsServerErrorOcorred] = useState(false)
 
 
@@ -55,7 +76,7 @@ function Dashboard(){
                 </div>
                 <div>
                     <BalanceInfo balance={userData.balance} blockedBalance={userData.blocked_balance} cdiBalance={userData.cdi_balance} savingBalance={userData.saving_balance} />
-                    <TransactionSimpleList trasactionsList={userData.transactions} />
+                    <TransactionSimpleList transactionsList={userData.transactions} />
                 </div>
                 <div>
                     <CurrentTime />

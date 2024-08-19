@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     element: <CardRequestAgencyBank />
   },
   {
-    path: '/dashboard-temp',
+    path: '/:nameBank/dashboard-temp',
     element: <Dashboard />
   },
   {
