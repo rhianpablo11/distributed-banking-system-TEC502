@@ -4,7 +4,9 @@ function TransactionInfoCompacted(props){
 
     return(
         <>
-        
+            <div>
+                {props.value}
+            </div>
         </>
     )
 }

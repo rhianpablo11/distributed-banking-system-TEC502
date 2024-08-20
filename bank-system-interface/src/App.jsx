@@ -13,6 +13,7 @@ import BackgroundTransactions from "./common/backgroundTransactions.jsx"
 import CardRequestAgencyBank from "./common/cardRequestAgencyBank.jsx"
 import RequestWhichBank from "./pages/request_bank/requestWhichBank.jsx"
 import Dashboard from "./pages/dashboard_account/dashboard.jsx"
+import LoginPage from "./pages/login/loginPage.jsx"
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: '/:nameBank/dashboard-temp',
     element: <Dashboard />
+  },
+  {
+    path: '/:nameBank/new-login',
+    element: <LoginPage />
   },
   {
     path: '/request-name-bank',

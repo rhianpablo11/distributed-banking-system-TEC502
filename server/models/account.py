@@ -490,7 +490,7 @@ class GenerateNumberAccountBank:
 
     def createAccountNumber(self):
             while True:
-                accountNumber = random.randint(0000, 99999)
+                accountNumber = random.randint(00000, 99999)
                 if accountNumber not in self.accountNumbersInSystem:
                     self.accountNumbersInSystem.add(accountNumber)
                     return accountNumber

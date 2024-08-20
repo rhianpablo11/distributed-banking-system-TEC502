@@ -4,7 +4,12 @@ function FastPix(props){
     
     return (
         <>
-        
+            <div>
+                <h1>Fast Pix</h1>
+                <div>
+                    <input></input>
+                </div>
+            </div>
         </>
     )
 }

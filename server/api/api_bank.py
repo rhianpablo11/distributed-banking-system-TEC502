@@ -59,6 +59,7 @@ def search_user(document_user_to_search, account_number_to_add, name_bank):
 @app.route('/account/login', methods=['POST'])
 def login_account():
     data_received_with_requisition = request.json
+    print(data_received_with_requisition)
     account_found = accounts_storage.find_account_by_number_account(data_received_with_requisition['account_number'])
     if(account_found == None):
         return 'account not found', 404
@@ -91,7 +92,7 @@ def login_account():
         payload = {
             'account_number': account_found.account_number,
             'document_user_logged': account_found.user_list[0],
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=15)
         }
 
         token_jwt = jwt.encode(payload, keys_storage.get_jwt_secret_key())
@@ -119,7 +120,7 @@ def get_account_full_info_for_user_logged(account_number_logged, document_user_l
         'account_info': account_found.get_json_user_logged(account_found.user_list.index(document_user_logged)),
         'token_jwt': token_jwt
     }
-    return make_response(jsonify(data_to_send))
+    return make_response(jsonify(data_to_send)),200
 
 
 

@@ -7,7 +7,7 @@ import HelloUser from "../../components/helloUser"
 import TransactionSimpleList from "../../components/transactionsSimpleList"
 import { useParams } from "react-router-dom"
 import NavbarLogged from "../../components/navbarLogged"
-import { get_address_bank_selected } from "../../utils/constants"
+import { get_address_bank_selected, get_token, save_cookie_token } from "../../utils/constants"
 import CurrentTime from "../../components/currentTime"
 
 function Dashboard(){
@@ -40,14 +40,21 @@ function Dashboard(){
     useEffect(()=>{
         const requestInfoAccount = async () => {
             try{
-                const response = await fetch(get_address_bank_selected(), {
-                    method: 'POST'
+                const urlCommunicate = get_address_bank_selected()+'/account/logged'
+                console.log(get_token())
+                const response = await fetch(urlCommunicate, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${get_token()}`
+                    }
                 })
 
                 if(response.ok){
                     setIsServerErrorOcorred(false)
                     const dataReceivedJson = await response.json()
-                    setUserData(dataReceivedJson)
+                    setUserData(dataReceivedJson['account_info'])
+                    console.log(userData)
+                    save_cookie_token(dataReceivedJson['token_jwt'])
                 } else{
                     setIsServerErrorOcorred(true)
                 }

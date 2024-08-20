@@ -12,6 +12,7 @@ function Deposit(props){
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)
 
+
     const qrCodeElement = <div>
                             qrCode image
                         </div>
@@ -70,9 +71,6 @@ function Deposit(props){
     }
 
 
-    
-
-
     return (
         <>
             <div>
@@ -99,6 +97,7 @@ function Deposit(props){
         </>
     )
 }
+
 
 Deposit.propsTypes = {
     account_number: propsTypes.number
