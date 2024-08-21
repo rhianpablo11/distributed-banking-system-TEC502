@@ -2,7 +2,7 @@ import propsTypes from 'prop-types'
 import { useState } from 'react'
 import Loading from './loading'
 import Error from './error'
-import { get_address_bank_selected } from '../utils/constants'
+import { get_address_bank_selected, get_token } from '../utils/constants'
 
 
 function Deposit(props){
@@ -54,7 +54,10 @@ function Deposit(props){
                 const urlCommunicate = get_address_bank_selected()+'/account/deposit/'+parseFloat(valueDeposit).toFixed(2)
                 setIsLoading(true)
                 const response = await fetch(urlCommunicate, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${get_token()}`
+                    }
                 })
 
                 if(response.ok){

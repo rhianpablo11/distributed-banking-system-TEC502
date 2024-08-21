@@ -24,7 +24,7 @@ function TransactionSimpleList(props){
                     <ul>
                         {transactions.map((transaction, index) => (
                             <li key={index}>
-                                <TransactionInfoCompacted value={transaction.value} date_transaction={transaction.date_transaction} concluded={transaction.concluded} name_source={transaction.name_source} type_transaction={transaction.type_transaction} />
+                                <TransactionInfoCompacted value={transaction.value} date_transaction={transaction.date_transaction} concluded={transaction.concluded} name_source={transaction.name_source} type_transaction={transaction.type_transaction} name_receiver={transaction.name_receiver}  />
                             </li>
                         ))}
                     </ul>

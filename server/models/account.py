@@ -158,6 +158,8 @@ class Account:
         if(self.cdi_balance > 0 ):
             money_earned_with_investiment = self.cdi_balance * 0.01
             user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+            
+            #alterar quem entregou esse dinheiro foi o banco e nao o usuario
             new_transaction = transaction.Transaction(
                 name_source= user_infos.name,
                 document_source= user_infos.document,
@@ -242,6 +244,8 @@ class Account:
         if(self.saving_balance > 0 ):
             money_earned_with_investiment = self.saving_balance * 0.005
             user_infos = accounts_storage.find_user_by_document(self.user_list[0])
+            
+            #alterar quem entregou esse dinheiro foi o banco e nao o usuario
             new_transaction = transaction.Transaction(
                 name_source= user_infos.name,
                 document_source= user_infos.document,
