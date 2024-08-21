@@ -1,20 +1,12 @@
 import propsTypes from 'prop-types'
 import { useEffect, useState } from 'react'
+import { formatCurrency } from '../utils/constants'
 
 function TransactionInfoCompacted(props){
     const [typeTransaction, setTypeTransaction] = useState('')
     const [moneyDirection, setMoneyDirection] = useState('')
     const [symbolRender, setSymbolRender] = useState(<></>)
     const dateTransactionObject = new Date(props.date_transaction)
-
-
-    const formatCurrency = (value) => {
-        const parts = value.toFixed(2).split('.');
-        const integerPart = parts[0];
-        const decimalPart = parts[1];
-        const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        return formattedIntegerPart+","+decimalPart;
-    }
 
 
     const selectSymbolOperation = () => {
