@@ -13,6 +13,7 @@ class User:
         self.user_lock = threading.Lock()
         self.date_created_user = datetime.datetime.now()
         self.banks_with_account = banks_with_account #dict with {name_bank: account_number}
+        # todo: add data de nascimento aqui
     
 
     def get_json(self):
