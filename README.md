@@ -38,11 +38,11 @@ O anel garante que apenas um banco execute operações por ciclo de posse do tok
 flowchart TD
     subgraph Consorcio["Consórcio Bancário Distribuído"]
         direction TB
-        B1["Eleven Bank (ID 1)<br/>Iniciador do Token"]
-        B2["Automobili Bank (ID 2)"]
-        B3["Secret Bank (ID 3)"]
-        B4["Formula Bank (ID 4)"]
-        B5["Titanium Bank (ID 5)"]
+        B1["Eleven Bank - ID 1<br/>Iniciador do Token"]
+        B2["Automobili Bank - ID 2"]
+        B3["Secret Bank - ID 3"]
+        B4["Formula Bank - ID 4"]
+        B5["Titanium Bank - ID 5"]
 
         B1 -->|1. Repassa Token| B2
         B2 -->|2. Repassa Token| B3
@@ -50,7 +50,7 @@ flowchart TD
         B4 -->|4. Repassa Token| B5
         B5 -->|5. Fecha o Anel| B1
 
-        B2 -.->|Salto se B3 cair (Skip Node)| B4
+        B2 -.->|Salto se B3 cair - Skip Node| B4
     end
 
     classDef nodeStyle fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;

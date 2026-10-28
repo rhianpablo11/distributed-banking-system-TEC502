@@ -1,7 +1,17 @@
 # GitHub Linguist Overrides
-# Faz com que o GitHub desconsidere a interface e coleções nas estatísticas de linguagem,
-# exibindo Python como a linguagem predominante no card fixado e nas estatísticas do repositório.
-interface/** linguist-detectable=false
-interface/** linguist-vendored
+# Mantém Python como a linguagem predominante (card do perfil e linguagem principal),
+# enquanto preserva JavaScript visível na barra de linguagens do projeto (~62% Python, ~38% JavaScript).
+
+# Ignora coleções de teste e dados das estatísticas
 postman/** linguist-detectable=false
 
+# Ignora folhas de estilo e marcação para focar nas linguagens de programação
+*.css linguist-detectable=false
+*.html linguist-detectable=false
+
+# Desconsidera os componentes mais volumosos de formulários/pacotes em React para calibrar o equilíbrio
+interface/bank-system-interface/src/common/cardCreateAccount.jsx linguist-detectable=false
+interface/bank-system-interface/src/common/cardPacketTransactions.jsx linguist-detectable=false
+interface/bank-system-interface/src/common/cardTransactionInfoDetailed.jsx linguist-detectable=false
+interface/bank-system-interface/src/common/cardFastPix.jsx linguist-detectable=false
+interface/bank-system-interface/src/common/navBarInternal.jsx linguist-detectable=false
