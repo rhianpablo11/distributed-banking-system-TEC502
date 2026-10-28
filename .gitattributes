@@ -1,0 +1,7 @@
+# GitHub Linguist Overrides
+# Faz com que o GitHub desconsidere a interface e coleções nas estatísticas de linguagem,
+# exibindo Python como a linguagem predominante no card fixado e nas estatísticas do repositório.
+interface/** linguist-detectable=false
+interface/** linguist-vendored
+postman/** linguist-detectable=false
+
